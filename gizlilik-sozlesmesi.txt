@@ -1,0 +1,150 @@
+Yürürlülük Tarihi: 29/03/2025
+Son Güncelleme Tarihi: 29/03/2025
+
+1. Veri Sorumlusu
+
+İşbu Aydınlatma Metni (“Politika”), veri sorumlusu sıfatıyla hareket eden, ULU CAMİ MAH. 389 SK. NO:2/18 AKHİSAR / MANİSA adresinde mukim ARAZIALCOM EMLAK SANAYİ VE TİCARET LİMİTED ŞİRKETİ (“ARAZIALCOM” veya “Şirket”) tarafından, 6698 sayılı Kişisel Verilerin Korunması Kanunu (“KVKK”) uyarınca, Şirketimizin mobil uygulaması (“Uygulama”) aracılığıyla sunulan gayrimenkul (arsa ve arazi) satışı, teklif ve ihale sistemi hizmetlerinden faydalanan kullanıcılarımızın (“Kullanıcı” veya “Veri Sahibi”) kişisel verilerinin işlenmesine ilişkin usul ve esasları belirlemek amacıyla hazırlanmıştır.
+
+2. Tanımlar
+
+Bu Politikada geçen;
+
+Kişisel Veri: Kimliği belirli veya belirlenebilir gerçek kişiye ilişkin her türlü bilgiyi,
+
+Kişisel Verilerin İşlenmesi: Kişisel verilerin tamamen veya kısmen otomatik olan ya da herhangi bir veri kayıt sisteminin parçası olmak kaydıyla otomatik olmayan yollarla elde edilmesi, kaydedilmesi, depolanması, muhafaza edilmesi, değiştirilmesi, yeniden düzenlenmesi, açıklanması, aktarılması, devralınması, elde edilebilir hâle getirilmesi, sınıflandırılması ya da kullanılmasının engellenmesi gibi veriler üzerinde gerçekleştirilen her türlü işlemi,
+
+Veri Sorumlusu: Kişisel verilerin işleme amaçlarını ve vasıtalarını belirleyen, veri kayıt sisteminin kurulmasından ve yönetilmesinden sorumlu olan ARAZIALCOM EMLAK SANAYİ VE TİCARET LİMİTED ŞİRKETİ’ni,
+
+Veri Sahibi (İlgili Kişi): Kişisel verisi işlenen gerçek kişiyi (Uygulama Kullanıcısı),
+
+Uygulama: ARAZIALCOM tarafından sunulan, arsa ve arazi satışı, teklif ve ihale sistemiyle online satış hizmetlerinin verildiği mobil uygulamayı,
+
+KVKK: 7 Nisan 2016 tarihli ve 29677 sayılı Resmi Gazete’de yayımlanan 6698 sayılı Kişisel Verilerin Korunması Kanunu’nu,
+
+Kurul: Kişisel Verileri Koruma Kurulu’nu,
+
+Açık Rıza: Belirli bir konuya ilişkin, bilgilendirilmeye dayanan ve özgür iradeyle açıklanan rızayı,
+
+Paratika: Ödeme işlemlerinin gerçekleştirilmesi için hizmet alınan üçüncü taraf ödeme hizmeti sağlayıcısını (Paratika Ödeme Hizmetleri A.Ş.),
+ifade eder.
+
+3. İşlenen Kişisel Veri Kategorileri
+
+ARAZIALCOM, Uygulama aracılığıyla aşağıdaki kategorilerde kişisel verilerinizi işleyebilmektedir:
+
+İletişim Bilgileri: E-posta Adresi, Cep Telefonu Numarası, Kayıt veya işlem sırasında sağlanan Yerleşim Yeri Adresi.
+
+Finansal Bilgiler: Verilen Teklif Geçmişi, Gerçekleşen İşlem Tutarları, Ödeme Durumu Bilgisi (Ödeme işlemleri Paratika üzerinden gerçekleştirilir).
+
+Kullanıcı İşlem Bilgileri: Hesap Bilgileri (Kullanıcı adı vb.), Giriş Kayıtları, Uygulama İçi Hareketler (verilen teklifler, takip edilen ihaleler vb.), Destek Talepleri ve İletişim Kayıtları.
+
+Teknik İşlem Güvenliği Bilgileri: IP Adresi, Cihaz Bilgileri (Model, İşletim Sistemi vb.), Uygulama Sürümü, Erişim Zamanları gibi teknik veriler.
+
+Kimlik Bilgileri: (Ad, Soyad gibi temel bilgiler. Not: Gayrimenkul alım-satım işlemlerinin tamamlanması aşamasında yasal zorunluluklar (örn. tapu işlemleri) veya Şirket prosedürleri gereği ek kimlik bilgileri (örn. T.C. Kimlik Numarası) talep edilebilir ve işlenebilir. Bu durumda ayrıca bilgilendirme yapılabilir.)
+
+4. Kişisel Verilerin İşlenme Amaçları
+
+Toplanan kişisel verileriniz, KVKK’nın 5. ve 6. maddelerinde belirtilen kişisel veri işleme şartları dahilinde, aşağıdaki amaçlarla işlenmektedir:
+
+Uygulama üzerinden kullanıcı hesabı oluşturulması, doğrulanması ve yönetilmesi (İletişim Bilgileri, Kullanıcı İşlem Bilgileri),
+
+Teklif verme ve ihale süreçlerine katılımın sağlanması, tekliflerin kaydedilmesi ve yönetilmesi (İletişim Bilgileri, Finansal Bilgiler, Kullanıcı İşlem Bilgileri),
+
+Başarılı ihale sonrası alım-satım işlemlerinin gerçekleştirilmesi ve ödemelerin Paratika aracılığıyla işlenmesi, faturalandırma ve muhasebe kayıtlarının tutulması (İletişim Bilgileri, Finansal Bilgiler),
+
+Kullanıcı ile Uygulama hizmetlerine ilişkin iletişim kurulması (örn. teklif durumu, ihale sonuçları, hesap bilgileri, hizmet güncellemeleri, destek talepleri yanıtları) (İletişim Bilgileri),
+
+Üyelik sözleşmesi ve kullanım koşullarından doğan yükümlülüklerin yerine getirilmesi (İlgili tüm veri kategorileri),
+
+Müşteri hizmetleri, şikayet ve taleplerin yönetimi (İletişim Bilgileri, Kullanıcı İşlem Bilgileri),
+
+Uygulama hizmetlerinin iyileştirilmesi, kullanıcı deneyiminin artırılması ve teknik sorunların giderilmesi (Teknik İşlem Güvenliği Bilgileri, Kullanıcı İşlem Bilgileri),
+
+Uygulama güvenliğinin sağlanması, şüpheli işlemlerin, hileli veya yetkisiz kullanımların tespit edilmesi ve önlenmesi (İlgili tüm veri kategorileri),
+
+Yasal düzenlemelerden (örn. Türk Ticaret Kanunu, Vergi Usul Kanunu, Elektronik Ticaretin Düzenlenmesi Hakkında Kanun) doğan hukuki yükümlülüklerin yerine getirilmesi,
+
+Yetkili kamu kurum ve kuruluşlarına hukuki zorunluluklar nedeniyle bilgi verilmesi.
+
+(İsteğe Bağlı) Kullanıcının açık rızası alınmak kaydıyla, pazarlama, kampanya ve promosyon bildirimlerinin gönderilmesi (İletişim Bilgileri).
+
+5. Kişisel Veri Toplamanın Yöntemi ve Hukuki Sebebi
+
+Kişisel verileriniz, Uygulama’ya kayıt olmanız, profil bilgilerinizi girmeniz, teklif vermeniz, iletişim formlarını doldurmanız gibi doğrudan sizden sağlanan bilgilerle veya Uygulama’yı kullanımınız sırasında (örn. teklif geçmişi, teknik veriler) otomatik veya kısmen otomatik yollarla toplanmaktadır.
+
+Kişisel verileriniz, KVKK Madde 5 uyarınca aşağıdaki hukuki sebeplere dayanılarak işlenmektedir:
+
+Bir sözleşmenin kurulması veya ifasıyla doğrudan doğruya ilgili olması kaydıyla, sözleşmenin taraflarına ait kişisel verilerin işlenmesinin gerekli olması (Madde 5/2-c): Üyelik sözleşmesinin kurulması, hesap yönetimi, teklif verme, ihale katılımı, başarılı ihale sonrası alım-satım sürecinin yürütülmesi gibi temel hizmetlerin sunulması.
+
+Veri sorumlusunun hukuki yükümlülüğünü yerine getirebilmesi için zorunlu olması (Madde 5/2-ç): Yasal bildirimler, vergi yükümlülükleri, resmi makamların taleplerinin karşılanması.
+
+İlgili kişinin temel hak ve özgürlüklerine zarar vermemek kaydıyla, veri sorumlusunun meşru menfaatleri için veri işlenmesinin zorunlu olması (Madde 5/2-f): Uygulama güvenliğinin sağlanması, hizmet kalitesinin artırılması, sahteciliğin önlenmesi, operasyonel süreçlerin yönetimi.
+
+Açık Rıza (Madde 5/1): Yukarıdaki hukuki sebeplerin geçerli olmadığı ve/veya isteğe bağlı olan durumlar için (örn. ticari elektronik ileti gönderimi gibi pazarlama faaliyetleri).
+
+6. Kişisel Verilerin Aktarılması
+
+Kişisel verileriniz, KVKK’nın 8. ve 9. maddelerinde belirtilen kişisel veri işleme şartları ve amaçları çerçevesinde, yukarıda sayılan amaçların gerçekleştirilmesi doğrultusunda ve yalnızca gerektiği ölçüde aşağıdaki alıcı gruplarına aktarılabilecektir:
+
+Ödeme Hizmeti Sağlayıcıları: Ödeme işlemlerinin güvenli bir şekilde gerçekleştirilmesi amacıyla anlaşmalı ödeme hizmeti sağlayıcımız olan Paratika Ödeme Hizmetleri A.Ş.'ye (işlem tutarı, kullanıcıya ait referans bilgisi gibi gerekli veriler aktarılır. Hassas kart bilgileriniz genellikle doğrudan Paratika sistemleri tarafından işlenir ve Şirketimiz tarafından görülmez/saklanmaz – Paratika’nın kendi gizlilik politikası geçerlidir).
+
+Tedarikçiler ve İş Ortakları: Hizmetlerin sunulması için gerekli olan altyapı (örn. sunucu barındırma/hosting, e-posta gönderimi) hizmeti alınan yurt içindeki tedarikçiler ve iş ortakları (yalnızca hizmetin gerektirdiği ölçüde).
+
+Yetkili Kamu Kurum ve Kuruluşları: Yasal zorunluluklar gereği (örn. mahkeme kararı, vergi incelemesi) bilgi talep etmeye yetkili olan kamu kurum ve kuruluşları.
+
+Hukuki Danışmanlar ve Noterler: Gerekli hallerde hukuki süreçlerin takibi veya gayrimenkul alım-satım işlemlerinin resmiyet kazanması amacıyla (örn. tapu işlemleri).
+
+Şirketimiz, yukarıda belirtilen zorunlu ve hizmet gereği aktarımlar dışında, kişisel verilerinizi başka üçüncü taraflarla pazarlama veya sair amaçlarla paylaşmamaktadır.
+
+Yurtdışına Veri Aktarımı: Kişisel verileriniz kural olarak Türkiye içinde işlenmekte ve saklanmaktadır. Hizmet altyapısı veya kullanılan servisler (örn. Paratika'nın altyapısı) nedeniyle yurtdışına veri aktarımı söz konusu olursa, bu aktarım KVKK Madde 9'daki şartlara (Kurul'un yeterlilik kararı, taahhütname veya açık rıza gibi) uygun olarak gerçekleştirilecektir. Şu an için [Eğer yurtdışı aktarım olmadığından eminseniz: "planlı bir yurtdışı aktarımı yapılmamaktadır." / Emin değilseniz veya Paratika vb. için gerekebiliyorsa: "gerekli yasal güvenceler sağlanarak yapılabilecektir."]
+
+7. Kişisel Verilerin Saklanma Süresi
+
+Kişisel verileriniz, ilgili mevzuatta öngörülen (örn. Türk Ticaret Kanunu, Vergi Usul Kanunu, Borçlar Kanunu uyarınca genellikle 10 yıl gibi) veya işlendikleri amaç için gerekli olan (örn. üyelik aktif olduğu sürece hesap bilgileri) süre kadar muhafaza edilecektir. Süre sonunda veya işleme amacı ortadan kalktığında, kişisel verileriniz resen veya talebiniz üzerine KVKK ve ilgili diğer mevzuata uygun olarak silinecek, yok edilecek veya anonim hale getirilecektir.
+
+8. Veri Güvenliği Tedbirleri
+
+ARAZIALCOM, kişisel verilerinizin hukuka aykırı olarak işlenmesini, erişilmesini önlemek ve muhafazasını sağlamak amacıyla KVKK Madde 12 uyarınca gerekli teknik ve idari tedbirleri almaktadır. Bu kapsamda, şifreleme, erişim yetki kontrolleri, güvenlik duvarları, güncel antivirüs sistemleri kullanımı, düzenli güvenlik taramaları gibi standart güvenlik uygulamaları benimsenmiştir. Veri işleyen personelimize yönelik farkındalık eğitimleri düzenlenmektedir.
+
+9. Veri Sahibinin Hakları (KVKK Madde 11)
+
+KVKK’nın 11. maddesi uyarınca, Veri Sahibi olarak aşağıdaki haklara sahipsiniz:
+
+Kişisel verilerinizin işlenip işlenmediğini öğrenme,
+
+Kişisel verileriniz işlenmişse buna ilişkin bilgi talep etme,
+
+Kişisel verilerinizin işlenme amacını ve bunların amacına uygun kullanılıp kullanılmadığını öğrenme,
+
+Yurt içinde veya yurt dışında kişisel verilerinizin aktarıldığı üçüncü kişileri bilme,
+
+Kişisel verilerinizin eksik veya yanlış işlenmiş olması hâlinde bunların düzeltilmesini isteme,
+
+KVKK’nın 7. maddesinde öngörülen şartlar çerçevesinde kişisel verilerinizin silinmesini veya yok edilmesini isteme,
+
+(d) ve (e) bentleri uyarınca yapılan işlemlerin, kişisel verilerinizin aktarıldığı üçüncü kişilere bildirilmesini isteme,
+
+İşlenen verilerinizin münhasıran otomatik sistemler vasıtasıyla analiz edilmesi suretiyle aleyhinize bir sonucun ortaya çıkmasına itiraz etme,
+
+Kişisel verilerinizin kanuna aykırı olarak işlenmesi sebebiyle zarara uğramanız hâlinde zararın giderilmesini talep etme.
+
+10. Başvuru ve İletişim
+
+Yukarıda belirtilen haklarınızı kullanmak için taleplerinizi, kimliğinizi tevsik edici belgelerle birlikte aşağıdaki yöntemlerden biriyle Şirketimize iletebilirsiniz:
+
+Yazılı olarak ıslak imzalı şekilde ULU CAMİ MAH. 389 SK. NO:2/18 AKHİSAR / MANİSA adresine iadeli taahhütlü mektupla veya şahsen başvuru yoluyla,
+
+Kayıtlı Elektronik Posta (KEP) adresinizi kullanarak Şirketimizin [Şirketin KEP Adresini Buraya Giriniz] KEP adresine e-posta göndererek,
+
+Güvenli Elektronik İmza veya Mobil İmza kullanarak [kvkk@arazialcom.com gibi bir e-posta adresi belirleyiniz] e-posta adresine e-posta göndererek,
+
+Şirketimize daha önce bildirdiğiniz ve sistemimizde kayıtlı bulunan elektronik posta adresinizi kullanarak [kvkk@arazialcom.com gibi aynı e-posta adresini belirleyiniz] e-posta adresine e-posta göndererek.
+
+Başvurunuzda adınızın, soyadınızın, TCKN’nizin (yabancılar için uyruk, pasaport numarası/kimlik numarası - eğer TCKN topluyorsanız zorunludur), tebligata esas yerleşim yeri veya iş yeri adresinizin, varsa bildirime esas elektronik posta adresi, telefon numaranızın ve talep konunuzun açıkça belirtilmesi gerekmektedir.
+
+Başvurularınız, talebinizin niteliğine göre en kısa sürede ve en geç otuz (30) gün içinde ücretsiz olarak sonuçlandırılacaktır. Ancak işlemin ayrıca bir maliyet gerektirmesi halinde, Kurul tarafından belirlenen tarifedeki ücretler talep edilebilir.
+
+11. Politika’da Yapılacak Değişiklikler
+
+ARAZIALCOM, işbu Gizlilik Politikası hükümlerini yasal düzenlemeler ve Şirket politikaları doğrultusunda dilediği zaman Uygulama üzerinden yayımlamak suretiyle güncelleyebilir ve değiştirebilir. Güncellenmiş Politika, Uygulama’da yayınlandığı tarihte yürürlük kazanır. Önemli değişiklikler kullanıcılara Uygulama içi bildirim veya e-posta yoluyla ayrıca duyurulabilir.
+

@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://www.arazialcom.net/sitemap.xml
+
+# Disallow admin areas
+Disallow: /admin
+Disallow: /api/
+Disallow: /private/
+
+# Allow important pages
+Allow: /dashboard
+Allow: /auctions
+Allow: /login
+Allow: /register
+
+# Crawl delay
+Crawl-delay: 1 

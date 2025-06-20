@@ -1,0 +1,3096 @@
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../supabaseClient';
+import { useAuth } from '../context/AuthContext';
+// import Button from '../components/ui/Button';
+
+const PageContainer = styled.div`
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+`;
+
+const PageHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-direction: column;
+  
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
+`;
+
+const PageTitle = styled.h1`
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  
+  @media (min-width: 768px) {
+    margin-bottom: 0;
+  }
+`;
+
+const DashboardGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  
+  @media (min-width: 1024px) {
+    grid-template-columns: 240px 1fr;
+  }
+`;
+
+const Sidebar = styled.div`
+  background-color: white;
+  border-radius: var(--border-radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  height: fit-content;
+`;
+
+const SidebarButton = styled.button`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.875rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-align: left;
+  color: ${props => props.$active ? 'var(--color-primary)' : 'var(--color-text-secondary)'};
+  background-color: ${props => props.$active ? 'rgba(var(--color-primary-rgb), 0.04)' : 'transparent'};
+  border: none;
+  border-left: 3px solid ${props => props.$active ? 'var(--color-primary)' : 'transparent'};
+  margin-bottom: 0.25rem;
+  border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  svg {
+    margin-right: 0.75rem;
+    flex-shrink: 0;
+  }
+  
+  &:hover {
+    color: var(--color-primary);
+    background-color: rgba(var(--color-primary-rgb), 0.04);
+  }
+`;
+
+const ContentArea = styled.div`
+  background-color: white;
+  border-radius: var(--border-radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+`;
+
+const SectionTitle = styled.h2`
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+`;
+
+const TableHead = styled.thead`
+  background-color: var(--color-background);
+`;
+
+const TableRow = styled.tr`
+  border-bottom: 1px solid var(--color-border);
+  
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const TableHeader = styled.th`
+  text-align: left;
+  padding: 1rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+`;
+
+const TableCell = styled.td`
+  padding: 1rem;
+  font-size: 0.875rem;
+`;
+
+const Button = styled.button`
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--border-radius-md);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  background-color: ${props => 
+    props.$variant === 'secondary' ? 'var(--color-background)' : 
+    props.$variant === 'danger' ? 'var(--color-error)' : 
+    'var(--color-primary)'
+  };
+  color: ${props => 
+    props.$variant === 'secondary' ? 'var(--color-text)' : 
+    'white'
+  };
+  border: ${props => 
+    props.$variant === 'secondary' ? '1px solid var(--color-border)' : 
+    'none'
+  };
+  
+  &:hover:not(:disabled) {
+    background-color: ${props => 
+      props.$variant === 'secondary' ? 'var(--color-background-dark)' : 
+      props.$variant === 'danger' ? 'var(--color-error-dark)' : 
+      'var(--color-primary-dark)'
+    };
+  }
+  
+  svg {
+    margin-right: ${props => props.iconOnly ? '0' : '0.5rem'};
+  }
+`;
+
+const ActionButton = styled(Button)`
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  margin-right: 0.5rem;
+  white-space: nowrap;
+  
+  &:last-child {
+    margin-right: 0;
+  }
+`;
+
+const StatusBadge = styled.span`
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 1rem;
+  background-color: ${props => 
+    props.$status === 'active' ? 'rgba(5, 150, 105, 0.1)' : 
+    props.$status === 'completed' ? 'rgba(107, 114, 128, 0.1)' : 
+    props.$status === 'upcoming' ? 'rgba(37, 99, 235, 0.1)' : 
+    'rgba(220, 38, 38, 0.1)'
+  };
+  color: ${props => 
+    props.$status === 'active' ? 'rgb(5, 150, 105)' : 
+    props.$status === 'completed' ? 'rgb(107, 114, 128)' : 
+    props.$status === 'upcoming' ? 'rgb(37, 99, 235)' : 
+    'rgb(220, 38, 38)'
+  };
+`;
+
+const FormGroup = styled.div`
+  margin-bottom: 1.5rem;
+`;
+
+const Label = styled.label`
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+`;
+
+const TextArea = styled.textarea`
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  min-height: 100px;
+  
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+`;
+
+const Select = styled.select`
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background-color: white;
+  
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+`;
+
+const FormRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+`;
+
+const SearchInput = styled.input`
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 1rem;
+`;
+
+const EmptyState = styled.div`
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--color-text-secondary);
+`;
+
+const StatCardContainer = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 1.5rem;
+  background-color: var(--color-background);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+`;
+
+const StatIconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  border-radius: 50%;
+  margin-right: 1rem;
+  
+  svg {
+    color: var(--color-primary);
+  }
+`;
+
+const StatContent = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const StatTitle = styled.div`
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.25rem;
+`;
+
+const StatValue = styled.div`
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+`;
+
+// StatCard component
+const StatCard = ({ title, value, icon }) => {
+  return (
+    <StatCardContainer>
+      <StatIconWrapper>
+        {icon}
+      </StatIconWrapper>
+      <StatContent>
+        <StatTitle>{title}</StatTitle>
+        <StatValue>{value}</StatValue>
+      </StatContent>
+    </StatCardContainer>
+  );
+};
+
+const ImageUploadContainer = styled.div`
+  margin-bottom: 1.5rem;
+  
+  .preview-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  .image-preview {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .remove-btn {
+      position: absolute;
+      top: 0.25rem;
+      right: 0.25rem;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+  }
+  
+  input[type="file"] {
+    display: none;
+  }
+  
+  .upload-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: var(--color-background);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    font-size: 0.875rem;
+    
+    svg {
+      margin-right: 0.5rem;
+    }
+  }
+`;
+
+const ImageGallery = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+  
+  .gallery-item {
+    aspect-ratio: 1;
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    &:hover img {
+      transform: scale(1.05);
+    }
+  }
+  
+  .gallery-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 2rem;
+    
+    .modal-content {
+      max-width: 90%;
+      max-height: 90%;
+      position: relative;
+      
+      img {
+        max-width: 100%;
+        max-height: 80vh;
+        object-fit: contain;
+        border-radius: var(--border-radius-md);
+      }
+      
+      .close-button {
+        position: absolute;
+        top: -2rem;
+        right: 0;
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+      }
+      
+      .nav-button {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        
+        &:hover {
+          background: rgba(255, 255, 255, 0.4);
+        }
+        
+        &.prev {
+          left: -4rem;
+        }
+        
+        &.next {
+          right: -4rem;
+        }
+      }
+    }
+  }
+`;
+
+const TabsContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 2rem;
+`;
+
+const Tab = styled.button`
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  background: none;
+  color: ${props => props.$active ? 'var(--color-primary)' : 'var(--color-text-secondary)'};
+  border-bottom: 2px solid ${props => props.$active ? 'var(--color-primary)' : 'transparent'};
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    color: var(--color-primary);
+  }
+`;
+
+function AdminDashboard() {
+  const navigate = useNavigate();
+  const { user, isAdmin: authIsAdmin, loading: authLoading, userRole } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [activeSection, setActiveSection] = useState('dashboard');
+  const [auctions, setAuctions] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [selectedAuctionId, setSelectedAuctionId] = useState(null);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [userBids, setUserBids] = useState([]);
+  const [userPayments, setUserPayments] = useState([]);
+  const [bids, setBids] = useState([]);
+  const [payments, setPayments] = useState([]);
+  const [images, setImages] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  // Cache payment table existence to avoid redundant checks
+  const [paymentTableExists, setPaymentTableExists] = useState(null);
+  
+  const [auctionForm, setAuctionForm] = useState({
+    title: '',
+    description: '',
+    startingPrice: '',
+    minIncrement: '',
+    startDate: '',
+    endDate: '',
+    startTime: '12:00', // Default time
+    endTime: '12:00', // Default end time
+    location: '',
+    status: 'upcoming',
+    images: []
+  });
+  
+  // Form states
+  const [userForm, setUserForm] = useState({
+    email: '',
+    password: '',
+    fullName: '',
+    role: 'user',
+    phone: ''
+  });
+  
+  useEffect(() => {
+    // Flag to track if this component is mounted
+    let mounted = true;
+    
+    // Wait for auth state to be fully loaded
+    if (authLoading) {
+      return () => { mounted = false; };
+    }
+    
+    console.log("Auth loaded, checking admin status:", { user: !!user, userRole, authIsAdmin });
+    
+    // Redirect non-admin users
+    if (!user) {
+      console.log("No user, redirecting to login");
+      navigate('/login');
+      return () => { mounted = false; };
+    }
+    
+    if (!authIsAdmin) {
+      console.log("User is not admin, redirecting to dashboard");
+      navigate('/dashboard');
+      return () => { mounted = false; };
+    }
+    
+    // Initialize storage bucket for auction images if needed
+    const initialize = async () => {
+      try {
+        if (!mounted) return;
+        
+        // Initialize storage
+        await initializeStorage();
+        
+        // Load initial data for dashboard
+        console.log("User is admin, loading dashboard data");
+        await fetchSectionData('dashboard');
+        
+        if (mounted) {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error initializing admin dashboard:", error);
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+    
+    initialize();
+    
+    // Cleanup function
+    return () => {
+      mounted = false;
+    };
+  }, [user, userRole, authIsAdmin, authLoading, navigate]);
+  
+  // Function to initialize storage bucket
+  const initializeStorage = async () => {
+    try {
+      // Check if bucket exists by trying to list files in it
+      const { error } = await supabase
+        .storage
+        .from('auction-images')
+        .list('');
+        
+      if (error && error.message.includes('The resource was not found')) {
+        console.log('auction-images bucket doesn\'t exist. Using default bucket.');
+        // We'll use the default 'storage' bucket instead for uploads
+      } else {
+        console.log('auction-images bucket exists or there was a different error:', error?.message || 'No error');
+      }
+    } catch (error) {
+      console.error('Error checking storage:', error);
+    }
+  };
+  
+  // Check if payments table exists (cached to avoid redundant checks)
+  const checkPaymentTableExists = async () => {
+    // If we already checked, use cached result
+    if (paymentTableExists !== null) {
+      console.log('Using cached payment table check result:', paymentTableExists);
+      return paymentTableExists;
+    }
+    
+    // Implement retry with exponential backoff to make this more resilient
+    const attemptFetch = async (attempt = 1, maxAttempts = 3) => {
+      try {
+        console.log(`Checking if payments table exists (attempt ${attempt}/${maxAttempts})`);
+        // First check if the payments table exists
+        const { error: checkError } = await supabase
+          .from('payments')
+          .select('id')
+          .limit(1);
+          
+        if (checkError) {
+          if (checkError.code === '42P01') { // Table doesn't exist (relation not found)
+            console.log('Payments table does not exist (cached).');
+            setPaymentTableExists(false);
+            return false;
+          } else if (attempt < maxAttempts) {
+            // For other errors, retry with exponential backoff
+            const delay = Math.pow(2, attempt) * 500; // 1s, 2s, 4s...
+            console.log(`Error checking payments table: ${checkError.message}. Retrying in ${delay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            return attemptFetch(attempt + 1, maxAttempts);
+          } else {
+            console.error('Max retry attempts reached when checking payments table');
+            setPaymentTableExists(false);
+            return false;
+          }
+        } else {
+          console.log('Payments table exists!');
+          setPaymentTableExists(true);
+          return true;
+        }
+      } catch (err) {
+        console.log('Error checking payments table:', err);
+        if (attempt < maxAttempts) {
+          const delay = Math.pow(2, attempt) * 500;
+          console.log(`Retrying in ${delay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          return attemptFetch(attempt + 1, maxAttempts);
+        } else {
+          setPaymentTableExists(false);
+          return false;
+        }
+      }
+    };
+    
+    return attemptFetch();
+  };
+  
+  const fetchSectionData = async (section) => {
+    setLoading(true);
+    
+    try {
+      if (section === 'auctions' || section === 'dashboard') {
+        const { data, error } = await supabase
+          .from('auctions')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (error) {
+          console.error(`Error fetching auctions:`, error);
+          setAuctions([]);
+        } else {
+          setAuctions(data || []);
+        }
+      } 
+      
+      if (section === 'users' || section === 'dashboard') {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (error) {
+          console.error(`Error fetching users:`, error);
+          setUsers([]);
+        } else {
+          setUsers(data || []);
+        }
+      }
+      
+      // Check if payments table exists before trying to fetch (using cached result)
+      if (section === 'payments' || section === 'dashboard') {
+        const exists = await checkPaymentTableExists();
+        
+        if (!exists) {
+          setPayments([]);
+        } else {
+          await fetchPayments();
+        }
+      }
+    } catch (error) {
+      console.error(`Error fetching data for ${section}:`, error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handleSectionChange = (section) => {
+    setActiveSection(section);
+    
+    if (authIsAdmin) {
+      fetchSectionData(section);
+    }
+  };
+  
+  const handleViewUserDetails = (userId) => {
+    fetchUserDetails(userId);
+    setActiveSection('user-details');
+  };
+  
+  const handleUpdateUserRole = async (userId, role) => {
+    setLoading(true);
+    try {
+      // Get the user's session token for authentication
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        throw new Error('Oturum bilgisi alınamadı. Lütfen tekrar giriş yapın.');
+      }
+      
+      console.log("Updating user role:", { userId, role });
+      console.log("Using URL:", `${process.env.REACT_APP_SUPABASE_URL}/functions/v1/update-user-role`);
+      
+      // Call the Edge Function to update the user role
+      const response = await fetch(`${process.env.REACT_APP_SUPABASE_URL}/functions/v1/update-user-role`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ userId, role })
+      });
+      
+      // Try to parse the response as JSON
+      let result;
+      const responseText = await response.text();
+      try {
+        result = JSON.parse(responseText);
+      } catch (e) {
+        console.error("Failed to parse response:", responseText);
+        throw new Error(`Sunucu yanıtı ayrıştırılamadı: ${responseText}`);
+      }
+      
+      if (!response.ok) {
+        console.error("Error response:", result);
+        throw new Error(result.error || result.message || `Sunucu hatası: ${response.status}`);
+      }
+      
+      // Refresh the user data after successful update
+      if (activeSection === 'users') {
+        fetchUsers();
+      } else if (activeSection === 'user-details' && selectedUserId === userId) {
+        fetchUserDetails(userId);
+      }
+      
+      console.log("Role update successful:", result);
+      alert(`Kullanıcı rolü ${role === 'admin' ? 'Admin' : 'Kullanıcı'} olarak güncellendi!`);
+    } catch (error) {
+      console.error('Error updating user role:', error);
+      alert(`Rol güncelleme hatası: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const fetchAuctionDetails = async (auctionId) => {
+    setLoading(true);
+    try {
+      // Fetch auction details
+      const { data: auctionData, error: auctionError } = await supabase
+        .from('auctions')
+        .select('*')
+        .eq('id', auctionId)
+        .single();
+        
+      if (auctionError) throw auctionError;
+      
+      // Set auction form data
+      setAuctionForm({
+        title: auctionData.title || '',
+        description: auctionData.description || '',
+        startingPrice: auctionData.starting_price || 0,
+        minIncrement: auctionData.min_increment || 0,
+        startDate: formatDateForInput(auctionData.start_date) || '',
+        endDate: formatDateForInput(auctionData.end_date) || '',
+        startTime: auctionData.start_time || formatTimeForInput(auctionData.start_date) || '12:00',
+        endTime: auctionData.end_time || formatTimeForInput(auctionData.end_date) || '12:00',
+        location: auctionData.location || '',
+        status: auctionData.status || 'upcoming',
+        images: auctionData.images || []
+      });
+      
+      // Fetch bids for this auction
+      const { data: bidsData, error: bidsError } = await supabase
+        .from('bids')
+        .select('*, profiles(full_name, email)')
+        .eq('auction_id', auctionId)
+        .order('amount', { ascending: false });
+        
+      if (bidsError) {
+        console.error('Error fetching bids:', bidsError);
+        setBids([]);
+      } else {
+        setBids(bidsData || []);
+      }
+      
+      // Fetch payments for this auction
+      const { data: paymentsData, error: paymentsError } = await supabase
+        .from('payments')
+        .select('*')
+        .eq('auction_id', auctionId)
+        .order('created_at', { ascending: false });
+        
+      if (paymentsError) {
+        console.error('Error fetching payments:', paymentsError);
+        setPayments([]);
+      } else {
+        // Enhance payments with user details
+        let enhancedPayments = [...paymentsData];
+        
+        // Add user data if user_id exists
+        for (let i = 0; i < enhancedPayments.length; i++) {
+          const payment = enhancedPayments[i];
+          
+          if (payment.user_id) {
+            try {
+              const { data: userData, error: userError } = await supabase
+                .from('profiles')
+                .select('full_name, email')
+                .eq('id', payment.user_id)
+                .single();
+                
+              if (!userError && userData) {
+                enhancedPayments[i].profiles = userData;
+              }
+            } catch (e) {
+              console.error('Error fetching user data for payment:', e);
+            }
+          }
+        }
+        
+        setPayments(enhancedPayments || []);
+      }
+      
+      setSelectedAuctionId(auctionId);
+      setActiveSection('auction-details');
+    } catch (error) {
+      console.error('Error fetching auction details:', error);
+      alert('İhale detayları getirilirken bir hata oluştu.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handleViewAuctionDetails = (auctionId) => {
+    fetchAuctionDetails(auctionId);
+    setActiveSection('auction-details');
+  };
+  
+  const handleUpdateAuction = async (e) => {
+    e.preventDefault();
+    
+    try {
+      // First upload new images if any
+      let imageUrls = auctionForm.images || [];
+      
+      if (images.length > 0) {
+        setUploading(true);
+        
+        for (const image of images) {
+          const fileExt = image.name.split('.').pop();
+          const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+          // Use the bucket that exists - either auction-images or storage
+          const bucketName = 'auction-images';  // we'll try this first
+          const filePath = `${fileName}`;
+          
+          try {
+            // Try uploading to auction-images bucket first
+            const { data, error } = await supabase.storage
+              .from(bucketName)
+              .upload(filePath, image, {
+                cacheControl: '3600',
+                upsert: false
+              });
+              
+            if (error) {
+              if (error.message.includes('The resource was not found')) {
+                // If auction-images bucket doesn't exist, try the default 'storage' bucket
+                console.log("Trying to upload to default bucket instead");
+                const { data: defaultData, error: defaultError } = await supabase.storage
+                  .from('storage')
+                  .upload(`auction-images/${filePath}`, image, {
+                    cacheControl: '3600',
+                    upsert: false
+                  });
+                  
+                if (defaultError) {
+                  // If that failed too, try the 'images' bucket which is often a default in Supabase
+                  console.log("Trying to upload to images bucket instead");
+                  const { data: imagesData, error: imagesError } = await supabase.storage
+                    .from('images')
+                    .upload(`auction-images/${filePath}`, image, {
+                      cacheControl: '3600',
+                      upsert: false
+                    });
+                    
+                  if (imagesError) {
+                    console.error('Error uploading to images bucket:', imagesError);
+                    continue;
+                  }
+                  
+                  // Get public URL from the images bucket
+                  const { data: imagesUrlData } = supabase.storage
+                    .from('images')
+                    .getPublicUrl(`auction-images/${filePath}`);
+                    
+                  imageUrls.push(imagesUrlData.publicUrl);
+                  continue;
+                }
+                
+                // Get public URL from the default bucket
+                const { data: defaultUrlData } = supabase.storage
+                  .from('storage')
+                  .getPublicUrl(`auction-images/${filePath}`);
+                  
+                imageUrls.push(defaultUrlData.publicUrl);
+              } else {
+                console.error('Error uploading image:', error);
+                continue;
+              }
+            } else {
+              // Get public URL from auction-images bucket
+              const { data: urlData } = supabase.storage
+                .from(bucketName)
+                .getPublicUrl(filePath);
+                
+              imageUrls.push(urlData.publicUrl);
+            }
+          } catch (uploadError) {
+            console.error('Exception during upload:', uploadError);
+            continue;
+          }
+        }
+        
+        setUploading(false);
+      }
+      
+      // Format dates correctly
+      const formatDateForDatabase = (dateStr, timeStr) => {
+        if (!dateStr) return null;
+        
+        try {
+          // If we have a time string, combine it with the date
+          if (timeStr) {
+            const combinedStr = `${dateStr}T${timeStr}:00`;
+            return new Date(combinedStr).toISOString();
+          }
+          
+          // Otherwise just format the date
+          return new Date(dateStr).toISOString();
+        } catch (e) {
+          console.error('Date formatting error:', e);
+          return null;
+        }
+      };
+      
+      // Parse the price
+      const price = auctionForm.startingPrice ? parseFloat(auctionForm.startingPrice.replace(',', '.')) : 0;
+
+      // Prepare update data
+      const updateData = {
+        title: auctionForm.title,
+        description: auctionForm.description,
+        starting_price: price,
+        start_price: price, // Include both column names to handle database discrepancy
+        min_increment: minIncrement,
+        start_date: formatDateForDatabase(auctionForm.startDate),
+        end_date: formatDateForDatabase(auctionForm.endDate),
+        start_time: formatDateForDatabase(auctionForm.startDate, auctionForm.startTime) || new Date().toISOString(),
+        end_time: formatDateForDatabase(auctionForm.endDate, auctionForm.endTime) || new Date(Date.now() + 7*24*60*60*1000).toISOString(),
+        location: auctionForm.location,
+        status: auctionForm.status,
+        images: imageUrls,
+        updated_at: new Date().toISOString()
+      };
+      
+      console.log("Attempting to update auction with data:", updateData);
+      
+      const { data, error } = await supabase
+        .from('auctions')
+        .update(updateData)
+        .eq('id', selectedAuctionId);
+        
+      if (error) {
+        console.error('Detailed error updating auction:', {
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+          message: error.message
+        });
+        throw error;
+      }
+      
+      console.log("Auction updated successfully:", data);
+      
+      setImages([]);
+      fetchSectionData('auctions');
+      alert('İhale başarıyla güncellendi.');
+      handleSectionChange('auctions');
+    } catch (error) {
+      console.error('Error updating auction:', error);
+      alert(`İhale güncellenirken bir hata oluştu: ${error.message || 'Bilinmeyen hata'}`);
+    }
+  };
+  
+  const handleCreatePayment = async (e) => {
+    e.preventDefault();
+    
+    const paymentForm = {
+      userId: e.target.userId.value,
+      auctionId: selectedAuctionId,
+      amount: parseFloat(e.target.amount.value),
+      status: e.target.status.value,
+      description: e.target.description.value
+    };
+    
+    try {
+      const { error } = await supabase
+        .from('payments')
+        .insert([
+          {
+            user_id: paymentForm.userId,
+            auction_id: paymentForm.auctionId,
+            amount: paymentForm.amount,
+            status: paymentForm.status,
+            description: paymentForm.description
+          }
+        ]);
+        
+      if (error) throw error;
+      
+      fetchAuctionDetails(selectedAuctionId);
+      alert('Ödeme başarıyla kaydedildi.');
+    } catch (error) {
+      console.error('Error creating payment:', error);
+      alert('Ödeme kaydedilirken bir hata oluştu.');
+    }
+  };
+  
+  // Update fetchPayments to use the cached check
+  const fetchPayments = async () => {
+    setLoading(true);
+    try {
+      // Use cached result to avoid redundant checks
+      const exists = await checkPaymentTableExists();
+      
+      if (!exists) {
+        setPayments([]);
+        return;
+      }
+      
+      // If table exists, proceed with fetching data
+      const { data, error } = await supabase
+        .from('payments')
+        .select('*')
+        .order('created_at', { ascending: false });
+        
+      if (error) {
+        console.error('Error fetching payments:', error);
+        setPayments([]);
+        return;
+      }
+      
+      // Then fetch related data separately if needed
+      let enhancedPayments = [...data];
+      
+      // Only process if we have data
+      if (enhancedPayments.length > 0) {
+        // Try to enhance with auction data if auction_id exists
+        for (let i = 0; i < enhancedPayments.length; i++) {
+          const payment = enhancedPayments[i];
+          
+          // Add user data if user_id exists
+          if (payment.user_id) {
+            try {
+              const { data: userData, error: userError } = await supabase
+                .from('profiles')
+                .select('full_name, email')
+                .eq('id', payment.user_id)
+                .single();
+                
+              if (!userError && userData) {
+                enhancedPayments[i].profiles = userData;
+              }
+            } catch (e) {
+              console.error('Error fetching user data for payment:', e);
+            }
+          }
+          
+          // Add auction data if auction_id exists
+          if (payment.auction_id) {
+            try {
+              const { data: auctionData, error: auctionError } = await supabase
+                .from('auctions')
+                .select('title')
+                .eq('id', payment.auction_id)
+                .single();
+                
+              if (!auctionError && auctionData) {
+                enhancedPayments[i].auctions = auctionData;
+              }
+            } catch (e) {
+              console.error('Error fetching auction data for payment:', e);
+            }
+          }
+        }
+      }
+      
+      setPayments(enhancedPayments || []);
+    } catch (error) {
+      console.error('Error fetching payments:', error);
+      setPayments([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handleUpdatePaymentStatus = async (paymentId, newStatus) => {
+    try {
+      const { error } = await supabase
+        .from('payments')
+        .update({ status: newStatus })
+        .eq('id', paymentId);
+        
+      if (error) throw error;
+      
+      if (activeSection === 'payments') {
+        fetchPayments();
+      } else if (activeSection === 'auction-details') {
+        fetchAuctionDetails(selectedAuctionId);
+      }
+      
+      alert('Ödeme durumu güncellendi.');
+    } catch (error) {
+      console.error('Error updating payment status:', error);
+      alert('Ödeme durumu güncellenirken bir hata oluştu.');
+    }
+  };
+  
+  // Fix fetchDashboardStats implementation
+  const fetchDashboardStats = async () => {
+    try {
+      // Only query tables that definitely exist to avoid errors
+      const promises = [];
+      
+      // Fetch auction stats
+      promises.push(
+        supabase
+          .from('auctions')
+          .select('id, status')
+          .then(({ data, error }) => {
+            if (error) throw error;
+            return {
+              totalAuctions: data?.length || 0,
+              activeAuctions: data?.filter(a => a.status === 'active').length || 0,
+              completedAuctions: data?.filter(a => a.status === 'completed').length || 0
+            };
+          })
+      );
+      
+      // Fetch user stats
+      promises.push(
+        supabase
+          .from('profiles')
+          .select('id')
+          .then(({ data, error }) => {
+            if (error) throw error;
+            return {
+              totalUsers: data?.length || 0
+            };
+          })
+      );
+      
+      // Fetch bids stats
+      promises.push(
+        supabase
+          .from('bids')
+          .select('id, created_at')
+          .then(({ data, error }) => {
+            if (error) throw error;
+            
+            // Calculate recent bids (within 7 days)
+            const recentBids = data?.filter(b => {
+              const bidDate = new Date(b.created_at);
+              const now = new Date();
+              const daysDiff = (now - bidDate) / (1000 * 60 * 60 * 24);
+              return daysDiff <= 7;
+            }).length || 0;
+            
+            return {
+              totalBids: data?.length || 0,
+              recentBids
+            };
+          })
+      );
+      
+      // We'll check if payments table exists before querying it
+      const paymentTableExists = await checkPaymentTableExists();
+      if (paymentTableExists) {
+        promises.push(
+          supabase
+            .from('payments')
+            .select('id, amount, status')
+            .then(({ data, error }) => {
+              if (error) throw error;
+              
+              return {
+                totalPayments: data?.length || 0,
+                totalPaymentAmount: data?.reduce((sum, payment) => sum + (payment.amount || 0), 0) || 0,
+                completedPaymentAmount: data?.filter(p => p.status === 'completed')
+                  .reduce((sum, payment) => sum + (payment.amount || 0), 0) || 0
+              };
+            })
+        );
+      } else {
+        // If payments table doesn't exist, use empty data
+        promises.push(Promise.resolve({
+          totalPayments: 0,
+          totalPaymentAmount: 0,
+          completedPaymentAmount: 0
+        }));
+      }
+      
+      // Resolve all promises and combine results
+      const results = await Promise.all(promises);
+      
+      // Merge all result objects into a single stats object
+      const stats = Object.assign({}, ...results);
+      
+      return stats;
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error);
+      // Return default stats on error
+      return {
+        totalAuctions: 0,
+        activeAuctions: 0,
+        completedAuctions: 0,
+        totalUsers: 0,
+        totalBids: 0,
+        recentBids: 0,
+        totalPayments: 0,
+        totalPaymentAmount: 0,
+        completedPaymentAmount: 0
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error(`Error fetching users:`, error);
+        setUsers([]);
+      } else {
+        setUsers(data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      setUsers([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Format date for display
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    try {
+      return new Date(dateString).toLocaleDateString('tr-TR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (e) {
+      console.error('Error formatting date:', e);
+      return dateString;
+    }
+  };
+  
+  // Helper to get status text from status code
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'active': return 'Aktif';
+      case 'upcoming': return 'Yaklaşan';
+      case 'completed': return 'Tamamlandı';
+      default: return status || '';
+    }
+  };
+  
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      // Format as YYYY-MM-DD for date input
+      return date.toISOString().split('T')[0];
+    } catch (e) {
+      console.error('Error formatting date for input:', e);
+      return '';
+    }
+  };
+  
+  const formatTimeForInput = (dateString) => {
+    if (!dateString) return '12:00';
+    try {
+      const date = new Date(dateString);
+      // Format as HH:MM for time input
+      return date.toISOString().split('T')[1].substring(0, 5);
+    } catch (e) {
+      console.error('Error formatting time for input:', e);
+      return '12:00';
+    }
+  };
+  
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    setImages(prev => [...prev, ...files]);
+  };
+  
+  const removeImage = (index) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
+  
+  const removeExistingImage = (index) => {
+    setAuctionForm(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
+  };
+  
+  const [activeImage, setActiveImage] = useState(null);
+
+  const handleImageClick = (imageUrl) => {
+    setActiveImage(imageUrl);
+  };
+
+  const handleCloseGallery = () => {
+    setActiveImage(null);
+  };
+
+  const handlePrevImage = () => {
+    if (!activeImage || !auctionForm.images) return;
+    
+    const currentIndex = auctionForm.images.findIndex(img => img === activeImage);
+    if (currentIndex > 0) {
+      setActiveImage(auctionForm.images[currentIndex - 1]);
+    } else {
+      // Loop to the end if at the beginning
+      setActiveImage(auctionForm.images[auctionForm.images.length - 1]);
+    }
+  };
+
+  const handleNextImage = () => {
+    if (!activeImage || !auctionForm.images) return;
+    
+    const currentIndex = auctionForm.images.findIndex(img => img === activeImage);
+    if (currentIndex < auctionForm.images.length - 1) {
+      setActiveImage(auctionForm.images[currentIndex + 1]);
+    } else {
+      // Loop to the beginning if at the end
+      setActiveImage(auctionForm.images[0]);
+    }
+  };
+  
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'dashboard':
+        return (
+          <>
+            <SectionTitle>Genel Bakış</SectionTitle>
+            
+            {loading ? (
+              <div>Yükleniyor...</div>
+            ) : (
+              <>
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', 
+                  gap: '1.5rem',
+                  marginBottom: '2rem'
+                }}>
+                  <StatCard 
+                    title="Toplam İhale"
+                    value={auctions.length}
+                    icon={
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                    }
+                  />
+                  
+                  <StatCard 
+                    title="Aktif İhale"
+                    value={auctions.filter(a => a.status === 'active').length}
+                    icon={
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                      </svg>
+                    }
+                  />
+                  
+                  <StatCard 
+                    title="Toplam Kullanıcı"
+                    value={users.length}
+                    icon={
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                      </svg>
+                    }
+                  />
+                  
+                  <StatCard 
+                    title="Toplam Ödeme"
+                    value={`${payments.reduce((sum, payment) => sum + (payment.amount || 0), 0).toLocaleString('tr-TR')} TL`}
+                    icon={
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="2" y="5" width="20" height="14" rx="2" />
+                        <line x1="2" y1="10" x2="22" y2="10" />
+                      </svg>
+                    }
+                  />
+                </div>
+                
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: '2fr 1fr', 
+                  gap: '1.5rem',
+                  marginBottom: '2rem'
+                }}>
+                  <div style={{ 
+                    backgroundColor: 'var(--color-background)',
+                    borderRadius: 'var(--border-radius-md)',
+                    padding: '1.5rem'
+                  }}>
+                    <h3 style={{ marginBottom: '1rem', fontSize: '1.125rem' }}>Son İhaleler</h3>
+                    
+                    {auctions.length > 0 ? (
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableHeader style={{ width: '60px' }}></TableHeader>
+                            <TableHeader>Başlık</TableHeader>
+                            <TableHeader>Başlangıç Fiyatı</TableHeader>
+                            <TableHeader>Başlangıç Tarihi</TableHeader>
+                            <TableHeader>Bitiş Tarihi</TableHeader>
+                            <TableHeader>Durum</TableHeader>
+                            <TableHeader>İşlemler</TableHeader>
+                          </TableRow>
+                        </TableHead>
+                        <tbody>
+                          {auctions.map(auction => (
+                            <TableRow key={auction.id}>
+                              <TableCell>
+                                {auction.images && auction.images.length > 0 ? (
+                                  <div style={{ 
+                                    width: '50px', 
+                                    height: '50px', 
+                                    borderRadius: 'var(--border-radius-sm)',
+                                    overflow: 'hidden' 
+                                  }}>
+                                    <img 
+                                      src={auction.images[0]} 
+                                      alt={auction.title} 
+                                      style={{ 
+                                        width: '100%', 
+                                        height: '100%', 
+                                        objectFit: 'cover'
+                                      }} 
+                                    />
+                                  </div>
+                                ) : (
+                                  <div style={{ 
+                                    width: '50px', 
+                                    height: '50px', 
+                                    backgroundColor: 'var(--color-background)',
+                                    borderRadius: 'var(--border-radius-sm)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                  }}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                      <circle cx="8.5" cy="8.5" r="1.5" />
+                                      <polyline points="21 15 16 10 5 21" />
+                                    </svg>
+                                  </div>
+                                )}
+                              </TableCell>
+                              <TableCell>{auction.title}</TableCell>
+                              <TableCell>{auction.starting_price?.toLocaleString('tr-TR')} TL</TableCell>
+                              <TableCell>{formatDate(auction.start_date)}</TableCell>
+                              <TableCell>{formatDate(auction.end_date)}</TableCell>
+                              <TableCell>
+                                <StatusBadge $status={auction.status}>
+                                  {getStatusText(auction.status)}
+                                </StatusBadge>
+                              </TableCell>
+                              <TableCell>
+                                <ActionButton 
+                                  $variant="primary" 
+                                  size="small"
+                                  onClick={() => handleViewAuctionDetails(auction.id)}
+                                >
+                                  Detaylar
+                                </ActionButton>
+                                <ActionButton 
+                                  $variant="secondary" 
+                                  size="small"
+                                  onClick={() => navigate(`/auctions/${auction.id}`)}
+                                >
+                                  Görüntüle
+                                </ActionButton>
+                                <ActionButton 
+                                  $variant="danger" 
+                                  size="small"
+                                  onClick={() => handleDeleteAuction(auction.id)}
+                                >
+                                  Sil
+                                </ActionButton>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </tbody>
+                      </Table>
+                    ) : (
+                      <p>Henüz oluşturulmuş ihale bulunmamaktadır.</p>
+                    )}
+                    
+                    <div style={{ marginTop: '1rem' }}>
+                      <Button 
+                        $variant="secondary" 
+                        size="small"
+                        onClick={() => handleSectionChange('auctions')}
+                      >
+                        Tüm İhaleleri Görüntüle
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div style={{ 
+                    backgroundColor: 'var(--color-background)',
+                    borderRadius: 'var(--border-radius-md)',
+                    padding: '1.5rem'
+                  }}>
+                    <h3 style={{ marginBottom: '1rem', fontSize: '1.125rem' }}>İhale Durumu</h3>
+                    
+                    <div style={{ margin: '1.5rem 0' }}>
+                      <div style={{ marginBottom: '1.25rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                          <span>Aktif</span>
+                          <span>{auctions.filter(a => a.status === 'active').length}</span>
+                        </div>
+                        <div style={{ width: '100%', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
+                          <div style={{ 
+                            width: `${auctions.length ? (auctions.filter(a => a.status === 'active').length / auctions.length) * 100 : 0}%`, 
+                            height: '100%', 
+                            backgroundColor: 'var(--color-primary)',
+                            borderRadius: '4px'
+                          }}></div>
+                        </div>
+                      </div>
+                      
+                      <div style={{ marginBottom: '1.25rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                          <span>Yaklaşan</span>
+                          <span>{auctions.filter(a => a.status === 'upcoming').length}</span>
+                        </div>
+                        <div style={{ width: '100%', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
+                          <div style={{ 
+                            width: `${auctions.length ? (auctions.filter(a => a.status === 'upcoming').length / auctions.length) * 100 : 0}%`, 
+                            height: '100%', 
+                            backgroundColor: '#3182ce',
+                            borderRadius: '4px'
+                          }}></div>
+                        </div>
+                      </div>
+                      
+                      <div style={{ marginBottom: '1.25rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                          <span>Tamamlanan</span>
+                          <span>{auctions.filter(a => a.status === 'completed').length}</span>
+                        </div>
+                        <div style={{ width: '100%', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
+                          <div style={{ 
+                            width: `${auctions.length ? (auctions.filter(a => a.status === 'completed').length / auctions.length) * 100 : 0}%`, 
+                            height: '100%', 
+                            backgroundColor: '#2d9547',
+                            borderRadius: '4px'
+                          }}></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div style={{ 
+                  backgroundColor: 'var(--color-background)',
+                  borderRadius: 'var(--border-radius-md)',
+                  padding: '1.5rem'
+                }}>
+                  <h3 style={{ marginBottom: '1rem', fontSize: '1.125rem' }}>Son Kullanıcılar</h3>
+                  
+                  {users.length > 0 ? (
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableHeader>Ad Soyad</TableHeader>
+                          <TableHeader>E-posta</TableHeader>
+                          <TableHeader>Telefon</TableHeader>
+                          <TableHeader>Rol</TableHeader>
+                          <TableHeader>Kayıt Tarihi</TableHeader>
+                          <TableHeader>İşlemler</TableHeader>
+                        </TableRow>
+                      </TableHead>
+                      <tbody>
+                        {users.map(user => (
+                          <TableRow key={user.id}>
+                            <TableCell>{user.full_name || '-'}</TableCell>
+                            <TableCell>{user.email}</TableCell>
+                            <TableCell>{user.phone || '-'}</TableCell>
+                            <TableCell>
+                              <StatusBadge $status={user.role === 'admin' ? 'active' : 'completed'}>
+                                {user.role === 'admin' ? 'Yönetici' : 'Kullanıcı'}
+                              </StatusBadge>
+                            </TableCell>
+                            <TableCell>{formatDate(user.created_at)}</TableCell>
+                            <TableCell>
+                              <ActionButton 
+                                $variant="primary" 
+                                size="small"
+                                onClick={() => handleViewUserDetails(user.id)}
+                              >
+                                Detaylar
+                              </ActionButton>
+                              <ActionButton 
+                                $variant={user.role === 'admin' ? 'secondary' : 'primary'} 
+                                size="small"
+                                onClick={() => handleUpdateUserRole(user.id, user.role === 'admin' ? 'user' : 'admin')}
+                              >
+                                {user.role === 'admin' ? 'Kullanıcı Yap' : 'Yönetici Yap'}
+                              </ActionButton>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </tbody>
+                    </Table>
+                  ) : (
+                    <p>Henüz kayıtlı kullanıcı bulunmamaktadır.</p>
+                  )}
+                  
+                  <div style={{ marginTop: '1rem' }}>
+                    <Button 
+                      $variant="secondary" 
+                      size="small"
+                      onClick={() => handleSectionChange('users')}
+                    >
+                      Tüm Kullanıcıları Görüntüle
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
+          </>
+        );
+      case 'auctions':
+        return (
+          <>
+            <SectionTitle>
+              İhaleler
+              <Button onClick={() => handleSectionChange('create-auction')}>Yeni İhale</Button>
+            </SectionTitle>
+            
+            {loading ? (
+              <div>Yükleniyor...</div>
+            ) : auctions.length > 0 ? (
+              <>
+                <SearchInput 
+                  type="text" 
+                  placeholder="İhale ara..." 
+                />
+                
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableHeader style={{ width: '60px' }}></TableHeader>
+                      <TableHeader>Başlık</TableHeader>
+                      <TableHeader>Başlangıç Fiyatı</TableHeader>
+                      <TableHeader>Başlangıç Tarihi</TableHeader>
+                      <TableHeader>Bitiş Tarihi</TableHeader>
+                      <TableHeader>Durum</TableHeader>
+                      <TableHeader>İşlemler</TableHeader>
+                    </TableRow>
+                  </TableHead>
+                  <tbody>
+                    {auctions.map(auction => (
+                      <TableRow key={auction.id}>
+                        <TableCell>
+                          {auction.images && auction.images.length > 0 ? (
+                            <div style={{ 
+                              width: '50px', 
+                              height: '50px', 
+                              borderRadius: 'var(--border-radius-sm)',
+                              overflow: 'hidden' 
+                            }}>
+                              <img 
+                                src={auction.images[0]} 
+                                alt={auction.title} 
+                                style={{ 
+                                  width: '100%', 
+                                  height: '100%', 
+                                  objectFit: 'cover'
+                                }} 
+                              />
+                            </div>
+                          ) : (
+                            <div style={{ 
+                              width: '50px', 
+                              height: '50px', 
+                              backgroundColor: 'var(--color-background)',
+                              borderRadius: 'var(--border-radius-sm)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                <circle cx="8.5" cy="8.5" r="1.5" />
+                                <polyline points="21 15 16 10 5 21" />
+                              </svg>
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell>{auction.title}</TableCell>
+                        <TableCell>{auction.starting_price?.toLocaleString('tr-TR')} TL</TableCell>
+                        <TableCell>{formatDate(auction.start_date)}</TableCell>
+                        <TableCell>{formatDate(auction.end_date)}</TableCell>
+                        <TableCell>
+                          <StatusBadge $status={auction.status}>
+                            {getStatusText(auction.status)}
+                          </StatusBadge>
+                        </TableCell>
+                        <TableCell>
+                          <ActionButton 
+                            variant="primary" 
+                            size="small"
+                            onClick={() => handleViewAuctionDetails(auction.id)}
+                          >
+                            Detaylar
+                          </ActionButton>
+                          <ActionButton 
+                            variant="secondary" 
+                            size="small"
+                            onClick={() => navigate(`/auctions/${auction.id}`)}
+                          >
+                            Görüntüle
+                          </ActionButton>
+                          <ActionButton 
+                            variant="danger" 
+                            size="small"
+                            onClick={() => handleDeleteAuction(auction.id)}
+                          >
+                            Sil
+                          </ActionButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </tbody>
+                </Table>
+              </>
+            ) : (
+              <EmptyState>
+                <p>Henüz oluşturulmuş ihale bulunmamaktadır.</p>
+                <Button 
+                  onClick={() => handleSectionChange('create-auction')}
+                  style={{ marginTop: '1rem' }}
+                >
+                  İhale Oluştur
+                </Button>
+              </EmptyState>
+            )}
+          </>
+        );
+      case 'create-auction':
+        return (
+          <>
+            <SectionTitle>
+              Yeni İhale Oluştur
+              <Button 
+                variant="secondary" 
+                onClick={() => handleSectionChange('auctions')}
+              >
+                İhalelere Dön
+              </Button>
+            </SectionTitle>
+            
+            <form onSubmit={handleCreateAuction}>
+              <FormGroup>
+                <Label htmlFor="title">İhale Başlığı</Label>
+                <Input 
+                  type="text" 
+                  id="title" 
+                  name="title"
+                  value={auctionForm.title}
+                  onChange={handleAuctionFormChange}
+                  required
+                />
+              </FormGroup>
+              
+              <FormGroup>
+                <Label htmlFor="description">İhale Açıklaması</Label>
+                <TextArea 
+                  id="description" 
+                  name="description"
+                  value={auctionForm.description}
+                  onChange={handleAuctionFormChange}
+                  required
+                />
+              </FormGroup>
+              
+              <FormRow>
+                <FormGroup>
+                  <Label htmlFor="startingPrice">Başlangıç Fiyatı (TL)</Label>
+                  <Input 
+                    type="number" 
+                    id="startingPrice" 
+                    name="startingPrice"
+                    value={auctionForm.startingPrice}
+                    onChange={handleAuctionFormChange}
+                    required
+                    min="0"
+                    step="0.01"
+                  />
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label htmlFor="minIncrement">Minimum Artış Tutarı (TL)</Label>
+                  <Input 
+                    type="number" 
+                    id="minIncrement" 
+                    name="minIncrement"
+                    value={auctionForm.minIncrement}
+                    onChange={handleAuctionFormChange}
+                    required
+                    min="0"
+                    step="0.01"
+                  />
+                </FormGroup>
+              </FormRow>
+              
+              <FormRow>
+                <FormGroup>
+                  <Label htmlFor="startDate">Başlangıç Tarihi</Label>
+                  <Input 
+                    type="date" 
+                    id="startDate" 
+                    name="startDate"
+                    value={auctionForm.startDate}
+                    onChange={handleAuctionFormChange}
+                    required
+                  />
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label htmlFor="startTime">Başlangıç Saati</Label>
+                  <Input 
+                    type="time" 
+                    id="startTime" 
+                    name="startTime"
+                    value={auctionForm.startTime}
+                    onChange={handleAuctionFormChange}
+                    required
+                  />
+                </FormGroup>
+              </FormRow>
+              
+              <FormRow>
+                <FormGroup>
+                  <Label htmlFor="endDate">Bitiş Tarihi</Label>
+                  <Input 
+                    type="date" 
+                    id="endDate" 
+                    name="endDate"
+                    value={auctionForm.endDate}
+                    onChange={handleAuctionFormChange}
+                    required
+                  />
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label htmlFor="endTime">Bitiş Saati</Label>
+                  <Input 
+                    type="time" 
+                    id="endTime" 
+                    name="endTime"
+                    value={auctionForm.endTime}
+                    onChange={handleAuctionFormChange}
+                    required
+                  />
+                </FormGroup>
+              </FormRow>
+              
+              <FormRow>
+                <FormGroup>
+                  <Label htmlFor="location">Konum</Label>
+                  <Input 
+                    type="text" 
+                    id="location" 
+                    name="location"
+                    value={auctionForm.location}
+                    onChange={handleAuctionFormChange}
+                    required
+                  />
+                </FormGroup>
+              </FormRow>
+              
+              <ImageUploadContainer>
+                <Label>İhale Görselleri</Label>
+                <label className="upload-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <polyline points="21 15 16 10 5 21" />
+                  </svg>
+                  Görsel Yükle
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageChange}
+                  />
+                </label>
+                
+                {uploading && <p>Yükleniyor...</p>}
+                
+                {images.length > 0 && (
+                  <div className="preview-area">
+                    {images.map((image, index) => (
+                      <div key={index} className="image-preview">
+                        <img src={URL.createObjectURL(image)} alt={`Preview ${index}`} />
+                        <div className="remove-btn" onClick={() => removeImage(index)}>×</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </ImageUploadContainer>
+              
+              <FormGroup>
+                <Label htmlFor="status">Durum</Label>
+                <Select 
+                  id="status" 
+                  name="status"
+                  value={auctionForm.status}
+                  onChange={handleAuctionFormChange}
+                  required
+                >
+                  <option value="upcoming">Yaklaşan</option>
+                  <option value="active">Aktif</option>
+                  <option value="completed">Tamamlandı</option>
+                </Select>
+              </FormGroup>
+              
+              <Button type="submit" disabled={uploading}>İhale Oluştur</Button>
+            </form>
+          </>
+        );
+      case 'users':
+        return (
+          <>
+            <SectionTitle>
+              Kullanıcılar
+              <Button onClick={() => handleSectionChange('create-user')}>Yeni Kullanıcı</Button>
+            </SectionTitle>
+            
+            {loading ? (
+              <div>Yükleniyor...</div>
+            ) : users.length > 0 ? (
+              <>
+                <SearchInput 
+                  type="text" 
+                  placeholder="Kullanıcı ara..." 
+                />
+                
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableHeader style={{ width: '60px' }}></TableHeader>
+                      <TableHeader>Ad Soyad</TableHeader>
+                      <TableHeader>E-posta</TableHeader>
+                      <TableHeader>Telefon</TableHeader>
+                      <TableHeader>Rol</TableHeader>
+                      <TableHeader>Kayıt Tarihi</TableHeader>
+                      <TableHeader>İşlemler</TableHeader>
+                    </TableRow>
+                  </TableHead>
+                  <tbody>
+                    {users.map(user => (
+                      <TableRow key={user.id}>
+                        <TableCell>
+                          {user.images && user.images.length > 0 ? (
+                            <div style={{ 
+                              width: '50px', 
+                              height: '50px', 
+                              borderRadius: 'var(--border-radius-sm)',
+                              overflow: 'hidden' 
+                            }}>
+                              <img 
+                                src={user.images[0]} 
+                                alt={user.full_name} 
+                                style={{ 
+                                  width: '100%', 
+                                  height: '100%', 
+                                  objectFit: 'cover'
+                                }} 
+                              />
+                            </div>
+                          ) : (
+                            <div style={{ 
+                              width: '50px', 
+                              height: '50px', 
+                              backgroundColor: 'var(--color-background)',
+                              borderRadius: 'var(--border-radius-sm)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                <circle cx="8.5" cy="8.5" r="1.5" />
+                                <polyline points="21 15 16 10 5 21" />
+                              </svg>
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell>{user.full_name || '-'}</TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>{user.phone || '-'}</TableCell>
+                        <TableCell>
+                          <StatusBadge $status={user.role === 'admin' ? 'active' : 'completed'}>
+                            {user.role === 'admin' ? 'Yönetici' : 'Kullanıcı'}
+                          </StatusBadge>
+                        </TableCell>
+                        <TableCell>{formatDate(user.created_at)}</TableCell>
+                        <TableCell>
+                          <ActionButton 
+                            variant="primary" 
+                            size="small"
+                            onClick={() => handleViewUserDetails(user.id)}
+                          >
+                            Detaylar
+                          </ActionButton>
+                          <ActionButton 
+                            variant={user.role === 'admin' ? 'secondary' : 'primary'} 
+                            size="small"
+                            onClick={() => handleUpdateUserRole(user.id, user.role === 'admin' ? 'user' : 'admin')}
+                          >
+                            {user.role === 'admin' ? 'Kullanıcı Yap' : 'Yönetici Yap'}
+                          </ActionButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </tbody>
+                </Table>
+              </>
+            ) : (
+              <EmptyState>
+                <p>Henüz kayıtlı kullanıcı bulunmamaktadır.</p>
+                <Button 
+                  onClick={() => handleSectionChange('create-user')}
+                  style={{ marginTop: '1rem' }}
+                >
+                  Kullanıcı Oluştur
+                </Button>
+              </EmptyState>
+            )}
+          </>
+        );
+      case 'create-user':
+        return (
+          <>
+            <SectionTitle>
+              Yeni Kullanıcı Oluştur
+              <Button 
+                variant="secondary" 
+                onClick={() => handleSectionChange('users')}
+              >
+                Kullanıcılara Dön
+              </Button>
+            </SectionTitle>
+            
+            <form onSubmit={handleCreateUser}>
+              <FormGroup>
+                <Label htmlFor="email">E-posta</Label>
+                <Input 
+                  type="email" 
+                  id="email" 
+                  name="email"
+                  value={userForm.email}
+                  onChange={handleUserFormChange}
+                  required
+                />
+              </FormGroup>
+              
+              <FormGroup>
+                <Label htmlFor="password">Şifre</Label>
+                <Input 
+                  type="password" 
+                  id="password" 
+                  name="password"
+                  value={userForm.password}
+                  onChange={handleUserFormChange}
+                  required
+                  minLength="6"
+                />
+              </FormGroup>
+              
+              <FormGroup>
+                <Label htmlFor="fullName">Ad Soyad</Label>
+                <Input 
+                  type="text" 
+                  id="fullName" 
+                  name="fullName"
+                  value={userForm.fullName}
+                  onChange={handleUserFormChange}
+                  required
+                />
+              </FormGroup>
+              
+              <FormRow>
+                <FormGroup>
+                  <Label htmlFor="role">Rol</Label>
+                  <Select 
+                    id="role" 
+                    name="role"
+                    value={userForm.role}
+                    onChange={handleUserFormChange}
+                    required
+                  >
+                    <option value="user">Kullanıcı</option>
+                    <option value="admin">Yönetici</option>
+                    <option value="moderator">Moderatör</option>
+                  </Select>
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label htmlFor="phone">Telefon</Label>
+                  <Input 
+                    type="tel" 
+                    id="phone" 
+                    name="phone"
+                    value={userForm.phone}
+                    onChange={handleUserFormChange}
+                    placeholder="(555) 123 4567"
+                  />
+                </FormGroup>
+              </FormRow>
+              
+              <Button type="submit">Kullanıcı Oluştur</Button>
+            </form>
+          </>
+        );
+      case 'user-details':
+        return (
+          <>
+            <SectionTitle>
+              Kullanıcı Detayları
+              <Button 
+                variant="secondary" 
+                onClick={() => handleSectionChange('users')}
+              >
+                Kullanıcılara Dön
+              </Button>
+            </SectionTitle>
+            
+            {loading ? (
+              <div>Yükleniyor...</div>
+            ) : selectedUser ? (
+              <div>
+                <div style={{ 
+                  marginBottom: '2rem',
+                  padding: '1.5rem',
+                  backgroundColor: 'var(--color-background)',
+                  borderRadius: 'var(--border-radius-md)'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <h3 style={{ fontSize: '1.25rem' }}>{selectedUser.full_name || 'İsimsiz Kullanıcı'}</h3>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <Button 
+                        variant={selectedUser.role === 'user' ? 'primary' : 'secondary'} 
+                        size="small"
+                        onClick={() => handleUpdateUserRole(selectedUser.id, 'user')}
+                        disabled={selectedUser.role === 'user'}
+                      >
+                        Kullanıcı
+                      </Button>
+                      <Button 
+                        variant={selectedUser.role === 'admin' ? 'primary' : 'secondary'} 
+                        size="small"
+                        onClick={() => handleUpdateUserRole(selectedUser.id, 'admin')}
+                        disabled={selectedUser.role === 'admin'}
+                      >
+                        Yönetici
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: '1fr 1fr', 
+                    gap: '1.5rem',
+                  }}>
+                    <div>
+                      <p><strong>E-posta:</strong> {selectedUser.email || '-'}</p>
+                      <p><strong>Telefon:</strong> {selectedUser.phone || '-'}</p>
+                      <p><strong>Rol:</strong> {selectedUser.role === 'admin' ? 'Yönetici' : 'Kullanıcı'}</p>
+                    </div>
+                    <div>
+                      <p><strong>Kayıt Tarihi:</strong> {formatDate(selectedUser.created_at)}</p>
+                      <p><strong>Son Güncelleme:</strong> {formatDate(selectedUser.updated_at)}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Tabs */}
+                <div style={{ display: 'flex', borderBottom: '1px solid var(--color-border)', marginBottom: '1.5rem' }}>
+                  <div style={{ 
+                    padding: '0.75rem 1.25rem', 
+                    borderBottom: '2px solid var(--color-primary)', 
+                    fontWeight: 'bold',
+                    cursor: 'pointer'
+                  }}>
+                    Teklifler
+                  </div>
+                  <div style={{ 
+                    padding: '0.75rem 1.25rem',
+                    cursor: 'pointer'
+                  }}>
+                    Ödemeler
+                  </div>
+                </div>
+                
+                {/* Bids Section */}
+                <div style={{ marginBottom: '2rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <h3 style={{ fontSize: '1.125rem' }}>Kullanıcı Teklifleri</h3>
+                  </div>
+                  
+                  {userBids.length > 0 ? (
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableHeader>İhale</TableHeader>
+                          <TableHeader>Teklif Tutarı</TableHeader>
+                          <TableHeader>Teklif Tarihi</TableHeader>
+                          <TableHeader>Durum</TableHeader>
+                        </TableRow>
+                      </TableHead>
+                      <tbody>
+                        {userBids.map(bid => (
+                          <TableRow key={bid.id}>
+                            <TableCell>{bid.auctions?.title || '-'}</TableCell>
+                            <TableCell>{bid.amount?.toLocaleString('tr-TR')} TL</TableCell>
+                            <TableCell>{formatDate(bid.created_at)}</TableCell>
+                            <TableCell>
+                              <StatusBadge $status={bid.is_winning ? 'active' : 'completed'}>
+                                {bid.is_winning ? 'Kazanan' : ''}
+                              </StatusBadge>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </tbody>
+                    </Table>
+                  ) : (
+                    <p>Kullanıcının henüz teklifi bulunmamaktadır.</p>
+                  )}
+                </div>
+                
+                {/* Payments Section */}
+                <div style={{ marginTop: '2rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <h3 style={{ fontSize: '1.125rem' }}>Kullanıcı Ödemeleri</h3>
+                  </div>
+                  
+                  {userPayments.length > 0 ? (
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableHeader>İhale</TableHeader>
+                          <TableHeader>Tutar</TableHeader>
+                          <TableHeader>Açıklama</TableHeader>
+                          <TableHeader>Ödeme Tarihi</TableHeader>
+                          <TableHeader>Durum</TableHeader>
+                        </TableRow>
+                      </TableHead>
+                      <tbody>
+                        {userPayments.map(payment => (
+                          <TableRow key={payment.id}>
+                            <TableCell>{payment.auctions?.title || '-'}</TableCell>
+                            <TableCell>{payment.amount?.toLocaleString('tr-TR')} TL</TableCell>
+                            <TableCell>{payment.description || '-'}</TableCell>
+                            <TableCell>{formatDate(payment.created_at)}</TableCell>
+                            <TableCell>
+                              <StatusBadge $status={
+                                payment.status === 'completed' ? 'active' : 
+                                payment.status === 'canceled' ? 'completed' : 
+                                'upcoming'
+                              }>
+                                {payment.status === 'completed' ? 'Tamamlandı' : 
+                                 payment.status === 'pending' ? 'Beklemede' : 'İptal Edildi'}
+                              </StatusBadge>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </tbody>
+                    </Table>
+                  ) : (
+                    <p>Kullanıcının henüz ödeme kaydı bulunmamaktadır.</p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div>Kullanıcı bulunamadı.</div>
+            )}
+          </>
+        );
+      case 'auction-details':
+        return (
+          <>
+            <SectionTitle>
+              İhale Detayları
+              <Button 
+                variant="secondary" 
+                onClick={() => handleSectionChange('auctions')}
+              >
+                İhalelere Dön
+              </Button>
+            </SectionTitle>
+            
+            {loading ? (
+              <div>Yükleniyor...</div>
+            ) : (
+              <div>
+                <div style={{ 
+                  marginBottom: '2rem',
+                  padding: '1.5rem',
+                  backgroundColor: 'var(--color-background)',
+                  borderRadius: 'var(--border-radius-md)'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <h3 style={{ fontSize: '1.25rem' }}>{auctionForm.title}</h3>
+                    <Button onClick={() => handleSectionChange('edit-auction')}>Düzenle</Button>
+                  </div>
+                  
+                  {/* Show auction images in a gallery */}
+                  {auctionForm.images && auctionForm.images.length > 0 && (
+                    <div style={{ marginBottom: '1.5rem' }}>
+                      <h4 style={{ fontSize: '1rem', marginBottom: '0.75rem' }}>İhale Görselleri</h4>
+                      <ImageGallery>
+                        {auctionForm.images.map((imageUrl, index) => (
+                          <div 
+                            key={index} 
+                            className="gallery-item"
+                            onClick={() => handleImageClick(imageUrl)}
+                          >
+                            <img 
+                              src={imageUrl} 
+                              alt={`Auction ${index + 1}`} 
+                            />
+                          </div>
+                        ))}
+                      </ImageGallery>
+                      
+                      {activeImage && (
+                        <div className="gallery-modal" onClick={handleCloseGallery}>
+                          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <button className="close-button" onClick={handleCloseGallery}>×</button>
+                            
+                            {auctionForm.images.length > 1 && (
+                              <>
+                                <button className="nav-button prev" onClick={handlePrevImage}>
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="15 18 9 12 15 6"></polyline>
+                                  </svg>
+                                </button>
+                                <button className="nav-button next" onClick={handleNextImage}>
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                  </svg>
+                                </button>
+                              </>
+                            )}
+                            
+                            <img src={activeImage} alt="Enlarged auction" />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  <div style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: '1fr 1fr', 
+                    gap: '1.5rem',
+                  }}>
+                    <div>
+                      <p><strong>Başlangıç Fiyatı:</strong> {parseFloat(auctionForm.startingPrice).toLocaleString('tr-TR')} TL</p>
+                      <p><strong>Konum:</strong> {auctionForm.location}</p>
+                      <p><strong>Durum:</strong> {getStatusText(auctionForm.status)}</p>
+                    </div>
+                    <div>
+                      <p><strong>Başlangıç Tarihi:</strong> {formatDate(auctionForm.startDate)}</p>
+                      <p><strong>Bitiş Tarihi:</strong> {formatDate(auctionForm.endDate)}</p>
+                    </div>
+                  </div>
+                  
+                  <div style={{ marginTop: '1rem' }}>
+                    <h4 style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>Açıklama</h4>
+                    <p>{auctionForm.description}</p>
+                  </div>
+                </div>
+                
+                {/* Tabs */}
+                <div style={{ display: 'flex', borderBottom: '1px solid var(--color-border)', marginBottom: '1.5rem' }}>
+                  <div style={{ 
+                    padding: '0.75rem 1.25rem', 
+                    borderBottom: '2px solid var(--color-primary)', 
+                    fontWeight: 'bold',
+                    cursor: 'pointer'
+                  }}>
+                    Teklif Verenler
+                  </div>
+                  <div style={{ 
+                    padding: '0.75rem 1.25rem',
+                    cursor: 'pointer'
+                  }}>
+                    Ödemeler
+                  </div>
+                </div>
+                
+                {/* Bidders Section */}
+                <div style={{ marginBottom: '2rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <h3 style={{ fontSize: '1.125rem' }}>Teklif Verenler</h3>
+                  </div>
+                  
+                  {bids.length > 0 ? (
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableHeader>Kullanıcı</TableHeader>
+                          <TableHeader>E-posta</TableHeader>
+                          <TableHeader>Teklif Tutarı</TableHeader>
+                          <TableHeader>Teklif Tarihi</TableHeader>
+                          <TableHeader>Durum</TableHeader>
+                        </TableRow>
+                      </TableHead>
+                      <tbody>
+                        {bids.map(bid => (
+                          <TableRow key={bid.id}>
+                            <TableCell>{bid.profiles?.full_name || 'İsimsiz'}</TableCell>
+                            <TableCell>{bid.profiles?.email || '-'}</TableCell>
+                            <TableCell>{bid.amount?.toLocaleString('tr-TR')} TL</TableCell>
+                            <TableCell>{formatDate(bid.created_at)}</TableCell>
+                            <TableCell>
+                              <StatusBadge $status={bid.is_winning ? 'active' : 'completed'}>
+                                {bid.is_winning ? 'Kazanan' : ''}
+                              </StatusBadge>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </tbody>
+                    </Table>
+                  ) : (
+                    <p>Henüz teklif veren bulunmamaktadır.</p>
+                  )}
+                </div>
+                
+                {/* Payments Section */}
+                <div style={{ marginTop: '2rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <h3 style={{ fontSize: '1.125rem' }}>Ödemeler</h3>
+                    <Button 
+                      variant="primary" 
+                      size="small"
+                      onClick={() => handleSectionChange('add-payment')}
+                    >
+                      Ödeme Ekle
+                    </Button>
+                  </div>
+                  
+                  {payments.length > 0 ? (
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableHeader>Kullanıcı</TableHeader>
+                          <TableHeader>E-posta</TableHeader>
+                          <TableHeader>Tutar</TableHeader>
+                          <TableHeader>Açıklama</TableHeader>
+                          <TableHeader>Ödeme Tarihi</TableHeader>
+                          <TableHeader>Durum</TableHeader>
+                        </TableRow>
+                      </TableHead>
+                      <tbody>
+                        {payments.map(payment => (
+                          <TableRow key={payment.id}>
+                            <TableCell>{payment.profiles?.full_name || 'İsimsiz'}</TableCell>
+                            <TableCell>{payment.profiles?.email || '-'}</TableCell>
+                            <TableCell>{payment.amount?.toLocaleString('tr-TR')} TL</TableCell>
+                            <TableCell>{payment.description || '-'}</TableCell>
+                            <TableCell>{formatDate(payment.created_at)}</TableCell>
+                            <TableCell>
+                              <StatusBadge $status={
+                                payment.status === 'completed' ? 'active' : 
+                                payment.status === 'canceled' ? 'completed' : 
+                                'upcoming'
+                              }>
+                                {payment.status === 'completed' ? 'Tamamlandı' : 
+                                 payment.status === 'pending' ? 'Beklemede' : 'İptal Edildi'}
+                              </StatusBadge>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </tbody>
+                    </Table>
+                  ) : (
+                    <p>Henüz ödeme kaydı bulunmamaktadır.</p>
+                  )}
+                </div>
+              </div>
+            )}
+          </>
+        );
+      case 'edit-auction':
+        return (
+          <>
+            <SectionTitle>
+              İhale Düzenle
+              <Button 
+                variant="secondary" 
+                onClick={() => handleSectionChange('auction-details')}
+              >
+                İhale Detaylarına Dön
+              </Button>
+            </SectionTitle>
+            
+            <form onSubmit={handleUpdateAuction}>
+              <FormGroup>
+                <Label htmlFor="title">İhale Başlığı</Label>
+                <Input 
+                  type="text" 
+                  id="title" 
+                  name="title"
+                  value={auctionForm.title}
+                  onChange={handleAuctionFormChange}
+                  required
+                />
+              </FormGroup>
+              
+              <FormGroup>
+                <Label htmlFor="description">İhale Açıklaması</Label>
+                <TextArea 
+                  id="description" 
+                  name="description"
+                  value={auctionForm.description}
+                  onChange={handleAuctionFormChange}
+                  required
+                />
+              </FormGroup>
+              
+              <FormRow>
+                <FormGroup>
+                  <Label htmlFor="startingPrice">Başlangıç Fiyatı (TL)</Label>
+                  <Input 
+                    type="number" 
+                    id="startingPrice" 
+                    name="startingPrice"
+                    value={auctionForm.startingPrice}
+                    onChange={handleAuctionFormChange}
+                    required
+                    min="0"
+                    step="0.01"
+                  />
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label htmlFor="minIncrement">Minimum Artış Tutarı (TL)</Label>
+                  <Input 
+                    type="number" 
+                    id="minIncrement" 
+                    name="minIncrement"
+                    value={auctionForm.minIncrement}
+                    onChange={handleAuctionFormChange}
+                    required
+                    min="0"
+                    step="0.01"
+                  />
+                </FormGroup>
+              </FormRow>
+              
+              <FormRow>
+                <FormGroup>
+                  <Label htmlFor="startDate">Başlangıç Tarihi</Label>
+                  <Input 
+                    type="date" 
+                    id="startDate" 
+                    name="startDate"
+                    value={auctionForm.startDate}
+                    onChange={handleAuctionFormChange}
+                    required
+                  />
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label htmlFor="startTime">Başlangıç Saati</Label>
+                  <Input 
+                    type="time" 
+                    id="startTime" 
+                    name="startTime"
+                    value={auctionForm.startTime}
+                    onChange={handleAuctionFormChange}
+                    required
+                  />
+                </FormGroup>
+              </FormRow>
+              
+              <FormRow>
+                <FormGroup>
+                  <Label htmlFor="endDate">Bitiş Tarihi</Label>
+                  <Input 
+                    type="date" 
+                    id="endDate" 
+                    name="endDate"
+                    value={auctionForm.endDate}
+                    onChange={handleAuctionFormChange}
+                    required
+                  />
+                </FormGroup>
+                
+                <FormGroup>
+                  <Label htmlFor="endTime">Bitiş Saati</Label>
+                  <Input 
+                    type="time" 
+                    id="endTime" 
+                    name="endTime"
+                    value={auctionForm.endTime}
+                    onChange={handleAuctionFormChange}
+                    required
+                  />
+                </FormGroup>
+              </FormRow>
+              
+              <FormRow>
+                <FormGroup>
+                  <Label htmlFor="location">Konum</Label>
+                  <Input 
+                    type="text" 
+                    id="location" 
+                    name="location"
+                    value={auctionForm.location}
+                    onChange={handleAuctionFormChange}
+                    required
+                  />
+                </FormGroup>
+              </FormRow>
+              
+              <ImageUploadContainer>
+                <Label>İhale Görselleri</Label>
+                
+                {/* Existing images */}
+                {auctionForm.images && auctionForm.images.length > 0 && (
+                  <>
+                    <p>Mevcut Görseller:</p>
+                    <div className="preview-area">
+                      {auctionForm.images.map((imageUrl, index) => (
+                        <div key={index} className="image-preview">
+                          <img src={imageUrl} alt={`Auction ${index}`} />
+                          <div className="remove-btn" onClick={() => removeExistingImage(index)}>×</div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+                
+                {/* Upload new images */}
+                <label className="upload-btn" style={{ marginTop: '1rem' }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <polyline points="21 15 16 10 5 21" />
+                  </svg>
+                  Yeni Görsel Yükle
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageChange}
+                  />
+                </label>
+                
+                {uploading && <p>Yükleniyor...</p>}
+                
+                {images.length > 0 && (
+                  <>
+                    <p>Yeni Görseller:</p>
+                    <div className="preview-area">
+                      {images.map((image, index) => (
+                        <div key={index} className="image-preview">
+                          <img src={URL.createObjectURL(image)} alt={`Preview ${index}`} />
+                          <div className="remove-btn" onClick={() => removeImage(index)}>×</div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </ImageUploadContainer>
+              
+              <FormGroup>
+                <Label htmlFor="status">Durum</Label>
+                <Select 
+                  id="status" 
+                  name="status"
+                  value={auctionForm.status}
+                  onChange={handleAuctionFormChange}
+                  required
+                >
+                  <option value="upcoming">Yaklaşan</option>
+                  <option value="active">Aktif</option>
+                  <option value="completed">Tamamlandı</option>
+                </Select>
+              </FormGroup>
+              
+              <Button type="submit" disabled={uploading}>İhaleyi Güncelle</Button>
+            </form>
+          </>
+        );
+      case 'add-payment':
+        return (
+          <>
+            <SectionTitle>
+              Ödeme Ekle
+              <Button 
+                variant="secondary" 
+                onClick={() => handleSectionChange('auction-details')}
+              >
+                İhale Detaylarına Dön
+              </Button>
+            </SectionTitle>
+            
+            <form onSubmit={handleCreatePayment}>
+              <FormGroup>
+                <Label htmlFor="userId">Kullanıcı</Label>
+                <Select 
+                  id="userId" 
+                  name="userId"
+                  required
+                >
+                  {users.map(user => (
+                    <option key={user.id} value={user.id}>
+                      {user.full_name || user.email}
+                    </option>
+                  ))}
+                </Select>
+              </FormGroup>
+              
+              <FormGroup>
+                <Label htmlFor="amount">Ödeme Tutarı (TL)</Label>
+                <Input 
+                  type="number" 
+                  id="amount" 
+                  name="amount"
+                  required
+                  min="0"
+                  step="0.01"
+                />
+              </FormGroup>
+              
+              <FormGroup>
+                <Label htmlFor="description">Açıklama</Label>
+                <Input 
+                  type="text" 
+                  id="description" 
+                  name="description"
+                  placeholder="İhale kazanım ödemesi"
+                />
+              </FormGroup>
+              
+              <FormGroup>
+                <Label htmlFor="status">Durum</Label>
+                <Select 
+                  id="status" 
+                  name="status"
+                  required
+                >
+                  <option value="pending">Beklemede</option>
+                  <option value="completed">Tamamlandı</option>
+                  <option value="canceled">İptal</option>
+                </Select>
+              </FormGroup>
+              
+              <Button type="submit">Ödeme Ekle</Button>
+            </form>
+          </>
+        );
+      case 'payments':
+        return (
+          <>
+            <SectionTitle>
+              Ödeme Takibi
+            </SectionTitle>
+            
+            {loading ? (
+              <div>Yükleniyor...</div>
+            ) : payments.length > 0 ? (
+              <>
+                <div style={{ marginBottom: '1rem' }}>
+                  <SearchInput 
+                    type="text" 
+                    placeholder="Ödeme ara..." 
+                  />
+                </div>
+                
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableHeader>İhale</TableHeader>
+                      <TableHeader>Kullanıcı</TableHeader>
+                      <TableHeader>Tutar</TableHeader>
+                      <TableHeader>Ödeme Tarihi</TableHeader>
+                      <TableHeader>Durum</TableHeader>
+                      <TableHeader>İşlemler</TableHeader>
+                    </TableRow>
+                  </TableHead>
+                  <tbody>
+                    {payments.map(payment => (
+                      <TableRow key={payment.id}>
+                        <TableCell>{payment.auctions?.title || payment.auction_name || '-'}</TableCell>
+                        <TableCell>{
+                          (payment.profiles?.full_name && payment.profiles?.email) 
+                            ? `${payment.profiles.full_name} (${payment.profiles.email})`
+                            : payment.profiles?.full_name || payment.profiles?.email || payment.user_name || '-'
+                        }</TableCell>
+                        <TableCell>{payment.amount?.toLocaleString('tr-TR')} TL</TableCell>
+                        <TableCell>{formatDate(payment.created_at)}</TableCell>
+                        <TableCell>
+                          <StatusBadge $status={
+                            payment.status === 'completed' ? 'active' : 
+                            payment.status === 'canceled' ? 'completed' : 
+                            'upcoming'
+                          }>
+                            {payment.status === 'completed' ? 'Tamamlandı' : 
+                             payment.status === 'pending' ? 'Beklemede' : 'İptal Edildi'}
+                          </StatusBadge>
+                        </TableCell>
+                        <TableCell>
+                          <ActionButton 
+                            variant="primary" 
+                            size="small"
+                            onClick={() => handleUpdatePaymentStatus(payment.id, 'completed')}
+                            disabled={payment.status === 'completed'}
+                          >
+                            Tamamla
+                          </ActionButton>
+                          <ActionButton 
+                            variant="secondary" 
+                            size="small"
+                            onClick={() => handleUpdatePaymentStatus(payment.id, 'pending')}
+                            disabled={payment.status === 'pending'}
+                          >
+                            Beklet
+                          </ActionButton>
+                          <ActionButton 
+                            variant="danger" 
+                            size="small"
+                            onClick={() => handleUpdatePaymentStatus(payment.id, 'canceled')}
+                            disabled={payment.status === 'canceled'}
+                          >
+                            İptal
+                          </ActionButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </tbody>
+                </Table>
+              </>
+            ) : (
+              <EmptyState>
+                <p>Henüz ödeme kaydı bulunmamaktadır.</p>
+              </EmptyState>
+            )}
+          </>
+        );
+      case 'settings':
+        return (
+          <>
+            <SectionTitle>Sistem Ayarları</SectionTitle>
+            
+            <FormGroup>
+              <Label htmlFor="siteName">Site Adı</Label>
+              <Input 
+                type="text" 
+                id="siteName" 
+                defaultValue="Arazial"
+              />
+            </FormGroup>
+            
+            <FormGroup>
+              <Label htmlFor="contactEmail">İletişim E-postası</Label>
+              <Input 
+                type="email" 
+                id="contactEmail" 
+                defaultValue="info@arazial.com"
+              />
+            </FormGroup>
+            
+            <FormGroup>
+              <Label htmlFor="bidIncrement">Minimum Teklif Artışı (TL)</Label>
+              <Input 
+                type="number" 
+                id="bidIncrement" 
+                defaultValue="100"
+                min="1"
+              />
+            </FormGroup>
+            
+            <Button>Ayarları Kaydet</Button>
+          </>
+        );
+      default:
+        return null;
+    }
+  };
+  
+  // Render loading state while auth is being checked
+  if (authLoading || loading) {
+    return (
+      <PageContainer>
+        <PageHeader>
+          <PageTitle>Admin Dashboard</PageTitle>
+        </PageHeader>
+        <div style={{ textAlign: 'center', padding: '5rem 0' }}>
+          <p>Yükleniyor...</p>
+        </div>
+      </PageContainer>
+    );
+  }
+  
+  // Render content only if user is admin
+  return (
+    <PageContainer>
+      <PageHeader>
+        <h1>Yönetici Paneli</h1>
+      </PageHeader>
+      
+      <DashboardGrid>
+        <Sidebar>
+          <SidebarButton 
+            $active={activeSection === 'dashboard'} 
+            onClick={() => handleSectionChange('dashboard')}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="7" height="9" />
+              <rect x="14" y="3" width="7" height="5" />
+              <rect x="14" y="12" width="7" height="9" />
+              <rect x="3" y="16" width="7" height="5" />
+            </svg>
+            Genel Bakış
+          </SidebarButton>
+          
+          <SidebarButton 
+            $active={activeSection === 'auctions' || activeSection === 'create-auction' || activeSection === 'auction-details' || activeSection === 'edit-auction'} 
+            onClick={() => handleSectionChange('auctions')}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+            İhaleler
+          </SidebarButton>
+          
+          <SidebarButton 
+            $active={activeSection === 'users' || activeSection === 'create-user' || activeSection === 'user-details'} 
+            onClick={() => handleSectionChange('users')}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            Kullanıcılar
+          </SidebarButton>
+          
+          <SidebarButton 
+            $active={activeSection === 'payments' || activeSection === 'add-payment'} 
+            onClick={() => handleSectionChange('payments')}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+              <line x1="1" y1="10" x2="23" y2="10" />
+            </svg>
+            Ödemeler
+          </SidebarButton>
+          
+          <SidebarButton 
+            $active={activeSection === 'settings'} 
+            onClick={() => handleSectionChange('settings')}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+            Ayarlar
+          </SidebarButton>
+          
+          <SidebarButton onClick={() => navigate('/dashboard')}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+              <polyline points="10 17 15 12 10 7" />
+              <line x1="15" y1="12" x2="3" y2="12" />
+            </svg>
+            Kullanıcı Paneline Dön
+          </SidebarButton>
+        </Sidebar>
+        
+        <ContentArea>
+          {!authIsAdmin ? (
+            <div style={{ textAlign: 'center', padding: '2rem' }}>
+              <h2>Erişim Reddedildi</h2>
+              <p>Bu sayfayı görüntülemek için yönetici haklarına sahip olmalısınız.</p>
+              <Button onClick={() => navigate('/dashboard')}>Kullanıcı Paneline Dön</Button>
+            </div>
+          ) : (
+            renderContent()
+          )}
+        </ContentArea>
+      </DashboardGrid>
+    </PageContainer>
+  );
+}
+
+export default AdminDashboard; 

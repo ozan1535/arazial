@@ -1,0 +1,304 @@
+Vallet FaviconVallet Dev
+Vallet
+entegrasyon@vallet.com.tr
+Hasan,Mehmet ve Recep ile tanışın
+Hoşgeldiniz...
+Tanımlamalar
+Sipariş Paremetreleri
+Sipariş Oluşturma
+Hash Oluşturma
+Ürün Datası Tanımlama
+Callback Tanımlama
+Callback Dinleme
+İade İşlemleri
+Vallet Developer Tools
+Anasayfa
+Vallet Developer Tools
+
+Merhaba Hoşgeldiniz;
+Satış süreçlerinde Vallet'i tercih ettiğiniz için teşekkür ederiz.
+Sizleri, ödeme sistemlerinin karmaşıklığını ortadan kaldırmak ve ödeme entegrasyonlarınızı hızla ve sorunsuz bir şekilde gerçekleştirmeniz için tasarlanmış olan güçlü entegrasyon altyapımız tanıştırmaktan mutluluk duyarız.
+
+API bilgileriniz ve hazır modüllerinizle birlikte, gerçek ortam testlerini kolayca yapmanızı sağlayacak bir çözüm sunuyoruz. Tek yapmanız gereken, geliştirme sürecinizi hızlandırmak ve entegrasyonları mükemmel bir şekilde tamamlamak için araçlarımızı kullanmak.
+
+PHP, ASP.NET ve JavaScript kod örnekleri ile desteklenmiş olan araçlarımız, farklı teknoloji yığınlarından gelen geliştiricilerin ihtiyaçlarını karşılamak için tasarlanmıştır.
+
+Arayüzümüzün basitliği ve kullanım kolaylığı, kredi kartı ve havale/EFT gibi ödeme yöntemlerini hızla entegre etmenizi sağlar. Siz sadece geliştirme sürecine odaklanırken, biz de arka planda gereken tüm altyapıyı sağlamak için çalışıyor olacağız.
+
+İşte bizimle çalışmanın keyifli tarafı burada başlıyor.
+Sizden gelecek katkılarla, ödeme entegrasyonlarını daha da erişilebilir ve kullanıcı dostu hale getirmek için sürekli olarak çaba sarf ediyoruz.
+Geliştirme yolculuğunuzda sizi desteklemek ve projelerinizi başarıya taşımak için buradayız.
+Popüler Dil Entegrasyon Örnekleri
+Vallet PHP Örneği
+PHP 8, JIT derleyiciyle performansı ikiye katladı!
+Vallet ASP.NET Örneği
+ASP.NET Core, platformlar arası çalışma yeteneği sunar!
+Vallet JavaScript Örneği
+ES6, modern kod yazımı için devrim yarattı!
+Açık Kaynak Ücretsiz E-Ticaret Entegrasyon Modülleri
+Vallet Opencart Modülü
+3.0, Twig şablon motoruyla daha esnek tasarımlar sunuyor!
+Vallet Prestashop Modülü
+1.7, yeni tema ve modül yapısıyla geldi!
+Vallet Woocommerce Modülü
+Vallet NopCommerce Modülü
+.NET Core 3.1 ile daha hızlı ve ölçeklenebilir!
+Vallet NopCommerce Modülü
+PWA Studio ve Elasticsearch 7 ile geldi!
+Vallet DrupalCommerce Modülü
+2.x, API odaklı ve çok dilli destek sunuyor!
+Vallet Virtuemart Modülü
+Joomla için ölçeklenebilir e-ticaret çözümüdür!
+Vallet Virtuemart Modülü
+Özelleştirilebilir ve güçlü bir CRM çözümüdür!
+Global E-Ticaret Yazılımları Entegrasyon Modülleri
+Vallet Xenforo Modülü
+Eklenti yapısıyla forumlar için özelleştirmeyi kolaylaştırıyor!
+Vallet Whmcs Modülü
+Oauth2 destekli API ve geliştirilmiş otomasyonlarla geldi!
+Vallet Wisecp Modülü
+Esnek ve kullanıcı dostu bir hosting panelidir.
+Vallet Wix Modülü
+Webde İhtiyacınıza Özel Çözümler!
+Vallet Shopify Modülü
+E-Ticarette Güçlü Partneriniz!
+Özel E-Ticaret Yazılımları İş Birlikleri
+Vallet ShopPHP Modülü
+Ekonomik Güçlü ve Popüler E-Ticaret Sistemi
+Vallet Yeppos
+Yeni Nesil Adisyon Sistemi
+Vallet Nivusosyal Modülü
+Geniş Api seçenekli SMM Panel
+
+Tanımlamalar
+Gerekli tüm anahtarlara vallet.com.tr/merchant adresindeki api menüsünden ulaşabilirsiniz.
+PARAMETRE	TİP	UZUNLUK	ZORUNLULUK	AÇIKLAMA
+userName	String	20	Evet Zorunlu	Api Kullanıcı Adı
+password	String	20	Evet Zorunlu	Api Şifre
+shopCode	String	4	Evet Zorunlu	Mağaza Kodu
+hashKey	Text	8	Evet Zorunlu	Şifreleme Anahtarı
+
+Sipariş Parametreleri
+Tüm parametreleri tanımlamanız için detaylı açıklandırma bulunur. Lütfen uyarılarıları dikkate almanızı rica ederiz.
+API üzerinden sipariş oluşturabilmek için, API kullanıcınızın "sipariş/Ekle" yetkisine sahip olması gerekmektedir.
+Yetki tanımlama işlemi, "Merchant Panel" altında "Hesap" bölümünden "Üye Yönetimim" sekmesine giderek gerçekleştirilebilir. Bu bölümde API kullanıcınıza gerekli yetkileri atayabilirsiniz.
+API servisine erişim, sadece önceden tanımlanmış olan alan adları ve IP adresleri üzerinden mümkündür.
+Alan adı ve IP adresi tanımlamalarınızı güncellemek için "Merchant Panel" altında "Api" bölümünden "Alan adlarım" sekmesine giderek yapabilirsiniz.
+Alan adınızda "www" önekinin kullanılıp kullanılmadığına dikkat etmelisiniz. Eğer alan adınız "www" ile başlıyorsa, tanımlama yaparken bu öneki de eklemelisiniz. Eğer kullanmıyorsa, "www" eklemeye gerek yoktur.
+Örnek: "www.vallet.com.tr" veya "vallet.com.tr".
+PARAMETRE	TİP	UZUNLUK	ZORUNLULUK	AÇIKLAMA
+Sorgu Url Adresi : https://www.vallet.com.tr/api/v1/create-payment-link
+productName	String	200	Evet	Sepetli sipariş ise, Sepet Adı, Fatura Adı, Tek Ürün ise tam ürün adı.
+Uyarı; Risk birimi siteniz ile siparişten gelen ürünleri karşılaştırır bu nedenle ürün adlarını doğru göndermeniz önemli.
+productData	Object / Array	Yok	Evet	Sepet içeriğindeki ürünleri dizi yada nesne olarak gönderiniz.
+Uyarı; Risk birimi siteniz ile siparişten gelen ürünleri karşılaştırır bu nedenle ürün adlarını doğru göndermeniz önemli.
+productType	String	Yok	DIJITAL_URUN yada FIZIKSEL_URUN	Ürünlerinizi kargo ile teslim edecekseniz FIZIKSEL_URUN dijital teslimat olan bir ürün satıyorsanız DIJITAL_URUN olarak gönderiniz.
+productsTotalPrice	Decimal	Yok	Evet	Siparişe ait sepetteki ürünlerin toplam tutarı.
+orderPrice	Decimal	Yok	Evet	Api üzerinden geçecek nihai tutar. Taksit oranları bu tutar üzerine eklenerek hesaplanır.
+currency	String	3	TRY,EUR USD	Para Birimi Varsayılan Değer: TRY
+orderID	String	50	Evet	İlgili siparişinizin sizin sisteminiz tarafındaki sipariş ID yada Sipariş Kodu. Ödenmemiş bir sipariş yada benzersiz olmalıdır.
+locale	String	2	tr,en,de,ru	Dil Varsayılan Değer: tr
+conversationId	String	200	Hayır	İstekte gönderilirse response olarak size geri döndürülür. Request/response eşlemesi yapmak için kullanılır.
+buyerName	String	4	Evet	Sipariş Sahibi Adı
+Uyarı: Doğru bilgi gönderiniz. Fraud kontrol geçemez ödemeler askıda kalır.
+buyerSurName	String	4	Evet	Sipariş Sahibi Soyadı
+Uyarı: Doğru bilgi gönderiniz. Fraud kontrol geçemez ödemeler askıda kalır.
+buyerGsmNo	String	4	Evet	Sipariş Sahibi Telefon Numarası
+Uyarı: Doğru bilgi gönderiniz. Fraud kontrol geçemez ödemeler askıda kalır.
+buyerEmail	String	80	Hayır	Sipariş Sahibi E-Posta adresi
+Uyarı: Doğru bilgi gönderiniz. Fraud kontrol geçemez ödemeler askıda kalır.
+buyerIp	String	80	Hayır	Sipariş Sahibi IP Adresi
+Uyarı: Doğru bilgi gönderiniz. Fraud kontrol geçemez ödemeler askıda kalır.
+buyerAdress	String	200	Hayır	Sipariş Sahibi Adresi
+BuyerCountry	String	70	Hayır	Sipariş Sahibi Ülke
+BuyerCity	String	70	Hayır	Sipariş Sahibi Şehir
+buyerDistrict	String	70	Hayır	Sipariş Sahibi İlçe
+hash	String	Yok	Evet	OrderID,currency,orderPrice,productsTotalPrice,productType,callbackOkUrl,callbackFailUrl
+değişkenlerinden birleştirilerek oluşturulan metnin işyeri hash kodunuzla şifrelenmiş halidir. Örnek Kod İnceleyiniz.
+callbackOkUrl	String	Yok	Evet	Müşterinin başarılı işlemde yönlendirileceği sayfa
+callbackFailUrl	String	Yok	Evet	Müşterinin başarısız işlemde yönlendirileceği sayfa
+
+Sipariş Oluştur
+Sipariş oluşturabilmeniz için örnek kod yapısı aşağıda paylaşılmıştır.
+Sorgu Url Adresi : https://www.vallet.com.tr/api/v1/create-payment-link
+
+public function create_payment_link($order_data)
+{
+$post_data = array(
+'userName' => '', // Api Kullanıcı Adı *
+'password' => '',  // Api Şifre *
+'shopCode' => '',  // Mağaza Kodu *
+'productName' => '',  // Ürün Adı (Doğru Olmak Zorunda) *
+'productData' => '', // Sepet içeriğindeki ürünler
+'productType' => '', // DIJITAL_URUN yada FIZIKSEL_URUN
+'productsTotalPrice' => '',  // Sepet toplam tutar
+'orderPrice' => '', // Ödenmesi istenilen son tutar *
+'currency' => '', // Para Birimi TRY,USD,EUR *
+'orderId' => '', // Sizin Sipariş Numaranız *
+'locale' => '', // Dil (Ödeme sayfası için önemli)
+'conversationId' => ', // İstekte gönderilirse response olarak size geri döndürülür.
+'buyerName' => '', // Sipariş Sahibi Ad (Doğru Olmak Zorunda) Fraud Kontrol bulunur. **
+'buyerSurName' => '', // Sipariş Sahibi Soyad (Doğru Olmak Zorunda) Fraud Kontrol bulunur. **
+'buyerGsmNo' => '', // Sipariş Sahibi Tel (Doğru Olmak Zorunda) Fraud Kontrol bulunur. **
+'buyerIp' => '', // Sipariş Sahibi Ip Adres (Doğru Olmak Zorunda) Fraud Kontrol bulunur. **
+'buyerMail' => '', // Sipariş Sahibi E-Posta (Doğru Olmak Zorunda) Fraud Kontrol bulunur. **
+'buyerAdress' => '', // Sipariş Sahibi Adres
+'buyerCountry' => '', // Sipariş Sahibi Ülke
+'buyerCity' => '', // Sipariş Sahibi Şehir
+'buyerDistrict' => '', // Sipariş Sahibi İlçe
+'callbackOkUrl' => '', // Başarılı dönüş url
+'callbackFailUrl' => '', // Başarısız dönüş url
+'module' => '' // İsteğe bağlı yazılım dili
+);
+$post_data['hash'] = '<?php echo $this->hash_generate($post_data['orderId'] . $post_data['currency'] . $post_data['orderPrice'] . $post_data['productsTotalPrice'] . $post_data['productType'] . $post_data['callbackOkUrl'] . $post_data['callbackFailUrl']); ?>';
+$response = '<?php echo $this->send_post('https://www.vallet.com.tr/api/v1/create-payment-link', $post_data); ?>';
+if (
+$response['status'] == 'success' && 
+isset($response['payment_page_url'])
+) {
+return '<?php echo $response; ?>';
+} else {
+print_r('<?php echo $response; ?>');
+// Hatayı Sisteminiz için Yönetin ve Döndürün
+}
+}
+
+Hash Oluştur
+Hash oluşturabilmeniz için örnek kod yapısı aşağıda paylaşılmıştır.
+Fonksiyon, $string adında bir parametre alır. Bu parametre, hash oluşturulurken kullanılacak olan ek bilgiyi temsil eder.
+Fonksiyon içerisinde, bir dizi bilgi birleştirilir:
+$this->userName: Sınıf içerisinde tanımlı olan kullanıcı adı.
+$this->password: Sınıf içerisinde tanımlı olan şifre.
+$this->shopCode: Sınıf içerisinde tanımlı olan mağaza kodu.
+$string: Fonksiyona gelen parametre.
+$this->hash: Sınıf içerisinde tanımlı olan özgün hash değeri.
+Bu bilgiler birleştirildikten sonra sha1 fonksiyonu ile SHA-1 algoritması kullanılarak hash değeri oluşturulur.
+Oluşturulan bu hash değeri, pack fonksiyonu ile belirli bir biçimde paketlenir ve son olarak base64_encode fonksiyonu ile Base64 formatına dönüştürülür.
+Fonksiyon, son olarak bu Base64 formatındaki hash değerini döndürür.
+function hash_generate($string)
+{
+$hash = base64_encode(pack('H*', sha1($this->userName.$this->password.$this->shopCode.$string.$this->hash)));
+return $hash;
+}
+userName. // Kullanıcı Adı
+$this->password. // Şifre
+$this->shopCode. // Mağaza Kodu
+$order_data['orderId']. // Sipariş Numarası
+$order_data['currency']. // Para Birimi
+$order_data['orderPrice']. // Sipariş Fiyatı
+$order_data['productsTotalPrice']. // Ürün Toplam Fiyatı
+$order_data['productType']. // Ürün Türü
+$order_data['callbackOkUrl']. // Başarılı Geri Çağrı URL'si
+$order_data['callbackFailUrl']. // Başarısız Geri Çağrı URL'si
+$this->hash))); // Hash Anahtarı
+
+Ürün Data Tanımlama
+Sepet içeriğinizi gönderebilmeniz için örnek kod yapısı aşağıda paylaşılmıştır.
+$productData = array(
+array(
+'productName' => '1. Ürün Adı',
+'productPrice' => 50,
+'productType' => 'DIJITAL_URUN'
+),
+array(
+'productName' => '2. Ürün Adı',
+'productPrice' => 30,
+'productType' => 'DIJITAL_URUN'
+)
+);
+
+Callback Tanımlama
+Callback için kullanmanız gereken tüm parametreler aşağıda paylaşılmıştır.
+PARAMETRE	TİP	ZORUNLULUK	AÇIKLAMA
+status	String	error, success	Başarısız , Başarılı
+errorMessage	String	Yok	Status error dönerse hata mesajını içerir. Success durumlarda boş döner.
+payment_page_url	String	Yok	status==success ve başarılı bir işlem ise müşteriye göstereceğiniz ödeme sayfası url adresini döndürür.
+status==success ve paymentPageUrl!=' paymentPageUrl adresine yönlendirin yukarıdaki durum sağlanmadıysa hatayı yönetin.
+
+Callback Dinleme
+PaymentOk cevabı almadan kesinlikle hizmeti vermeyin !
+Yazılım Uzmanına Not: Callback istekleri, "Merchant Panel -> Api -> Alan adlarım" bölümündeki tanımlı Callback Confirm adresine gönderilir. Ödeme başarılı olduğunda, müşteri yönlendirilmeden önce bu istek 3. parti olarak iletilir. İsteği tarayıcıda göremezsiniz; sadece veritabanı veya loglama ile yakalayabilirsiniz. Vallet, gönderdiği isteğin başarılı bir şekilde alındığını ve işlendiğini doğrulamak için "OK" yanıtını bekler. Ödemenizi aldıysanız ve işlediyseniz, ekranda "OK" yazmalısınız. Ağ sorunları nedeniyle "OK" yanıtını alamazsa, Vallet isteği tekrar gönderebilir. Bu durumda, önceki işlemi yapmış olsanız bile "OK" yanıtını vermelisiniz. Diğer hatalar için "HASH_HATALI" veya "SIPARIS_BULUNAMADI" gibi mesajlar da ekranda gösterebilirsiniz.
+Parametre	Tip	Açıklama
+status	String	success, error
+paymentStatus	String	
+paymentOk cevabı almadan hizmet vermeyin !
+paymentWait,paymentVerification, paymentOk, paymentNotPaid
+paymentWait = Sipariş Ödenmemiş. Ödemeyi bekliyor. paymentOk cevabını bekleyin
+paymentVerification = Tahsilat işlemi tamamlanmamış yada tahsilat inceleme beklemektedir.
+paymentOk = Tutar Müşteriden tahsil edilmiştir. Tutar hesabınıza geçmiştir.
+paymentNotPaid = Sipariş Ödemesi Rededildi
+hash	String	Üretilen İmza
+paymentAmount	Decimal	Ödenen sipariş tutarı
+paymentType	String	KART, BANKA_HAVALE, YURT_DISI
+conversationId	String	Sipariş oluştururken geri cevapta olmasını istediğiniz veri
+orderId	String	Siparişi oluştururken gönderdiğiniz, sisteminize ait sipariş numarası
+shopCode	String	Mağaza kodunuz
+
+İade Sistemi
+Aşağıda örnek iade fonksiyonu tarafınıza paylaşılmıştır.
+Parametre	Tip	Açıklama
+Sorgu Url Adresi : https://www.vallet.com.tr/api/v1/create-refund
+userName	String	Api Kullanıcı Adı
+password	String	Api Kullanıcı Şifre
+shopCode	String	Api Mağaza Kodu
+valletOrderId	İnt	Vallet Sipariş ID
+orderId	String	Müşteri Sipariş ID
+amount	Number	İade Tutarı
+hash	String	Hash edilmiş String
+Sorgu Url Adresi : https://www.vallet.com.tr/api/v1/create-refund
+<?php 
+function hash_generate($string)
+{
+$hash = base64_encode(pack('H*', sha1($string)));
+return $hash;
+}
+
+$hashKey = ''; // Mağazanısın Hash Anahtarı
+$post['userName'] = ''; // Api Kullanıcı Adı
+$post['password'] = ''; // Api kullanıcı Key
+$post['shopCode'] = ''; //İşyeri Kodunuz
+$post['valletOrderId'] = ''; //Vallet tarafındaki Sipariş ID
+$post['orderId'] = ''; // Vallete gönderdiğiniz orderId Değeri
+$post['amount'] = 5; //İade edilecek tutar
+$post['hash'] = hash_generate($post['userName'].$post['password'].$post['shopCode'].$post['valletOrderId'].$post['orderId'].$post['amount'].$hashKey);
+$post['hashString'] = $post['userName'].$post['password'].$post['shopCode'].$post['valletOrderId'].$post['orderId'].$post['amount'];
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL,'https://www.vallet.com.tr/api/v1/create-refund');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_POST, 1) ;
+curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post));
+curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
+curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+curl_setopt($ch, CURLOPT_REFERER, $_SERVER['SERVER_NAME']);
+$result = curl_exec($ch);
+$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
+if (curl_errno($ch))
+{
+echo 'Curl Bir Hata Aldı';
+echo 'Curl Hata Kodu : ' . curl_errno($ch);
+}
+else if($httpcode !='200')
+{
+echo 'Http Kodu 200 Dönmedi';
+}
+else
+{
+$responseArray = json_decode($result,1);
+echo $result;
+print_r($responseArray);
+if($responseArray['status'] == 'success')
+{
+/*İade Talebi Oluşturuldu*/
+echo 'Iade talebi oluşturuldu';
+echo 'Oluşturulan Talep ID : ' . $responseArray['extraData']['refundId'];
+}
+else
+{
+/*İade Talebi Oluşturulamadı*/
+echo 'Iade talebi oluşturulamadı';
+echo 'Mesaj : ' . $responseArray['errorMessage'];
+echo 'Ek Data : ' . (isset($responseArray['extraData']) ? json_encode($responseArray['extraData']) : '');
+}
+}
+Copyright © 2008-2024 VALLET ELEKTRONİK TİCARET ANONİM ŞİRKETİ. All rights reserved.
