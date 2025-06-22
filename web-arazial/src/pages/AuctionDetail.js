@@ -2554,7 +2554,7 @@ const PaymentModalFooter = styled.div`
   padding: 1rem 1.5rem;
   border-top: 1px solid var(--color-border);
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 0.75rem;
   background-color: var(--color-background);
   border-radius: 0 0 8px 8px;
@@ -2562,6 +2562,7 @@ const PaymentModalFooter = styled.div`
   @media (max-width: 768px) {
     border-radius: 0;
     padding: 1rem;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
     flex-shrink: 0;
     gap: 0.5rem;
   }
