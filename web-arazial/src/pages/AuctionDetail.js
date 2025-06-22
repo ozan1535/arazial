@@ -620,6 +620,10 @@ const BidForm = styled.form`
 
 const InputGroup = styled.div`
   margin-bottom: 1.5rem;
+  
+  @media (max-width: 768px) {
+    margin-bottom: 1rem;
+  }
 `;
 
 const InputLabel = styled.label`
@@ -628,6 +632,11 @@ const InputLabel = styled.label`
   font-weight: 500;
   margin-bottom: 0.5rem;
   color: var(--color-text);
+  
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
+    margin-bottom: 0.4rem;
+  }
 `;
 
 const Input = styled.input`
@@ -643,6 +652,11 @@ const Input = styled.input`
     outline: none;
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+  }
+  
+  @media (max-width: 768px) {
+    padding: 0.75rem;
+    font-size: 1rem;
   }
 `;
 
@@ -2400,54 +2414,6 @@ const BidCard = ({
                       />
                     </div>
                   </div>
-
-                  {/* SMS Notification Button for non-active auctions */}
-                  {currentStatus !== "active" && (
-                    <button
-                      style={{
-                        width: "100%",
-                        backgroundColor: "var(--color-primary)",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "var(--border-radius-md)",
-                        padding: "0.75rem 1rem",
-                        fontSize: "0.875rem",
-                        fontWeight: "600",
-                        cursor: "pointer",
-                        transition: "all 0.2s ease",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "0.5rem",
-                        marginTop: "1rem",
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.backgroundColor =
-                          "var(--color-primary-dark)";
-                        e.currentTarget.style.transform = "translateY(-1px)";
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.backgroundColor =
-                          "var(--color-primary)";
-                        e.currentTarget.style.transform = "translateY(0)";
-                      }}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M22 2H2l8 9.46V22l4-2v-8.54L22 2z" />
-                      </svg>
-                      SMS Bildirimi Al
-                    </button>
-                  )}
                 </>
               )}
           </>
@@ -2514,6 +2480,11 @@ const PaymentModalOverlay = styled.div`
   opacity: ${(props) => (props.isVisible ? 1 : 0)};
   visibility: ${(props) => (props.isVisible ? "visible" : "hidden")};
   transition: opacity 0.3s ease, visibility 0.3s ease;
+  
+  @media (max-width: 768px) {
+    align-items: flex-start;
+    padding: 0;
+  }
 `;
 
 const PaymentModalContent = styled.div`
@@ -2526,6 +2497,16 @@ const PaymentModalContent = styled.div`
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   padding: 0;
   position: relative;
+  
+  @media (max-width: 768px) {
+    width: 100%;
+    max-width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+  }
 `;
 
 const PaymentModalHeader = styled.div`
@@ -2536,6 +2517,12 @@ const PaymentModalHeader = styled.div`
   align-items: center;
   background-color: var(--color-background);
   border-radius: 8px 8px 0 0;
+  
+  @media (max-width: 768px) {
+    border-radius: 0;
+    padding: 1rem;
+    flex-shrink: 0;
+  }
 `;
 
 const PaymentModalTitle = styled.h3`
@@ -2543,10 +2530,24 @@ const PaymentModalTitle = styled.h3`
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-text);
+  
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+  }
 `;
 
 const PaymentModalBody = styled.div`
   padding: 1.5rem;
+  flex: 1;
+  overflow-y: auto;
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
 `;
 
 const PaymentModalFooter = styled.div`
@@ -2557,6 +2558,13 @@ const PaymentModalFooter = styled.div`
   gap: 0.75rem;
   background-color: var(--color-background);
   border-radius: 0 0 8px 8px;
+  
+  @media (max-width: 768px) {
+    border-radius: 0;
+    padding: 1rem;
+    flex-shrink: 0;
+    gap: 0.5rem;
+  }
 `;
 
 const PaymentWarning = styled.div`
@@ -2566,6 +2574,20 @@ const PaymentWarning = styled.div`
   border-left: 4px solid #f59e0b;
   border-radius: 4px;
   color: #92400e;
+  
+  @media (max-width: 768px) {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+    p {
+      font-size: 0.875rem;
+      line-height: 1.4;
+    }
+  }
 `;
 
 const PaymentInfo = styled.div`
@@ -2581,17 +2603,30 @@ const PaymentAmount = styled.div`
   border-radius: 8px;
   margin-bottom: 1.5rem;
   background-color: rgba(var(--color-primary-rgb), 0.05);
+  
+  @media (max-width: 768px) {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+  }
 `;
 
 const PaymentAmountLabel = styled.span`
   font-weight: 500;
   color: var(--color-text);
+  
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 `;
 
 const PaymentAmountValue = styled.span`
   font-weight: 700;
   font-size: 1.25rem;
   color: var(--color-primary);
+  
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+  }
 `;
 
 const PaymentMessage = styled.p`
@@ -2620,6 +2655,11 @@ const AgreementSection = styled.div`
   border: 1px solid var(--color-border);
   border-radius: 8px;
   background-color: #f9f9f9;
+  
+  @media (max-width: 768px) {
+    margin: 1rem 0;
+    padding: 0.75rem;
+  }
 `;
 
 const AgreementText = styled.div`
@@ -2644,6 +2684,19 @@ const AgreementText = styled.div`
   strong {
     font-weight: 600;
   }
+  
+  @media (max-width: 768px) {
+    max-height: 150px;
+    font-size: 0.7rem;
+    
+    h4 {
+      font-size: 0.75rem;
+    }
+    
+    p {
+      margin: 0.4rem 0;
+    }
+  }
 `;
 
 const AgreementCheckbox = styled.div`
@@ -2663,6 +2716,12 @@ const AgreementCheckbox = styled.div`
     cursor: pointer;
     color: var(--color-text);
     line-height: 1.4;
+  }
+  
+  @media (max-width: 768px) {
+    label {
+      font-size: 0.8rem;
+    }
   }
 `;
 
@@ -4075,7 +4134,12 @@ const AuctionDetail = () => {
                 </PaymentAmount>
 
                 {/* Mock form fields for payment - to be replaced with actual payment processor later */}
-                <div style={{ marginBottom: "1.5rem" }}>
+                <div style={{ 
+                  marginBottom: "1.5rem",
+                  "@media (max-width: 768px)": {
+                    marginBottom: "1rem"
+                  }
+                }}>
                   <InputGroup>
                     <InputLabel>Kart Sahibi</InputLabel>
                     <Input
@@ -4098,8 +4162,20 @@ const AuctionDetail = () => {
                       required
                     />
                   </InputGroup>
-                  <div style={{ display: "flex", gap: "1rem" }}>
-                    <InputGroup style={{ flex: 1 }}>
+                  <div style={{ 
+                    display: "flex", 
+                    gap: "1rem",
+                    "@media (max-width: 768px)": {
+                      flexDirection: "column",
+                      gap: "0.75rem"
+                    }
+                  }}>
+                    <InputGroup style={{ 
+                      flex: 1,
+                      "@media (max-width: 768px)": {
+                        flex: "none"
+                      }
+                    }}>
                       <InputLabel>Son Kullanma Tarihi</InputLabel>
                       <Input
                         type="text"
@@ -4111,7 +4187,12 @@ const AuctionDetail = () => {
                         maxLength={5}
                       />
                     </InputGroup>
-                    <InputGroup style={{ flex: 1 }}>
+                    <InputGroup style={{ 
+                      flex: 1,
+                      "@media (max-width: 768px)": {
+                        flex: "none"
+                      }
+                    }}>
                       <InputLabel>CVV</InputLabel>
                       <Input
                         type="text"
@@ -4143,6 +4224,11 @@ const AuctionDetail = () => {
                     backgroundColor: "transparent",
                     color: "var(--color-text)",
                     border: "1px solid var(--color-border)",
+                    "@media (max-width: 768px)": {
+                      flex: 1,
+                      fontSize: "0.875rem",
+                      padding: "0.75rem 1rem"
+                    }
                   }}
                 >
                   İptal
@@ -4153,6 +4239,11 @@ const AuctionDetail = () => {
                     minWidth: "140px",
                     opacity: agreementAccepted ? 1 : 0.5,
                     cursor: agreementAccepted ? "pointer" : "not-allowed",
+                    "@media (max-width: 768px)": {
+                      flex: 1,
+                      fontSize: "0.875rem",
+                      padding: "0.75rem 1rem"
+                    }
                   }}
                   disabled={!agreementAccepted}
                 >
@@ -4168,6 +4259,11 @@ const AuctionDetail = () => {
                     backgroundColor: "transparent",
                     color: "var(--color-text)",
                     border: "1px solid var(--color-border)",
+                    "@media (max-width: 768px)": {
+                      flex: 1,
+                      fontSize: "0.875rem",
+                      padding: "0.75rem 1rem"
+                    }
                   }}
                   disabled={paymentProcessing}
                 >
@@ -4175,7 +4271,14 @@ const AuctionDetail = () => {
                 </Button>
                 <Button
                   onClick={handleRealPayment}
-                  style={{ minWidth: "120px" }}
+                  style={{ 
+                    minWidth: "120px",
+                    "@media (max-width: 768px)": {
+                      flex: 1,
+                      fontSize: "0.875rem",
+                      padding: "0.75rem 1rem"
+                    }
+                  }}
                   disabled={paymentProcessing}
                 >
                   {paymentProcessing ? (
@@ -4185,6 +4288,9 @@ const AuctionDetail = () => {
                         justifyContent: "center",
                         alignItems: "center",
                         gap: "0.5rem",
+                        "@media (max-width: 768px)": {
+                          fontSize: "0.875rem"
+                        }
                       }}
                     >
                       <LoadingIcon /> Ödeniyor...
