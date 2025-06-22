@@ -1817,7 +1817,7 @@ const BidCard = ({
             {currentStatus === "active" && (
               <form
                 onSubmit={handleSubmitBid}
-                style={{ marginBottom: isMobile ? "0.5rem" : "1rem" }}
+               /*  style={{ marginBottom: isMobile ? "0.5rem" : "1rem" }} */
               >
                 {!user && !authLoading && (
                   <p
@@ -1861,9 +1861,9 @@ const BidCard = ({
                             {currentStatus === "active" && (
                               <form
                                 onSubmit={handleSubmitBid}
-                                style={{
+                               /*  style={{
                                   marginBottom: isMobile ? "0.5rem" : "1rem",
-                                }}
+                                }} */
                               >
                                 {!user && !authLoading && (
                                   <p
@@ -1897,18 +1897,40 @@ const BidCard = ({
                                           gap: "0.5rem",
                                           alignItems: "center",
                                           padding: "0.75rem 1rem 0.5rem 1rem",
+                                          fontSize: "0.75rem",
+                                          position: "relative",
                                         }}
                                       >
                                         <div
                                           style={{
+                                            position: "absolute",
+                                            left: 0,
+                                            top: "10px",
                                             flex: 1,
                                             textAlign: "left",
-                                            fontWeight: "600",
-                                            fontSize: "1.125rem",
                                           }}
                                         >
                                           Güncel Teklif:{" "}
-                                          {formatPrice(getMinimumBidAmount())}
+                                          <span style={{ fontWeight: "bold" }}>
+                                            {formatPrice(getMinimumBidAmount())}
+                                          </span>
+                                        </div>
+                                        <div
+                                          style={{
+                                            position: "absolute",
+                                            right: 0,
+                                            top: "10px",
+                                            textAlign: "left",
+
+                                            whiteSpace: "nowrap",
+                                          }}
+                                        >
+                                          Teminat Tutarı:{" "}
+                                          <span style={{ fontWeight: "bold" }}>
+                                            {formatPrice(
+                                              auction.deposit_amount || 0
+                                            )}
+                                          </span>
                                         </div>
                                       </div>
 
@@ -1924,19 +1946,19 @@ const BidCard = ({
                                           style={{
                                             flex: 1,
                                             textAlign: "left",
-                                            fontWeight: "600",
-                                            fontSize: "1.125rem",
                                           }}
                                         >
                                           Minimum Artış:{" "}
-                                          {formatPrice(
-                                            auction.minIncrement ||
-                                              auction.min_increment
-                                          )}
+                                          <span style={{ fontWeight: "bold" }}>
+                                            {formatPrice(
+                                              auction.minIncrement ||
+                                                auction.min_increment
+                                            )}
+                                          </span>
                                         </div>
                                       </div>
 
-                                      <div
+                                      {/*  <div
                                         style={{
                                           display: "flex",
                                           gap: "0.5rem",
@@ -1946,22 +1968,22 @@ const BidCard = ({
                                           padding: "0.5rem 1rem 0.75rem 1rem",
                                           justifyContent: "space-between",
                                         }}
-                                      >
-                                        <div
+                                      > */}
+                                      {/*  <div
                                           style={{
-                                            fontWeight: "600",
-                                            fontSize: "1rem",
                                             textAlign: "left",
                                             whiteSpace: "nowrap",
                                           }}
                                         >
                                           Teminat Tutarı:{" "}
-                                          {formatPrice(
-                                            auction.deposit_amount || 0
-                                          )}
-                                        </div>
+                                          <span style={{ fontWeight: "bold" }}>
+                                            {formatPrice(
+                                              auction.deposit_amount || 0
+                                            )}
+                                          </span>
+                                        </div> */}
 
-                                        {/* <button
+                                      {/* <button
                                           onClick={(e) => {
                                             e.preventDefault();
                                             handleShare();
@@ -2023,7 +2045,7 @@ const BidCard = ({
                                           </svg>
                                           Paylaş
                                         </button> */}
-                                      </div>
+                                      {/* </div> */}
                                     </div>
                                     {bidError && (
                                       <p
@@ -2089,9 +2111,9 @@ const BidCard = ({
             {currentStatus === "active" && (
               <div
                 style={{
-                  marginTop: "1.5rem",
+                  //marginTop: "1.5rem",
                   textAlign: "center",
-                  padding: "1.5rem",
+                  padding: "0 1.5rem",
                   background:
                     "linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.03) 0%, rgba(var(--color-primary-rgb), 0.08) 100%)",
                   borderRadius: "1rem",
