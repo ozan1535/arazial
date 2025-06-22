@@ -1556,6 +1556,14 @@ const CurrencyInput = ({
   );
 };
 
+const BidCardText = styled.div`
+  font-size: 0.7rem;
+
+  @media (max-width: 768px) {
+    font-size: 0.85rem;
+  }
+`;
+
 const StartTimeBadge = styled.div`
   display: inline-flex;
   align-items: center;
@@ -1850,7 +1858,7 @@ const BidCard = ({
                         backgroundColor: "rgba(var(--color-primary-rgb), 0.05)",
                         borderRadius: "var(--border-radius-md)",
                         border: "1px solid rgba(var(--color-primary-rgb), 0.1)",
-                        marginBottom: "0.75rem",
+                        //marginBottom: "0.75rem",
                         overflow: "hidden",
                       }}
                     >
@@ -1866,7 +1874,7 @@ const BidCard = ({
                           display: "flex",
                           flexDirection: "column",
                           gap: "0.5rem",
-                          padding: "1rem",
+                          padding: "1rem 1rem 0 1rem",
                         }}
                       >
                         {!isOfferListing && (
@@ -1915,29 +1923,27 @@ const BidCard = ({
                                           position: "relative",
                                         }}
                                       >
-                                        <div
+                                        <BidCardText
                                           style={{
                                             position: "absolute",
                                             left: 0,
                                             top: "10px",
                                             flex: 1,
                                             textAlign: "left",
-                                            fontSize: "0.7rem",
                                           }}
                                         >
                                           Güncel Teklif:{" "}
                                           <span style={{ fontWeight: "bold" }}>
                                             {formatPrice(getMinimumBidAmount())}
                                           </span>
-                                        </div>
-                                        <div
+                                        </BidCardText>
+                                        <BidCardText
                                           style={{
                                             position: "absolute",
                                             right: 0,
                                             top: "10px",
                                             textAlign: "left",
                                             whiteSpace: "nowrap",
-                                            fontSize: "0.7rem",
                                           }}
                                         >
                                           Teminat Tutarı:{" "}
@@ -1946,7 +1952,7 @@ const BidCard = ({
                                               auction.deposit_amount || 0
                                             )}
                                           </span>
-                                        </div>
+                                        </BidCardText>
                                       </div>
 
                                       <div
@@ -1957,11 +1963,10 @@ const BidCard = ({
                                           alignItems: "center",
                                         }}
                                       >
-                                        <div
+                                        <BidCardText
                                           style={{
                                             flex: 1,
                                             textAlign: "left",
-                                            fontSize: "0.7rem",
                                           }}
                                         >
                                           Minimum Artış:{" "}
@@ -1971,7 +1976,7 @@ const BidCard = ({
                                                 auction.min_increment
                                             )}
                                           </span>
-                                        </div>
+                                        </BidCardText>
 
                                         {(currentStatus === "active" ||
                                           currentStatus === "upcoming") && (
@@ -2295,10 +2300,10 @@ const BidCard = ({
                           display: "flex",
                           justifyContent: "space-between",
                           alignItems: "center",
-                          fontSize: "0.7rem",
+                          // fontSize: "0.7rem",
                         }}
                       >
-                        <span
+                        <BidCardText
                           style={{
                             color: "var(--color-text-secondary)",
                             //  fontSize: "1rem",
@@ -2315,9 +2320,9 @@ const BidCard = ({
                           >
                             {formatPrice(getMinimumBidAmount())}
                           </strong>
-                        </span>
+                        </BidCardText>
 
-                        <span
+                        <BidCardText
                           style={{
                             color: "var(--color-text-secondary)",
                             // fontSize: "0.875rem",
@@ -2332,7 +2337,7 @@ const BidCard = ({
                           >
                             {formatPrice(auction.deposit_amount || 0)}
                           </strong>
-                        </span>
+                        </BidCardText>
                       </div>
                       {auction.minIncrement > 0 ||
                         (auction.min_increment > 0 &&
@@ -2342,10 +2347,10 @@ const BidCard = ({
                                 display: "flex",
                                 justifyContent: "space-between",
                                 alignItems: "center",
-                                fontSize: "0.7rem",
+                                // fontSize: "0.7rem",
                               }}
                             >
-                              <span
+                              <BidCardText
                                 style={{
                                   color: "var(--color-text-secondary)",
                                   // fontSize: "0.875rem",
@@ -2363,7 +2368,7 @@ const BidCard = ({
                                       auction.min_increment
                                   )}
                                 </strong>
-                              </span>
+                              </BidCardText>
                               {(currentStatus === "active" ||
                                 currentStatus === "upcoming") && (
                                 <button

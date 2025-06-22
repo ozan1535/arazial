@@ -236,7 +236,8 @@ const TabButton = styled.button`
   border: 1px solid
     ${(props) =>
       props.$isActive ? "var(--color-primary)" : "var(--color-border)"};
-  background: ${(props) => (props.$isActive ? "#059669e6" : "transparent")};
+  background: ${(props) =>
+    props.$isActive ? "var(--color-primary)" : "transparent"};
   color: ${(props) => (props.$isActive ? "#fff" : "#666")};
   font-weight: 600;
   cursor: pointer;
@@ -246,8 +247,10 @@ const TabButton = styled.button`
 
   &:hover {
     background: ${(props) =>
-      props.$isActive ? "#059669e6" : "rgba(5, 150, 105, 0.1)"};
-    color: ${(props) => (props.$isActive ? "#fff" : "#059669e6")};
+      props.$isActive
+        ? "var(--color-primary-dark)"
+        : "rgba(59, 130, 246, 0.1)"};
+    color: ${(props) => (props.$isActive ? "#fff" : "var(--color-primary)")};
   }
 `;
 
@@ -1250,10 +1253,10 @@ const Home = () => {
   const resetFilters = () => {
     // Müsterinin istegi üzerine aktif açik artirmalara yönlendiriliyor.
     // Eski kodlar yoruma eklendi.
-    // setSelectedCity("");
-    // filterAuctions();
-    // setCurrentPage(1);
-    navigate("/auctions");
+    setSelectedCity("");
+    filterAuctions();
+    setCurrentPage(1);
+    handleListingTypeChange("new");
   };
 
   // Get paginated results
@@ -1895,23 +1898,25 @@ const Home = () => {
                               Parsel: <strong>{listing.parsel_no}</strong>
                             </MetaItem>
                           )}
-
-                          {listing.area_size && listing.area_unit && (
-                            <MetaItem>
-                              <GridIcon />
-                              {listing.area_size}
-                              {listing.area_unit}
-                            </MetaItem>
-                          )}
-
-                          {listing.emlak_tipi && (
-                            <MetaItem>
-                              <GridIcon />
-                              {listing.emlak_tipi}
-                            </MetaItem>
-                          )}
+                          <br />
                         </AuctionMeta>
                       )}
+                      <AuctionMeta>
+                        {listing.area_size && listing.area_unit && (
+                          <MetaItem>
+                            <GridIcon />
+                            {listing.area_size}
+                            {listing.area_unit}
+                          </MetaItem>
+                        )}
+
+                        {listing.emlak_tipi && (
+                          <MetaItem>
+                            <GridIcon />
+                            {listing.emlak_tipi}
+                          </MetaItem>
+                        )}
+                      </AuctionMeta>
 
                       {/* <AuctionDetails>
                         <div
@@ -2038,7 +2043,7 @@ const Home = () => {
                           </AuctionStatus>
                         )}
 
-                        { (
+                        {
                           <button
                             onClick={(e) => handleShare(e, listing)}
                             style={{
@@ -2086,7 +2091,7 @@ const Home = () => {
                             </svg>
                             Paylaş
                           </button>
-                        )}
+                        }
                       </AuctionDetails>
                     </AuctionContent>
                   </AuctionCard>
