@@ -2726,6 +2726,55 @@ const AgreementCheckbox = styled.div`
   }
 `;
 
+const ExtensionNotification = styled.div`
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  animation: slideDown 0.3s ease-out;
+  
+  @keyframes slideDown {
+    from {
+      transform: translateX(-50%) translateY(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    transform: none;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    
+    @keyframes slideDown {
+      from {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  }
+`;
+
 const AuctionDetail = () => {
   // Version check to help with debugging cache issues
   const CODE_VERSION = "2024-12-20-v2";
@@ -2789,6 +2838,10 @@ const AuctionDetail = () => {
 
   // --- Add state for agreement checkbox ---
   const [agreementAccepted, setAgreementAccepted] = useState(false);
+
+  // --- Add state for auction time extension notification ---
+  const [showExtensionNotification, setShowExtensionNotification] = useState(false);
+  const [extensionMessage, setExtensionMessage] = useState("");
 
   // Enhanced card number formatting and validation
   const handleCardNumberChange = (e) => {
@@ -3132,6 +3185,31 @@ const AuctionDetail = () => {
           );
         }
         return;
+      }
+
+      // Try to extend auction time if needed
+      try {
+        const { data: extensionResult, error: extensionError } = await supabase
+          .rpc('extend_auction_time', { auction_id: auction.id });
+        
+        if (extensionError) {
+          console.error("Error extending auction time:", extensionError);
+        } else if (extensionResult) {
+          console.log("Auction time extended successfully");
+          // Show extension notification
+          setExtensionMessage("İhale süresi uzatıldı! Yeni teklifler için daha fazla zaman var.");
+          setShowExtensionNotification(true);
+          // Hide notification after 5 seconds
+          setTimeout(() => {
+            setShowExtensionNotification(false);
+            setExtensionMessage("");
+          }, 5000);
+          // Refresh auction data to get updated end time
+          await fetchData();
+        }
+      } catch (extensionError) {
+        console.error("Exception extending auction time:", extensionError);
+        // Don't fail the bid submission if extension fails
       }
 
       await refreshBids();
@@ -5082,6 +5160,24 @@ const AuctionDetail = () => {
 
       {/* Add Payment Modal */}
       {renderPaymentModal()}
+      {showExtensionNotification && (
+        <ExtensionNotification>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M12 6v12m-3-2.818.879.536c.445.272.99.272 1.435 0l.879-.536M7.5 14.25a3 3 0 0 0-3 3h15a3 3 0 0 0-3-3m-10.5-1.5a3 3 0 0 1 3-3h7.5a3 3 0 0 1 3 3" />
+          </svg>
+          {extensionMessage}
+        </ExtensionNotification>
+      )}
     </PageContainer>
   );
 };
