@@ -13,12 +13,15 @@ const fadeIn = keyframes`
   to { opacity: 1; transform: translateY(0); }
 `;
 
+/* 
+ padding: ${props => props.compact ? '0.5rem 0.75rem' : '1rem 1.5rem'};
+ overflow: hidden;
+*/
 const TimerContainer = styled.div`
   display: inline-flex;
   align-items: center;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-weight: 600;
-  padding: ${props => props.compact ? '0.5rem 0.75rem' : '1rem 1.5rem'};
   background: ${props => {
     if (props.isExpiring) {
       return 'linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(239, 68, 68, 0.15) 100%)';
@@ -45,7 +48,7 @@ const TimerContainer = styled.div`
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   animation: ${fadeIn} 0.5s ease-out;
   position: relative;
-  overflow: hidden;
+  
   
   ${props => props.isExpiring && `
     animation: ${pulse} 2s infinite;
@@ -91,10 +94,11 @@ const TimerIcon = styled.span`
   font-size: 12px;
 `;
 
+/* gap: 0.5rem; */
 const TimeDisplay = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  
   font-variant-numeric: tabular-nums;
 `;
 
@@ -105,8 +109,11 @@ const TimeUnit = styled.div`
   min-width: ${props => props.compact ? '2rem' : '2.5rem'};
 `;
 
+/* 
+font-size: ${props => props.compact ? '1.125rem' : '1.5rem'};
+*/
 const TimeValue = styled.span`
-  font-size: ${props => props.compact ? '1.125rem' : '1.5rem'};
+  font-size: ${props => props.compact ? '0.5rem' : '0.75rem'};
   font-weight: 700;
   line-height: 1;
   color: ${props => props.isExpiring ? 'rgb(220, 38, 38)' : 'var(--color-text)'};
@@ -291,9 +298,9 @@ const CountdownTimer = ({
       isExpiring={isExpiring}
       alwaysVisible={alwaysVisible}
     >
-      <TimerIcon compact={compact} isExpiring={isExpiring}>
+     {/*  <TimerIcon compact={compact} isExpiring={isExpiring}>
         {isExpiring ? '⏰' : '⏱️'}
-      </TimerIcon>
+      </TimerIcon> */}
       {renderTimeDisplay()}
     </TimerContainer>
   );

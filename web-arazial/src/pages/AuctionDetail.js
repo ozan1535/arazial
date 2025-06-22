@@ -620,7 +620,7 @@ const BidForm = styled.form`
 
 const InputGroup = styled.div`
   margin-bottom: 1.5rem;
-  
+
   @media (max-width: 768px) {
     margin-bottom: 1rem;
   }
@@ -632,7 +632,7 @@ const InputLabel = styled.label`
   font-weight: 500;
   margin-bottom: 0.5rem;
   color: var(--color-text);
-  
+
   @media (max-width: 768px) {
     font-size: 0.8rem;
     margin-bottom: 0.4rem;
@@ -653,7 +653,7 @@ const Input = styled.input`
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
   }
-  
+
   @media (max-width: 768px) {
     padding: 0.75rem;
     font-size: 1rem;
@@ -1831,7 +1831,7 @@ const BidCard = ({
             {currentStatus === "active" && (
               <form
                 onSubmit={handleSubmitBid}
-               /*  style={{ marginBottom: isMobile ? "0.5rem" : "1rem" }} */
+                /*  style={{ marginBottom: isMobile ? "0.5rem" : "1rem" }} */
               >
                 {!user && !authLoading && (
                   <p
@@ -1875,7 +1875,7 @@ const BidCard = ({
                             {currentStatus === "active" && (
                               <form
                                 onSubmit={handleSubmitBid}
-                               /*  style={{
+                                /*  style={{
                                   marginBottom: isMobile ? "0.5rem" : "1rem",
                                 }} */
                               >
@@ -1922,6 +1922,7 @@ const BidCard = ({
                                             top: "10px",
                                             flex: 1,
                                             textAlign: "left",
+                                            fontSize: "0.7rem",
                                           }}
                                         >
                                           Güncel Teklif:{" "}
@@ -1935,8 +1936,8 @@ const BidCard = ({
                                             right: 0,
                                             top: "10px",
                                             textAlign: "left",
-
                                             whiteSpace: "nowrap",
+                                            fontSize: "0.7rem",
                                           }}
                                         >
                                           Teminat Tutarı:{" "}
@@ -1951,15 +1952,16 @@ const BidCard = ({
                                       <div
                                         style={{
                                           display: "flex",
-                                          gap: "0.5rem",
+                                          justifyContent: "space-between",
+
                                           alignItems: "center",
-                                          padding: "0.75rem 1rem 0.5rem 1rem",
                                         }}
                                       >
                                         <div
                                           style={{
                                             flex: 1,
                                             textAlign: "left",
+                                            fontSize: "0.7rem",
                                           }}
                                         >
                                           Minimum Artış:{" "}
@@ -1970,6 +1972,73 @@ const BidCard = ({
                                             )}
                                           </span>
                                         </div>
+
+                                        {(currentStatus === "active" ||
+                                          currentStatus === "upcoming") && (
+                                          <button
+                                            onClick={(e) => {
+                                              e.preventDefault();
+                                              handleShare();
+                                            }}
+                                            style={{
+                                              display: "flex",
+                                              alignItems: "center",
+                                              gap: "0.5rem",
+                                              backgroundColor:
+                                                "var(--color-primary)",
+                                              color: "white",
+                                              border: "none",
+                                              borderRadius: "4px",
+                                              padding: "0.5rem 0.75rem",
+                                              fontSize: "0.875rem",
+                                              fontWeight: "500",
+                                              cursor: "pointer",
+                                              transition: "all 0.2s ease",
+                                              margin: "1rem 0",
+                                            }}
+                                          >
+                                            <svg
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              width="16"
+                                              height="16"
+                                              viewBox="0 0 24 24"
+                                              fill="none"
+                                              stroke="currentColor"
+                                              strokeWidth="2"
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                            >
+                                              <circle
+                                                cx="18"
+                                                cy="5"
+                                                r="3"
+                                              ></circle>
+                                              <circle
+                                                cx="6"
+                                                cy="12"
+                                                r="3"
+                                              ></circle>
+                                              <circle
+                                                cx="18"
+                                                cy="19"
+                                                r="3"
+                                              ></circle>
+                                              <line
+                                                x1="8.59"
+                                                y1="13.51"
+                                                x2="15.42"
+                                                y2="17.49"
+                                              ></line>
+                                              <line
+                                                x1="15.41"
+                                                y1="6.51"
+                                                x2="8.59"
+                                                y2="10.49"
+                                              ></line>
+                                            </svg>
+                                            Paylaş
+                                          </button>
+                                        )}
                                       </div>
 
                                       {/*  <div
@@ -2127,7 +2196,7 @@ const BidCard = ({
                 style={{
                   //marginTop: "1.5rem",
                   textAlign: "center",
-                  padding: "0 1.5rem",
+                  //padding: "0 1.5rem",
                   background:
                     "linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.03) 0%, rgba(var(--color-primary-rgb), 0.08) 100%)",
                   borderRadius: "1rem",
@@ -2145,19 +2214,21 @@ const BidCard = ({
                 >
                   <div
                     style={{
-                      fontSize: "1rem",
+                      display: "flex",
+                      alignItems: "center",
+                      fontSize: "0.25rem",
                       fontWeight: "600",
                       color: "var(--color-text)",
                       margin: 0,
                     }}
                   >
-                    ⏰ İhale bitimine kalan süre:
+                    <span style={{ fontSize: "0.75rem" }}>⏰ Kalan süre:</span>
+                    <CountdownTimer
+                      endTime={auction.end_time}
+                      compact={false}
+                      onComplete={handleTimerComplete}
+                    />
                   </div>
-                  <CountdownTimer
-                    endTime={auction.end_time}
-                    compact={false}
-                    onComplete={handleTimerComplete}
-                  />
                 </div>
                 <div
                   style={{
@@ -2165,6 +2236,7 @@ const BidCard = ({
                     flexDirection: "column",
                     alignItems: "center",
                     gap: "1rem",
+                    marginTop: "1rem",
                   }}
                   className="mobile-layout"
                 >
@@ -2211,10 +2283,11 @@ const BidCard = ({
                   >
                     <div
                       style={{
+                        position: "relative",
                         display: "flex",
                         flexDirection: "column",
                         gap: "0.5rem",
-                        padding: "1rem",
+                        //padding: "1rem",
                       }}
                     >
                       <div
@@ -2222,26 +2295,44 @@ const BidCard = ({
                           display: "flex",
                           justifyContent: "space-between",
                           alignItems: "center",
+                          fontSize: "0.7rem",
                         }}
                       >
                         <span
                           style={{
                             color: "var(--color-text-secondary)",
-                            fontSize: "0.875rem",
+                            //  fontSize: "1rem",
                           }}
                         >
                           {currentStatus === "active"
-                            ? "Güncel Teklif:"
-                            : "Başlangıç Fiyatı:"}
+                            ? "Güncel Teklif: "
+                            : "Başlangıç Fiyatı: "}
+                          <strong
+                            style={{
+                              //  fontSize: "1",
+                              color: "var(--color-text)",
+                            }}
+                          >
+                            {formatPrice(getMinimumBidAmount())}
+                          </strong>
                         </span>
-                        <strong
+
+                        <span
                           style={{
-                            fontSize: "1.125rem",
-                            color: "var(--color-text)",
+                            color: "var(--color-text-secondary)",
+                            // fontSize: "0.875rem",
                           }}
                         >
-                          {formatPrice(getMinimumBidAmount())}
-                        </strong>
+                          Teminat Tutarı:{" "}
+                          <strong
+                            style={{
+                              //  fontSize: "1.125rem",
+                              color: "var(--color-text)",
+                            }}
+                          >
+                            {formatPrice(auction.deposit_amount || 0)}
+                          </strong>
+                        </span>
                       </div>
                       {auction.minIncrement > 0 ||
                         (auction.min_increment > 0 &&
@@ -2251,29 +2342,84 @@ const BidCard = ({
                                 display: "flex",
                                 justifyContent: "space-between",
                                 alignItems: "center",
+                                fontSize: "0.7rem",
                               }}
                             >
                               <span
                                 style={{
                                   color: "var(--color-text-secondary)",
-                                  fontSize: "0.875rem",
+                                  // fontSize: "0.875rem",
                                 }}
                               >
-                                Minimum Artış:
+                                Minimum Artış:{" "}
+                                <strong
+                                  style={{
+                                    //   fontSize: "1.125rem",
+                                    color: "var(--color-text)",
+                                  }}
+                                >
+                                  {formatPrice(
+                                    auction.minIncrement ||
+                                      auction.min_increment
+                                  )}
+                                </strong>
                               </span>
-                              <strong
-                                style={{
-                                  fontSize: "1.125rem",
-                                  color: "var(--color-text)",
-                                }}
-                              >
-                                {formatPrice(
-                                  auction.minIncrement || auction.min_increment
-                                )}
-                              </strong>
+                              {(currentStatus === "active" ||
+                                currentStatus === "upcoming") && (
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleShare();
+                                  }}
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "0.5rem",
+                                    backgroundColor: "var(--color-primary)",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: "4px",
+                                    padding: "0.5rem 0.75rem",
+                                    fontSize: "0.875rem",
+                                    fontWeight: "500",
+                                    cursor: "pointer",
+                                    transition: "all 0.2s ease",
+                                    margin: "1rem 0",
+                                  }}
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  >
+                                    <circle cx="18" cy="5" r="3"></circle>
+                                    <circle cx="6" cy="12" r="3"></circle>
+                                    <circle cx="18" cy="19" r="3"></circle>
+                                    <line
+                                      x1="8.59"
+                                      y1="13.51"
+                                      x2="15.42"
+                                      y2="17.49"
+                                    ></line>
+                                    <line
+                                      x1="15.41"
+                                      y1="6.51"
+                                      x2="8.59"
+                                      y2="10.49"
+                                    ></line>
+                                  </svg>
+                                  Paylaş
+                                </button>
+                              )}
                             </div>
                           ))}
-                      <div
+                      {/* <div
                         style={{
                           display: "flex",
                           justifyContent: "space-between",
@@ -2296,7 +2442,147 @@ const BidCard = ({
                         >
                           {formatPrice(auction.deposit_amount || 0)}
                         </strong>
+                      </div> */}
+                    </div>
+                  </div>
+                  {/* <div className="mobile-layout">
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "0.75rem",
+                        flexWrap: "wrap",
+                        alignItems: "center",
+                        marginBottom: "0.5rem",
+                      }}
+                    >
+                      <AuctionStatus status={currentStatus}>
+                        {getStatusIcon(currentStatus)}
+                        {getStatusText(currentStatus)}
+                      </AuctionStatus>
+
+                      {auction.listing_type === "auction" &&
+                        (currentStatus === "active"
+                          ? auction.end_time && (
+                              <StartTimeBadge>
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth={1.5}
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
+                                  />
+                                </svg>
+                                <span className="date-label">
+                                  Bitiş Tarihi:
+                                </span>{" "}
+                                <ModernDateDisplay
+                                  date={auction.end_time}
+                                  compact={true}
+                                  showIcon={false}
+                                />
+                              </StartTimeBadge>
+                            )
+                          : auction.start_time && (
+                              <StartTimeBadge>
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth={1.5}
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
+                                  />
+                                </svg>
+                                <span className="date-label">
+                                  Başlangıç Tarihi:
+                                </span>{" "}
+                                <ModernDateDisplay
+                                  date={auction.start_time}
+                                  compact={true}
+                                  showIcon={false}
+                                />
+                              </StartTimeBadge>
+                            ))}
+                    </div>
+                  </div> */}
+
+                  {/* Countdown Timer */}
+                  <div
+                    style={{
+                      marginTop: "0",
+                      textAlign: "center",
+                      // padding: "1.5rem",
+                      background:
+                        "linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.03) 0%, rgba(var(--color-primary-rgb), 0.08) 100%)",
+                      borderRadius: "1rem",
+                      border: "1px solid rgba(var(--color-primary-rgb), 0.1)",
+                      boxShadow:
+                        "0 4px 12px rgba(var(--color-primary-rgb), 0.08)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: "1rem",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          fontSize: "0.25rem",
+                          fontWeight: "600",
+                          color: "var(--color-text)",
+                          margin: 0,
+                        }}
+                      >
+                        <span style={{ fontSize: "0.75rem" }}>
+                          {currentStatus === "active"
+                            ? "⏰ Kalan süre:"
+                            : "📅 Kalan süre:"}
+                        </span>
+                        <CountdownTimer
+                          endTime={
+                            currentStatus === "active"
+                              ? auction.end_time
+                              : auction.start_time
+                          }
+                          compact={false}
+                          onComplete={handleTimerComplete}
+                        />
                       </div>
+                      {/* <div
+                        style={{
+                          fontSize: "1rem",
+                          fontWeight: "600",
+                          color: "var(--color-text)",
+                          margin: 0,
+                        }}
+                      >
+                        {currentStatus === "active"
+                          ? "⏰ Kalan süre:"
+                          : "📅 Kalan süre:"}
+                      </div>
+                      <CountdownTimer
+                        endTime={
+                          currentStatus === "active"
+                            ? auction.end_time
+                            : auction.start_time
+                        }
+                        compact={false}
+                        onComplete={handleTimerComplete}
+                      /> */}
                     </div>
                   </div>
                   <div className="mobile-layout">
@@ -2368,57 +2654,11 @@ const BidCard = ({
                             ))}
                     </div>
                   </div>
-
-                  {/* Countdown Timer */}
-                  <div
-                    style={{
-                      marginTop: "0",
-                      textAlign: "center",
-                      padding: "1.5rem",
-                      background:
-                        "linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.03) 0%, rgba(var(--color-primary-rgb), 0.08) 100%)",
-                      borderRadius: "1rem",
-                      border: "1px solid rgba(var(--color-primary-rgb), 0.1)",
-                      boxShadow:
-                        "0 4px 12px rgba(var(--color-primary-rgb), 0.08)",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: "1rem",
-                      }}
-                    >
-                      <div
-                        style={{
-                          fontSize: "1rem",
-                          fontWeight: "600",
-                          color: "var(--color-text)",
-                          margin: 0,
-                        }}
-                      >
-                        {currentStatus === "active"
-                          ? "⏰ İhale bitimine kalan süre:"
-                          : "📅 İhale başlamasına kalan süre:"}
-                      </div>
-                      <CountdownTimer
-                        endTime={
-                          currentStatus === "active"
-                            ? auction.end_time
-                            : auction.start_time
-                        }
-                        compact={false}
-                        onComplete={handleTimerComplete}
-                      />
-                    </div>
-                  </div>
                 </>
               )}
           </>
         )}
-        {(currentStatus === "active" || currentStatus === "upcoming") && (
+        {/* {(currentStatus === "active" || currentStatus === "upcoming") && (
           <button
             onClick={(e) => {
               e.preventDefault();
@@ -2459,7 +2699,7 @@ const BidCard = ({
             </svg>
             Paylaş
           </button>
-        )}
+        )} */}
       </div>
     </div>
   );
@@ -2480,7 +2720,7 @@ const PaymentModalOverlay = styled.div`
   opacity: ${(props) => (props.isVisible ? 1 : 0)};
   visibility: ${(props) => (props.isVisible ? "visible" : "hidden")};
   transition: opacity 0.3s ease, visibility 0.3s ease;
-  
+
   @media (max-width: 768px) {
     align-items: flex-start;
     padding: 0;
@@ -2497,7 +2737,7 @@ const PaymentModalContent = styled.div`
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   padding: 0;
   position: relative;
-  
+
   @media (max-width: 768px) {
     width: 100%;
     max-width: 100%;
@@ -2517,7 +2757,7 @@ const PaymentModalHeader = styled.div`
   align-items: center;
   background-color: var(--color-background);
   border-radius: 8px 8px 0 0;
-  
+
   @media (max-width: 768px) {
     border-radius: 0;
     padding: 1rem;
@@ -2530,7 +2770,7 @@ const PaymentModalTitle = styled.h3`
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-text);
-  
+
   @media (max-width: 768px) {
     font-size: 1.1rem;
   }
@@ -2540,7 +2780,7 @@ const PaymentModalBody = styled.div`
   padding: 1.5rem;
   flex: 1;
   overflow-y: auto;
-  
+
   @media (max-width: 768px) {
     padding: 1rem;
     flex: 1;
@@ -2558,7 +2798,7 @@ const PaymentModalFooter = styled.div`
   gap: 0.75rem;
   background-color: var(--color-background);
   border-radius: 0 0 8px 8px;
-  
+
   @media (max-width: 768px) {
     border-radius: 0;
     padding: 1rem;
@@ -2575,7 +2815,7 @@ const PaymentWarning = styled.div`
   border-left: 4px solid #f59e0b;
   border-radius: 4px;
   color: #92400e;
-  
+
   @media (max-width: 768px) {
     margin-bottom: 1rem;
     padding: 0.75rem;
@@ -2583,7 +2823,7 @@ const PaymentWarning = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: center;
-    
+
     p {
       font-size: 0.875rem;
       line-height: 1.4;
@@ -2604,7 +2844,7 @@ const PaymentAmount = styled.div`
   border-radius: 8px;
   margin-bottom: 1.5rem;
   background-color: rgba(var(--color-primary-rgb), 0.05);
-  
+
   @media (max-width: 768px) {
     margin-bottom: 1rem;
     padding: 0.75rem;
@@ -2614,7 +2854,7 @@ const PaymentAmount = styled.div`
 const PaymentAmountLabel = styled.span`
   font-weight: 500;
   color: var(--color-text);
-  
+
   @media (max-width: 768px) {
     font-size: 0.875rem;
   }
@@ -2624,7 +2864,7 @@ const PaymentAmountValue = styled.span`
   font-weight: 700;
   font-size: 1.25rem;
   color: var(--color-primary);
-  
+
   @media (max-width: 768px) {
     font-size: 1.1rem;
   }
@@ -2656,7 +2896,7 @@ const AgreementSection = styled.div`
   border: 1px solid var(--color-border);
   border-radius: 8px;
   background-color: #f9f9f9;
-  
+
   @media (max-width: 768px) {
     margin: 1rem 0;
     padding: 0.75rem;
@@ -2685,15 +2925,15 @@ const AgreementText = styled.div`
   strong {
     font-weight: 600;
   }
-  
+
   @media (max-width: 768px) {
     max-height: 150px;
     font-size: 0.7rem;
-    
+
     h4 {
       font-size: 0.75rem;
     }
-    
+
     p {
       margin: 0.4rem 0;
     }
@@ -2718,7 +2958,7 @@ const AgreementCheckbox = styled.div`
     color: var(--color-text);
     line-height: 1.4;
   }
-  
+
   @media (max-width: 768px) {
     label {
       font-size: 0.8rem;
@@ -2742,7 +2982,7 @@ const ExtensionNotification = styled.div`
   gap: 0.5rem;
   font-weight: 600;
   animation: slideDown 0.3s ease-out;
-  
+
   @keyframes slideDown {
     from {
       transform: translateX(-50%) translateY(-100%);
@@ -2753,7 +2993,7 @@ const ExtensionNotification = styled.div`
       opacity: 1;
     }
   }
-  
+
   @media (max-width: 768px) {
     top: 10px;
     left: 10px;
@@ -2761,7 +3001,7 @@ const ExtensionNotification = styled.div`
     transform: none;
     padding: 0.75rem 1rem;
     font-size: 0.875rem;
-    
+
     @keyframes slideDown {
       from {
         transform: translateY(-100%);
@@ -2840,7 +3080,8 @@ const AuctionDetail = () => {
   const [agreementAccepted, setAgreementAccepted] = useState(false);
 
   // --- Add state for auction time extension notification ---
-  const [showExtensionNotification, setShowExtensionNotification] = useState(false);
+  const [showExtensionNotification, setShowExtensionNotification] =
+    useState(false);
   const [extensionMessage, setExtensionMessage] = useState("");
 
   // Enhanced card number formatting and validation
@@ -3189,15 +3430,17 @@ const AuctionDetail = () => {
 
       // Try to extend auction time if needed
       try {
-        const { data: extensionResult, error: extensionError } = await supabase
-          .rpc('extend_auction_time', { auction_id: auction.id });
-        
+        const { data: extensionResult, error: extensionError } =
+          await supabase.rpc("extend_auction_time", { auction_id: auction.id });
+
         if (extensionError) {
           console.error("Error extending auction time:", extensionError);
         } else if (extensionResult) {
           console.log("Auction time extended successfully");
           // Show extension notification
-          setExtensionMessage("İhale süresi uzatıldı! Yeni teklifler için daha fazla zaman var.");
+          setExtensionMessage(
+            "İhale süresi uzatıldı! Yeni teklifler için daha fazla zaman var."
+          );
           setShowExtensionNotification(true);
           // Hide notification after 5 seconds
           setTimeout(() => {
@@ -4213,12 +4456,14 @@ const AuctionDetail = () => {
                 </PaymentAmount>
 
                 {/* Mock form fields for payment - to be replaced with actual payment processor later */}
-                <div style={{ 
-                  marginBottom: "1.5rem",
-                  "@media (max-width: 768px)": {
-                    marginBottom: "1rem"
-                  }
-                }}>
+                <div
+                  style={{
+                    marginBottom: "1.5rem",
+                    "@media (max-width: 768px)": {
+                      marginBottom: "1rem",
+                    },
+                  }}
+                >
                   <InputGroup>
                     <InputLabel>Kart Sahibi</InputLabel>
                     <Input
@@ -4241,20 +4486,24 @@ const AuctionDetail = () => {
                       required
                     />
                   </InputGroup>
-                  <div style={{ 
-                    display: "flex", 
-                    gap: "1rem",
-                    "@media (max-width: 768px)": {
-                      flexDirection: "column",
-                      gap: "0.75rem"
-                    }
-                  }}>
-                    <InputGroup style={{ 
-                      flex: 1,
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "1rem",
                       "@media (max-width: 768px)": {
-                        flex: "none"
-                      }
-                    }}>
+                        flexDirection: "column",
+                        gap: "0.75rem",
+                      },
+                    }}
+                  >
+                    <InputGroup
+                      style={{
+                        flex: 1,
+                        "@media (max-width: 768px)": {
+                          flex: "none",
+                        },
+                      }}
+                    >
                       <InputLabel>Son Kullanma Tarihi</InputLabel>
                       <Input
                         type="text"
@@ -4266,12 +4515,14 @@ const AuctionDetail = () => {
                         maxLength={5}
                       />
                     </InputGroup>
-                    <InputGroup style={{ 
-                      flex: 1,
-                      "@media (max-width: 768px)": {
-                        flex: "none"
-                      }
-                    }}>
+                    <InputGroup
+                      style={{
+                        flex: 1,
+                        "@media (max-width: 768px)": {
+                          flex: "none",
+                        },
+                      }}
+                    >
                       <InputLabel>CVV</InputLabel>
                       <Input
                         type="text"
@@ -4306,8 +4557,8 @@ const AuctionDetail = () => {
                     "@media (max-width: 768px)": {
                       flex: 1,
                       fontSize: "0.875rem",
-                      padding: "0.75rem 1rem"
-                    }
+                      padding: "0.75rem 1rem",
+                    },
                   }}
                 >
                   İptal
@@ -4321,8 +4572,8 @@ const AuctionDetail = () => {
                     "@media (max-width: 768px)": {
                       flex: 1,
                       fontSize: "0.875rem",
-                      padding: "0.75rem 1rem"
-                    }
+                      padding: "0.75rem 1rem",
+                    },
                   }}
                   disabled={!agreementAccepted}
                 >
@@ -4341,8 +4592,8 @@ const AuctionDetail = () => {
                     "@media (max-width: 768px)": {
                       flex: 1,
                       fontSize: "0.875rem",
-                      padding: "0.75rem 1rem"
-                    }
+                      padding: "0.75rem 1rem",
+                    },
                   }}
                   disabled={paymentProcessing}
                 >
@@ -4350,13 +4601,13 @@ const AuctionDetail = () => {
                 </Button>
                 <Button
                   onClick={handleRealPayment}
-                  style={{ 
+                  style={{
                     minWidth: "120px",
                     "@media (max-width: 768px)": {
                       flex: 1,
                       fontSize: "0.875rem",
-                      padding: "0.75rem 1rem"
-                    }
+                      padding: "0.75rem 1rem",
+                    },
                   }}
                   disabled={paymentProcessing}
                 >
@@ -4368,8 +4619,8 @@ const AuctionDetail = () => {
                         alignItems: "center",
                         gap: "0.5rem",
                         "@media (max-width: 768px)": {
-                          fontSize: "0.875rem"
-                        }
+                          fontSize: "0.875rem",
+                        },
                       }}
                     >
                       <LoadingIcon /> Ödeniyor...
