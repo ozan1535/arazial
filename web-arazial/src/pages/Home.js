@@ -789,7 +789,6 @@ const Home = () => {
   const [shareMessage, setShareMessage] = useState("");
   const navigate = useNavigate();
   const { user } = useAuth();
-  console.log(auctions, "AUCTIONS");
   // Turkish cities data for the dropdown
   const cities = [
     "Adana",
@@ -1829,7 +1828,6 @@ const Home = () => {
               getPaginatedAuctions()
                 .sort((a, b) => new Date(a.startTime) - new Date(b.startTime))
                 .map((listing) => {
-                  console.log(listing, "FALAAAANNNN");
                   return (
                     <AuctionCard
                       key={listing.id}

@@ -49,7 +49,7 @@ const BackButton = styled.button`
 
   @media (max-width: 768px) {
     margin-left: 1rem;
-    display:none;
+    display: none;
   }
 
   &:hover {
@@ -4674,8 +4674,6 @@ const AuctionDetail = () => {
 
   const currentStatus = getAuctionStatus();
   const isOfferListing = auction.listing_type === "offer";
-
-  console.log(currentStatus, "CUURENTSTATUS");
 
   // Determine offer state for rendering
   const userActiveOffer = isOfferListing
