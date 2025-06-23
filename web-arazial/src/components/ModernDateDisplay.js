@@ -90,11 +90,10 @@ const ModernDateDisplay = ({
 }) => {
   if (!date) return null;
   const formatDate = (dateString) => {
-    console.log(dateString, "daatestring");
     if (!dateString) return "-";
     try {
       const date = new Date(dateString);
-      console.log(date, "dateeeee");
+
       // Removes first 0(zero) on the date in mobile
       // return date.toLocaleString("tr-TR", {
       //   day: "numeric",

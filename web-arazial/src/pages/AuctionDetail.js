@@ -4750,8 +4750,6 @@ const AuctionDetail = () => {
     }
   `; */
 
-  console.log(auction, "AUCTION");
-
   return (
     <PageContainer>
       {/* --- Add Helmet for Meta Tags --- */}
