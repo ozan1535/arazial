@@ -90,9 +90,11 @@ const ModernDateDisplay = ({
 }) => {
   if (!date) return null;
   const formatDate = (dateString) => {
+    console.log(dateString, "daatestring");
     if (!dateString) return "-";
     try {
       const date = new Date(dateString);
+      console.log(date, "dateeeee");
       // Removes first 0(zero) on the date in mobile
       // return date.toLocaleString("tr-TR", {
       //   day: "numeric",
@@ -102,12 +104,11 @@ const ModernDateDisplay = ({
       //   minute: "2-digit",
       // });
 
-      const day = String(date.getDate()).padStart(2, "0"); // Ensures day has 2 digits
-      const month = String(date.getMonth() + 1).padStart(2, "0"); // Ensures month has 2 digits (months are 0-indexed)
-      const year = date.getFullYear();
-      const hour = String(date.getHours()).padStart(2, "0"); // Ensures hour has 2 digits
-      const minute = String(date.getMinutes()).padStart(2, "0"); // Ensures minute has 2 digits
-
+      const day = String(date.getUTCDate()).padStart(2, "0");
+      const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+      const year = date.getUTCFullYear();
+      const hour = String(date.getUTCHours()).padStart(2, "0");
+      const minute = String(date.getUTCMinutes()).padStart(2, "0");
       // Return the formatted date
       return `${day}.${month}.${year} ${hour}:${minute}`;
     } catch (e) {

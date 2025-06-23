@@ -2168,6 +2168,8 @@ function AdminDashboard() {
         : auctionForm.locationDetails;
 
       // Update auction data - Adjust fields
+      // start_date: formatDateForDatabase(auctionForm.startDate),
+      // end_date: formatDateForDatabase(auctionForm.endDate),
       const auctionData = {
         title: auctionForm.title,
         description: auctionForm.description,
@@ -2177,8 +2179,14 @@ function AdminDashboard() {
         offer_increment:
           auctionForm.listingType === "offer" ? offerIncrement : null,
         listing_type: auctionForm.listingType,
-        start_date: formatDateForDatabase(auctionForm.startDate),
-        end_date: formatDateForDatabase(auctionForm.endDate),
+        start_date: formatDateForDatabase(
+          auctionForm.startDate,
+          auctionForm.startTime
+        ),
+        end_date: formatDateForDatabase(
+          auctionForm.endDate,
+          auctionForm.endTime
+        ),
         start_time: formatDateForDatabase(
           auctionForm.startDate,
           auctionForm.startTime
@@ -2197,6 +2205,8 @@ function AdminDashboard() {
         ilan_sahibi: auctionForm.ilan_sahibi,
         deposit_amount: depositAmount, // <-- Add deposit_amount to update data
       };
+
+      console.log(auctionData, "AUCTIONDATA");
 
       console.log("Attempting to update auction with data:", auctionData);
 
