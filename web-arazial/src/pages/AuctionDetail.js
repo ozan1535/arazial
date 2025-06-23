@@ -3662,7 +3662,6 @@ const AuctionDetail = () => {
     const now = new Date();
     const startTime = new Date(auction.start_time);
     const endTime = new Date(auction.end_time);
-
     if (now < startTime) return "upcoming";
     if (now > endTime) return "ended";
     return "active"; // Even offers can be considered 'active' during their listing window
@@ -4668,6 +4667,8 @@ const AuctionDetail = () => {
 
   const currentStatus = getAuctionStatus();
   const isOfferListing = auction.listing_type === "offer";
+
+  console.log(currentStatus, "CUURENTSTATUS");
 
   // Determine offer state for rendering
   const userActiveOffer = isOfferListing
