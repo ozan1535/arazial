@@ -3230,7 +3230,7 @@ function AdminDashboard() {
                       <TableRow>
                         <TableHeader style={{ width: "60px" }}></TableHeader>
                         <TableHeader>Ad Soyad</TableHeader>
-                        <TableHeader>E-posta</TableHeader>
+                        {/* {<TableHeader>E-posta</TableHeader>} */}
                         <TableHeader>Telefon</TableHeader>
                         <TableHeader>Rol</TableHeader>
                         <TableHeader>Son Giriş</TableHeader>
@@ -4719,7 +4719,7 @@ function AdminDashboard() {
                     <TableRow>
                       <TableHeader style={{ width: "60px" }}></TableHeader>
                       <TableHeader>Ad Soyad</TableHeader>
-                      <TableHeader>E-posta</TableHeader>
+                      {/* <TableHeader>E-posta</TableHeader> */}
                       <TableHeader>Telefon</TableHeader>
                       <TableHeader>Rol</TableHeader>
                       <TableHeader>Son Giriş</TableHeader>
