@@ -495,10 +495,13 @@ const AuctionTitle = styled.h3`
   min-height: 2.6em; /* Set a minimum height for 2 lines */
 `;
 
+/* 
+ margin-bottom: 1rem;
+*/
 const AuctionLocation = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
+
   font-size: 0.875rem;
   color: var(--color-text-secondary);
 
@@ -510,12 +513,15 @@ const AuctionLocation = styled.div`
   }
 `;
 
+/* 
+ margin-top: 0.75rem;
+  margin-bottom: 1rem;
+*/
 const AuctionMeta = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-top: 0.75rem;
-  margin-bottom: 1rem;
+
   font-size: 0.875rem;
   color: var(--color-text-secondary);
 `;
@@ -1305,7 +1311,7 @@ const Home = () => {
       case "active":
         return "Aktif";
       case "upcoming":
-        return "";
+        return "Yaklaşan";
       case "completed":
       case "ended":
         return "Tamamlandı";
@@ -1492,7 +1498,7 @@ const Home = () => {
     e.stopPropagation(); // Prevent card click navigation
     const shareUrl = `${window.location.origin}/auctions/${auction.id}`;
     const shareTitle = auction.title || "Arazi İlanı";
-    const shareText = `${shareTitle} - Arazial.com'da incele!`;
+    const shareText = `${shareTitle} - arazialcom.net'de incele!`;
 
     try {
       if (navigator.share) {
@@ -1720,22 +1726,22 @@ const Home = () => {
         <PageContainer>
           <TabsContainer>
             <TabButton
-              $isActive={listingType === "new"}
-              onClick={() => handleListingTypeChange("new")}
-            >
-              Yeni Eklenenler
-            </TabButton>
-            <TabButton
               $isActive={listingType === "auction"}
               onClick={() => handleListingTypeChange("auction")}
             >
-              Açık Arttırma
+              AÇIK ARTIRMALAR
             </TabButton>
             <TabButton
               $isActive={listingType === "offer"}
               onClick={() => handleListingTypeChange("offer")}
             >
-              Satın Al
+              SATIN ALINABİLİR
+            </TabButton>
+            <TabButton
+              $isActive={listingType === "new"}
+              onClick={() => handleListingTypeChange("new")}
+            >
+              YENİ İLANLAR
             </TabButton>
           </TabsContainer>
 
@@ -1745,13 +1751,13 @@ const Home = () => {
                 active={auctionStatus === "active"}
                 onClick={() => handleStatusChange("active")}
               >
-                Aktif Açık Arttırmalar
+                Devam Edenler
               </StatusTab>
               <StatusTab
                 active={auctionStatus === "upcoming"}
                 onClick={() => handleStatusChange("upcoming")}
               >
-                Yakında Başlayacak
+                Yakında
               </StatusTab>
               <StatusTab
                 active={auctionStatus === "ended"}
@@ -1809,10 +1815,7 @@ const Home = () => {
                   padding: "3rem 0",
                 }}
               >
-                <p>
-                  Arama kriterlerinize uygun aktif emlak açık arttırma
-                  bulunamadı.
-                </p>
+                <p>Şu anda görüntülenebilecek satış ilanı bulunmamaktadır.</p>
                 <Button
                   variant="secondary"
                   size="small"
@@ -1823,21 +1826,24 @@ const Home = () => {
                 </Button>
               </div>
             ) : (
-              getPaginatedAuctions().map((listing) => {
-                return (
-                  <AuctionCard
-                    key={listing.id}
-                    onClick={() => handleAuctionClick(listing.id)}
-                  >
-                    <AuctionImage>
-                      <img
-                        src={
-                          listing.images?.[0] ||
-                          "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                        }
-                        alt={listing.title}
-                      />
-                      {/* {(listing.status === "active" ||
+              getPaginatedAuctions()
+                .sort((a, b) => new Date(a.startTime) - new Date(b.startTime))
+                .map((listing) => {
+                  console.log(listing, "FALAAAANNNN");
+                  return (
+                    <AuctionCard
+                      key={listing.id}
+                      onClick={() => handleAuctionClick(listing.id)}
+                    >
+                      <AuctionImage>
+                        <img
+                          src={
+                            listing.images?.[0] ||
+                            "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                          }
+                          alt={listing.title}
+                        />
+                        {/* {(listing.status === "active" ||
                         listing.status === "upcoming") && (
                         <ShareButton
                           onClick={(e) => handleShare(e, listing)}
@@ -1864,109 +1870,109 @@ const Home = () => {
                           Paylaş
                         </ShareButton>
                       )} */}
-                      <AuctionStatusBadge
-                        status={listing.status}
-                        type={listing._display_type}
-                      >
-                        {getStatusText(listing.status, listing._display_type)}
-                      </AuctionStatusBadge>
-                      {listingType === "new" &&
-                        listing._display_type !== "offer" && (
-                          <AuctionTypeTag>Açık Arttırma</AuctionTypeTag>
-                        )}
-                    </AuctionImage>
-                    <AuctionContent>
-                      <AuctionTitle>
-                        {listing.title || "Emlak İlanı"}
-                      </AuctionTitle>
-                      <AuctionLocation>
-                        <LocationIcon />
-                        {getAuctionLocation(listing)}
-                      </AuctionLocation>
+                        <AuctionStatusBadge
+                          status={listing.status}
+                          type={listing._display_type}
+                        >
+                          {getStatusText(listing.status, listing._display_type)}
+                        </AuctionStatusBadge>
+                        {listingType === "new" &&
+                          listing._display_type !== "offer" && (
+                            <AuctionTypeTag>Açık Arttırma</AuctionTypeTag>
+                          )}
+                      </AuctionImage>
+                      <AuctionContent>
+                        <AuctionTitle>
+                          {listing.title || "Emlak İlanı"}
+                        </AuctionTitle>
+                        <AuctionLocation>
+                          <LocationIcon />
+                          {getAuctionLocation(listing)}
+                        </AuctionLocation>
 
-                      {(listing.ada_no || listing.parsel_no) && (
-                        <AuctionMeta>
-                          {listing.ada_no && (
-                            <MetaItem>
-                              <GridIcon />
-                              Ada: <strong>{listing.ada_no}</strong>
-                            </MetaItem>
-                          )}
-                          {listing.parsel_no && (
-                            <MetaItem>
-                              <GridIcon />
-                              Parsel: <strong>{listing.parsel_no}</strong>
-                            </MetaItem>
-                          )}
-                          {
-                            <button
-                              onClick={(e) => handleShare(e, listing)}
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "0.5rem",
-                                backgroundColor: "var(--color-primary)",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "4px",
-                                padding: "0.5rem 0.75rem",
-                                fontSize: "0.875rem",
-                                fontWeight: "500",
-                                cursor: "pointer",
-                                transition: "all 0.2s ease",
-                                margin: "1rem 0",
-                              }}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
+                        {(listing.ada_no || listing.parsel_no) && (
+                          <AuctionMeta>
+                            {listing.ada_no && (
+                              <MetaItem>
+                                <GridIcon />
+                                Ada: <strong>{listing.ada_no}</strong>
+                              </MetaItem>
+                            )}
+                            {listing.parsel_no && (
+                              <MetaItem>
+                                <GridIcon />
+                                Parsel: <strong>{listing.parsel_no}</strong>
+                              </MetaItem>
+                            )}
+                            {
+                              <button
+                                onClick={(e) => handleShare(e, listing)}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "0.5rem",
+                                  backgroundColor: "var(--color-primary)",
+                                  color: "white",
+                                  border: "none",
+                                  borderRadius: "4px",
+                                  padding: "0.5rem 0.75rem",
+                                  fontSize: "0.875rem",
+                                  fontWeight: "500",
+                                  cursor: "pointer",
+                                  transition: "all 0.2s ease",
+                                  //margin: "1rem 0",
+                                }}
                               >
-                                <circle cx="18" cy="5" r="3"></circle>
-                                <circle cx="6" cy="12" r="3"></circle>
-                                <circle cx="18" cy="19" r="3"></circle>
-                                <line
-                                  x1="8.59"
-                                  y1="13.51"
-                                  x2="15.42"
-                                  y2="17.49"
-                                ></line>
-                                <line
-                                  x1="15.41"
-                                  y1="6.51"
-                                  x2="8.59"
-                                  y2="10.49"
-                                ></line>
-                              </svg>
-                              Paylaş
-                            </button>
-                          }
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <circle cx="18" cy="5" r="3"></circle>
+                                  <circle cx="6" cy="12" r="3"></circle>
+                                  <circle cx="18" cy="19" r="3"></circle>
+                                  <line
+                                    x1="8.59"
+                                    y1="13.51"
+                                    x2="15.42"
+                                    y2="17.49"
+                                  ></line>
+                                  <line
+                                    x1="15.41"
+                                    y1="6.51"
+                                    x2="8.59"
+                                    y2="10.49"
+                                  ></line>
+                                </svg>
+                                Paylaş
+                              </button>
+                            }
+                          </AuctionMeta>
+                        )}
+                        <AuctionMeta>
+                          {listing.area_size && listing.area_unit && (
+                            <MetaItem>
+                              <GridIcon />
+                              {listing.area_size}
+                              {listing.area_unit}
+                            </MetaItem>
+                          )}
+
+                          {listing.emlak_tipi && (
+                            <MetaItem>
+                              <GridIcon />
+                              {listing.emlak_tipi}
+                            </MetaItem>
+                          )}
                         </AuctionMeta>
-                      )}
-                      <AuctionMeta>
-                        {listing.area_size && listing.area_unit && (
-                          <MetaItem>
-                            <GridIcon />
-                            {listing.area_size}
-                            {listing.area_unit}
-                          </MetaItem>
-                        )}
 
-                        {listing.emlak_tipi && (
-                          <MetaItem>
-                            <GridIcon />
-                            {listing.emlak_tipi}
-                          </MetaItem>
-                        )}
-                      </AuctionMeta>
-
-                      {/* <AuctionDetails>
+                        {/* <AuctionDetails>
                         <div
                           style={{
                             width: "100%",
@@ -1987,48 +1993,50 @@ const Home = () => {
                         </div>
                       </AuctionDetails> */}
 
-                      <AuctionDetails>
-                        <PriceInfo>
-                          <span>
-                            {listing.status === "active"
-                              ? "Güncel Teklif"
-                              : listing.status === "ended" ||
-                                listing.status === "completed"
-                              ? "Kapanış Fiyatı"
-                              : "Başlangıç Fiyatı"}
-                          </span>
-                          <AuctionPrice>
-                            {formatPrice(
-                              listing.status === "active" ||
-                                listing.status === "ended" ||
-                                listing.status === "completed"
-                                ? getMinimumBidAmount(listing)
-                                : listing.starting_price ||
-                                    listing.startingPrice ||
-                                    listing.starting_bid ||
-                                    0
-                            )}
-                          </AuctionPrice>
-                        </PriceInfo>
+                        <AuctionDetails>
+                          <PriceInfo>
+                            <span>
+                              {listing.status === "active"
+                                ? "Güncel Teklif"
+                                : listing.status === "ended" ||
+                                  listing.status === "completed"
+                                ? "Kapanış Fiyatı"
+                                : "Başlangıç Fiyatı"}
+                            </span>
+                            <AuctionPrice>
+                              {formatPrice(
+                                listing.status === "active" ||
+                                  listing.status === "ended" ||
+                                  listing.status === "completed"
+                                  ? getMinimumBidAmount(listing)
+                                  : listing.starting_price ||
+                                      listing.startingPrice ||
+                                      listing.starting_bid ||
+                                      0
+                              )}
+                            </AuctionPrice>
+                          </PriceInfo>
 
-                        <PriceInfo>
-                          <span> Artış Tutarı:</span>
-                          <AuctionPrice>
-                            {formatPrice(
-                              listing.minIncrement || listing.minIncrement || 0
-                            )}
-                          </AuctionPrice>
-                        </PriceInfo>
-                        <PriceInfo>
-                          <span>Teminat Tutarı</span>
-                          <AuctionPrice>
-                            {formatPrice(listing.deposit_amount || 0)}
-                          </AuctionPrice>
-                        </PriceInfo>
-                      </AuctionDetails>
+                          <PriceInfo>
+                            <span> Artış Tutarı:</span>
+                            <AuctionPrice>
+                              {formatPrice(
+                                listing.minIncrement ||
+                                  listing.minIncrement ||
+                                  0
+                              )}
+                            </AuctionPrice>
+                          </PriceInfo>
+                          <PriceInfo>
+                            <span>Teminat Tutarı</span>
+                            <AuctionPrice>
+                              {formatPrice(listing.deposit_amount || 0)}
+                            </AuctionPrice>
+                          </PriceInfo>
+                        </AuctionDetails>
 
-                      <AuctionDetails>
-                        {/*  <PriceInfo>
+                        <AuctionDetails>
+                          {/*  <PriceInfo>
                           <span>
                             {listing.status === "active"
                               ? "Güncel Teklif"
@@ -2051,50 +2059,50 @@ const Home = () => {
                           </AuctionPrice>
                         </PriceInfo> */}
 
-                        {listing._display_type === "offer" ? (
-                          <AuctionStatus status="offer">
-                            {getStatusIcon("offer", "offer")}
-                            Satın Al
-                          </AuctionStatus>
-                        ) : listing.status === "active" ? (
-                          <CountdownInfo>
-                            <CountdownLabel status="active">
-                              {getStatusIcon("active", "auction")}
-                              Kalan:
-                            </CountdownLabel>
-                            <CountdownTimer
-                              endTime={new Date(
-                                listing.end_time ||
-                                  listing.endTime ||
-                                  listing.end_date
-                              ).toISOString()}
-                              compact={true}
-                            />
-                          </CountdownInfo>
-                        ) : listing.status === "upcoming" ? (
-                          <CountdownInfo>
-                            <CountdownLabel status="upcoming">
-                              {getStatusIcon("upcoming", "auction")}
-                              Başlamasına kalan:
-                            </CountdownLabel>
-                            <CountdownTimer
-                              endTime={new Date(
-                                listing.start_time || listing.startTime
-                              ).toISOString()}
-                              compact={true}
-                            />
-                          </CountdownInfo>
-                        ) : (
-                          <AuctionStatus status={listing.status}>
-                            {getStatusIcon(listing.status, "auction")}
-                            {getStatusText(listing.status, "auction")}
-                          </AuctionStatus>
-                        )}
-                      </AuctionDetails>
-                    </AuctionContent>
-                  </AuctionCard>
-                );
-              })
+                          {listing._display_type === "offer" ? (
+                            <AuctionStatus status="offer">
+                              {getStatusIcon("offer", "offer")}
+                              Satın Al
+                            </AuctionStatus>
+                          ) : listing.status === "active" ? (
+                            <CountdownInfo>
+                              <CountdownLabel status="active">
+                                {getStatusIcon("active", "auction")}
+                                Kalan:
+                              </CountdownLabel>
+                              <CountdownTimer
+                                endTime={new Date(
+                                  listing.end_time ||
+                                    listing.endTime ||
+                                    listing.end_date
+                                ).toISOString()}
+                                compact={true}
+                              />
+                            </CountdownInfo>
+                          ) : listing.status === "upcoming" ? (
+                            <CountdownInfo>
+                              <CountdownLabel status="upcoming">
+                                {getStatusIcon("upcoming", "auction")}
+                                Başlamasına kalan:
+                              </CountdownLabel>
+                              <CountdownTimer
+                                endTime={new Date(
+                                  listing.start_time || listing.startTime
+                                ).toISOString()}
+                                compact={true}
+                              />
+                            </CountdownInfo>
+                          ) : (
+                            <AuctionStatus status={listing.status}>
+                              {getStatusIcon(listing.status, "auction")}
+                              {getStatusText(listing.status, "auction")}
+                            </AuctionStatus>
+                          )}
+                        </AuctionDetails>
+                      </AuctionContent>
+                    </AuctionCard>
+                  );
+                })
             )}
           </AuctionsGrid>
 

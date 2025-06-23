@@ -1,17 +1,21 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 const DateContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.05) 0%, rgba(var(--color-primary-rgb), 0.08) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(var(--color-primary-rgb), 0.05) 0%,
+    rgba(var(--color-primary-rgb), 0.08) 100%
+  );
   border: 1px solid rgba(var(--color-primary-rgb), 0.1);
   border-radius: 0.75rem;
   box-shadow: 0 2px 8px rgba(var(--color-primary-rgb), 0.08);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  
+
   &:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.12);
@@ -27,7 +31,7 @@ const DateIcon = styled.div`
   border-radius: 50%;
   background: rgba(var(--color-primary-rgb), 0.15);
   color: var(--color-primary);
-  
+
   svg {
     width: 16px;
     height: 16px;
@@ -55,18 +59,20 @@ const DateValue = styled.span`
   line-height: 1.2;
 `;
 
+/* 
+padding: 0.5rem 0.75rem;
+*/
 const CompactDateContainer = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
   background: rgba(var(--color-primary-rgb), 0.05);
   border: 1px solid rgba(var(--color-primary-rgb), 0.1);
   border-radius: 0.5rem;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--color-text);
-  
+
   svg {
     width: 14px;
     height: 14px;
@@ -74,46 +80,79 @@ const CompactDateContainer = styled.div`
   }
 `;
 
-const ModernDateDisplay = ({ 
-  date, 
-  label, 
-  compact = false, 
+const ModernDateDisplay = ({
+  date,
+  label,
+  compact = false,
   showIcon = true,
-  className 
+  className,
+  canHavePadding = true,
 }) => {
   if (!date) return null;
-
   const formatDate = (dateString) => {
-    if (!dateString) return '-';
+    if (!dateString) return "-";
     try {
       const date = new Date(dateString);
-      return date.toLocaleString('tr-TR', { 
-        day: 'numeric',
-        month: 'numeric',
-        year: 'numeric',
-        hour: '2-digit', 
-        minute: '2-digit'
-      });
+      // Removes first 0(zero) on the date in mobile
+      // return date.toLocaleString("tr-TR", {
+      //   day: "numeric",
+      //   month: "numeric",
+      //   year: "numeric",
+      //   hour: "2-digit",
+      //   minute: "2-digit",
+      // });
+
+      const day = String(date.getDate()).padStart(2, "0"); // Ensures day has 2 digits
+      const month = String(date.getMonth() + 1).padStart(2, "0"); // Ensures month has 2 digits (months are 0-indexed)
+      const year = date.getFullYear();
+      const hour = String(date.getHours()).padStart(2, "0"); // Ensures hour has 2 digits
+      const minute = String(date.getMinutes()).padStart(2, "0"); // Ensures minute has 2 digits
+
+      // Return the formatted date
+      return `${day}.${month}.${year} ${hour}:${minute}`;
     } catch (e) {
-      return 'Geçersiz Tarih';
+      return "Geçersiz Tarih";
     }
   };
 
   const CalendarIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+      />
     </svg>
   );
 
   const ClockIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+      />
     </svg>
   );
 
   if (compact) {
     return (
-      <CompactDateContainer className={className}>
+      <CompactDateContainer
+        className={className}
+        style={{ padding: canHavePadding ? "0.5rem 0.75rem" : "" }}
+      >
         {showIcon && <ClockIcon />}
         {formatDate(date)}
       </CompactDateContainer>
@@ -135,4 +174,4 @@ const ModernDateDisplay = ({
   );
 };
 
-export default ModernDateDisplay; 
+export default ModernDateDisplay;

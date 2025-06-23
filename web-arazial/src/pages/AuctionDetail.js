@@ -49,6 +49,7 @@ const BackButton = styled.button`
 
   @media (max-width: 768px) {
     margin-left: 1rem;
+    display:none;
   }
 
   &:hover {
@@ -328,7 +329,7 @@ const PropertyLabel = styled.label`
 
 const PropertyValue = styled.div`
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--color-text);
 
   @media (max-width: 768px) {
@@ -420,7 +421,8 @@ const GalleryNavButton = styled.button`
   top: 50%;
   transform: translateY(-50%);
   ${(props) => (props.direction === "left" ? "left: 1rem;" : "right: 1rem;")}
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
   border: none;
   border-radius: 50%;
   width: 40px;
@@ -433,7 +435,8 @@ const GalleryNavButton = styled.button`
   transition: background-color 0.2s ease;
 
   &:hover {
-    background-color: white;
+    background-color: black;
+    color: white;
   }
 
   &:disabled {
@@ -444,6 +447,7 @@ const GalleryNavButton = styled.button`
   svg {
     width: 20px;
     height: 20px;
+    font-size: 1rem;
   }
 `;
 
@@ -512,6 +516,10 @@ const LightboxNav = styled.div`
   justify-content: space-between;
   padding: 0 1rem;
   transform: translateY(-50%);
+
+  @media (max-width: 768px) {
+    top: 45%;
+  }
 `;
 
 const LightboxNavButton = styled.button`
@@ -2227,7 +2235,7 @@ const BidCard = ({
                       margin: 0,
                     }}
                   >
-                    <span style={{ fontSize: "0.75rem" }}>⏰ Kalan süre:</span>
+                    <span style={{ fontSize: "0.75rem" }}>Kalan süre:</span>
                     <CountdownTimer
                       endTime={auction.end_time}
                       compact={false}
@@ -2554,8 +2562,8 @@ const BidCard = ({
                       >
                         <span style={{ fontSize: "0.75rem" }}>
                           {currentStatus === "active"
-                            ? "⏰ Kalan süre:"
-                            : "📅 Kalan süre:"}
+                            ? "Kalan süre:"
+                            : "Kalan süre:"}
                         </span>
                         <CountdownTimer
                           endTime={
@@ -2576,8 +2584,8 @@ const BidCard = ({
                         }}
                       >
                         {currentStatus === "active"
-                          ? "⏰ Kalan süre:"
-                          : "📅 Kalan süre:"}
+                          ? "Kalan süre:"
+                          : "Kalan süre:"}
                       </div>
                       <CountdownTimer
                         endTime={
@@ -2590,21 +2598,20 @@ const BidCard = ({
                       /> */}
                     </div>
                   </div>
-                  <div className="mobile-layout">
+                  <div
+                    className="mobile-layout"
+                    style={{ justifyContent: "center" }}
+                  >
                     <div
                       style={{
                         display: "flex",
                         gap: "0.75rem",
                         flexWrap: "wrap",
                         alignItems: "center",
-                        marginBottom: "0.5rem",
+                        justifyContent: "center",
+                        margin: "0.5rem 0",
                       }}
                     >
-                      <AuctionStatus status={currentStatus}>
-                        {getStatusIcon(currentStatus)}
-                        {getStatusText(currentStatus)}
-                      </AuctionStatus>
-
                       {auction.listing_type === "auction" &&
                         (currentStatus === "active"
                           ? auction.end_time && (
@@ -4884,19 +4891,21 @@ const AuctionDetail = () => {
               onClick={prevImage}
               disabled={auction.images.length <= 1}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="15 18 9 12 15 6" />
-              </svg>
+              <div style={{ fontSize: "0.5rem" }}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="48"
+                  height="48"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+              </div>
             </GalleryNavButton>
 
             <GalleryNavButton
@@ -4904,19 +4913,22 @@ const AuctionDetail = () => {
               onClick={nextImage}
               disabled={auction.images.length <= 1}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
+              {" "}
+              <div style={{ fontSize: "0.5rem" }}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </div>
             </GalleryNavButton>
           </MainGalleryContainer>
 
@@ -5065,7 +5077,7 @@ const AuctionDetail = () => {
                   <PropertyValue>{auction.parsel_no || "-"}</PropertyValue>
                 </PropertyItem>
                 <PropertyItem>
-                  <PropertyLabel>Emlak Tipi</PropertyLabel>
+                  <PropertyLabel>İmar durumu</PropertyLabel>
                   <PropertyValue>{auction.emlak_tipi || "-"}</PropertyValue>
                 </PropertyItem>
                 <PropertyItem>
@@ -5093,6 +5105,7 @@ const AuctionDetail = () => {
                       date={auction.created_at}
                       compact={true}
                       showIcon={false}
+                      canHavePadding={false}
                     />
                   </PropertyValue>
                 </PropertyItem>
@@ -5106,6 +5119,7 @@ const AuctionDetail = () => {
                           date={auction.start_time}
                           compact={true}
                           showIcon={false}
+                          canHavePadding={false}
                         />
                       </PropertyValue>
                     </PropertyItem>
@@ -5116,6 +5130,7 @@ const AuctionDetail = () => {
                           date={auction.end_time}
                           compact={true}
                           showIcon={false}
+                          canHavePadding={false}
                         />
                       </PropertyValue>
                     </PropertyItem>
@@ -5163,19 +5178,21 @@ const AuctionDetail = () => {
                 onClick={prevImage}
                 disabled={auction.images.length <= 1}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polyline points="15 18 9 12 15 6" />
-                </svg>
+                <div style={{ fontSize: "0.5rem" }}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                </div>
               </GalleryNavButton>
 
               <GalleryNavButton
@@ -5183,19 +5200,22 @@ const AuctionDetail = () => {
                 onClick={nextImage}
                 disabled={auction.images.length <= 1}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
+                {" "}
+                <div style={{ fontSize: "0.5rem" }}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
               </GalleryNavButton>
             </MainGalleryContainer>
 
@@ -5225,7 +5245,7 @@ const AuctionDetail = () => {
                   <PropertyValue>{auction.parsel_no || "-"}</PropertyValue>
                 </PropertyItem>
                 <PropertyItem>
-                  <PropertyLabel>Emlak Tipi</PropertyLabel>
+                  <PropertyLabel>İmar durumu</PropertyLabel>
                   <PropertyValue>{auction.emlak_tipi || "-"}</PropertyValue>
                 </PropertyItem>
                 <PropertyItem>
@@ -5253,6 +5273,7 @@ const AuctionDetail = () => {
                       date={auction.created_at}
                       compact={true}
                       showIcon={false}
+                      canHavePadding={false}
                     />
                   </PropertyValue>
                 </PropertyItem>
@@ -5266,6 +5287,7 @@ const AuctionDetail = () => {
                           date={auction.start_time}
                           compact={true}
                           showIcon={false}
+                          canHavePadding={false}
                         />
                       </PropertyValue>
                     </PropertyItem>
@@ -5276,6 +5298,7 @@ const AuctionDetail = () => {
                           date={auction.end_time}
                           compact={true}
                           showIcon={false}
+                          canHavePadding={false}
                         />
                       </PropertyValue>
                     </PropertyItem>
