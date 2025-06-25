@@ -207,7 +207,7 @@ const TableHeader = styled.th`
   color: var(--color-text);
   background-color: var(--color-background);
   white-space: nowrap; /* Prevent header text wrapping */
-
+    
   &:first-child {
     border-top-left-radius: var(--border-radius-lg);
   }
@@ -4683,7 +4683,7 @@ function AdminDashboard() {
           <>
             <SectionTitle>
               Kullanıcılar
-             {/*  <Button onClick={() => handleSectionChange("create-user")}>
+              {/*  <Button onClick={() => handleSectionChange("create-user")}>
                 Yeni Kullanıcı
               </Button> */}
             </SectionTitle>
@@ -4765,7 +4765,7 @@ function AdminDashboard() {
                       <TableHeader>Rol</TableHeader>
                       <TableHeader>Son Giriş</TableHeader>
                       <TableHeader>Durum</TableHeader>
-                     {/*  <TableHeader>İşlemler</TableHeader> */}
+                      <TableHeader>İşlemler</TableHeader>
                     </TableRow>
                   </TableHead>
                   <tbody>
@@ -4880,14 +4880,14 @@ function AdminDashboard() {
                               <StatusBadge status="active">Aktif</StatusBadge>
                             )}
                           </TableCell>
-                          {/* <TableCell data-label="İşlemler">
-                            <ActionButton
+                          <TableCell data-label="İşlemler">
+                            {/* <ActionButton
                               variant="primary"
                               onClick={() => handleViewUserDetails(user.id)}
                               disabled={actionLoading}
                             >
                               Detaylar
-                            </ActionButton>
+                            </ActionButton> */}
                             <ActionButton
                               variant="warning"
                               onClick={() =>
@@ -4902,7 +4902,7 @@ function AdminDashboard() {
                                 ? "Kullanıcı Yap"
                                 : "Yönetici Yap"}
                             </ActionButton>
-                          </TableCell> */}
+                          </TableCell>
                         </TableRow>
                       ))}
                   </tbody>
