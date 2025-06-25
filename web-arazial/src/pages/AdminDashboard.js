@@ -807,7 +807,7 @@ const FilterButton = styled.button`
     border-color: var(--color-primary);
     background: ${(props) =>
       props.active ? "var(--color-primary)" : "var(--color-primary-light)"};
-    color: ${(props) => (props.active ? "white" : "var(--color-primary)")};
+    color: white;
   }
 `;
 
@@ -1257,6 +1257,31 @@ function AdminDashboard() {
 
     setContentLoading(true);
     setActiveSection(section);
+    setAuctionForm({
+      title: "",
+      description: "",
+      startingPrice: "",
+      minIncrement: "",
+      offerIncrement: "",
+      deposit_amount: "", // <-- Add deposit_amount here
+      startDate: "",
+      endDate: "",
+      startTime: "12:00",
+      endTime: "12:00",
+      location: "",
+      city: "",
+      locationDetails: "",
+      status: "upcoming",
+      listingType: "auction",
+      ada_no: "",
+      parsel_no: "",
+      images: [],
+      area_size: "",
+      area_unit: "m2", // Always set to m2
+      emlak_tipi: "",
+      imar_durumu: "",
+      ilan_sahibi: "",
+    });
 
     setTimeout(async () => {
       if (section === "edit-auction" && selectedAuctionId) {
@@ -1501,7 +1526,7 @@ function AdminDashboard() {
         try {
           // If we have a time string, combine it with the date
           if (timeStr) {
-            const combinedStr = `${dateStr}T${timeStr}:00`;
+            const combinedStr = `${dateStr}T${timeStr}:00Z`;
             return new Date(combinedStr).toISOString();
           }
 
@@ -1545,14 +1570,30 @@ function AdminDashboard() {
         offer_increment:
           auctionForm.listingType === "offer" ? offerIncrement : null,
         listing_type: auctionForm.listingType,
-        start_date: formatDateForDatabase(auctionForm.startDate),
-        end_date: formatDateForDatabase(auctionForm.endDate),
-        start_time:
-          formatDateForDatabase(auctionForm.startDate, auctionForm.startTime) ||
-          new Date().toISOString(),
-        end_time:
-          formatDateForDatabase(auctionForm.endDate, auctionForm.endTime) ||
-          new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        // start_date: formatDateForDatabase(auctionForm.startDate),
+        // end_date: formatDateForDatabase(auctionForm.endDate),
+        // start_time:
+        //   formatDateForDatabase(auctionForm.startDate, auctionForm.startTime) ||
+        //   new Date().toISOString(),
+        // end_time:
+        //   formatDateForDatabase(auctionForm.endDate, auctionForm.endTime) ||
+        //   new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        start_date: formatDateForDatabase(
+          auctionForm.startDate,
+          auctionForm.startTime
+        ),
+        end_date: formatDateForDatabase(
+          auctionForm.endDate,
+          auctionForm.endTime
+        ),
+        start_time: formatDateForDatabase(
+          auctionForm.startDate,
+          auctionForm.startTime
+        ),
+        end_time: formatDateForDatabase(
+          auctionForm.endDate,
+          auctionForm.endTime
+        ),
         location: locationString,
         status: auctionForm.status,
         created_by: user?.id, // Use created_by
@@ -3230,7 +3271,7 @@ function AdminDashboard() {
                       <TableRow>
                         <TableHeader style={{ width: "60px" }}></TableHeader>
                         <TableHeader>Ad Soyad</TableHeader>
-                        {/* {<TableHeader>E-posta</TableHeader>} */}
+                        {/*  <TableHeader>E-posta</TableHeader> */}
                         <TableHeader>Telefon</TableHeader>
                         <TableHeader>Rol</TableHeader>
                         <TableHeader>Son Giriş</TableHeader>
@@ -3300,7 +3341,7 @@ function AdminDashboard() {
                             <TableCell data-label="Ad Soyad">
                               {user.full_name || "-"}
                             </TableCell>
-                            <TableCell data-label="E-posta">
+                            {/* <TableCell data-label="E-posta">
                               {user.email || "-"}
                               {user.email_confirmed_at && (
                                 <span
@@ -3313,7 +3354,7 @@ function AdminDashboard() {
                                   ✓
                                 </span>
                               )}
-                            </TableCell>
+                            </TableCell> */}
                             <TableCell data-label="Telefon">
                               {user.phone || "-"}
                               {user.phone_confirmed_at && (
@@ -4642,9 +4683,9 @@ function AdminDashboard() {
           <>
             <SectionTitle>
               Kullanıcılar
-              <Button onClick={() => handleSectionChange("create-user")}>
+             {/*  <Button onClick={() => handleSectionChange("create-user")}>
                 Yeni Kullanıcı
-              </Button>
+              </Button> */}
             </SectionTitle>
 
             {/* Replace the multiple tabs with a single "Listings" tab */}
@@ -4724,7 +4765,7 @@ function AdminDashboard() {
                       <TableHeader>Rol</TableHeader>
                       <TableHeader>Son Giriş</TableHeader>
                       <TableHeader>Durum</TableHeader>
-                      <TableHeader>İşlemler</TableHeader>
+                     {/*  <TableHeader>İşlemler</TableHeader> */}
                     </TableRow>
                   </TableHead>
                   <tbody>
@@ -4788,7 +4829,7 @@ function AdminDashboard() {
                           <TableCell data-label="Ad Soyad">
                             {user.full_name || "-"}
                           </TableCell>
-                          <TableCell data-label="E-posta">
+                          {/* <TableCell data-label="E-posta">
                             {user.email || "-"}
                             {user.email_confirmed_at && (
                               <span
@@ -4801,7 +4842,7 @@ function AdminDashboard() {
                                 ✓
                               </span>
                             )}
-                          </TableCell>
+                          </TableCell> */}
                           <TableCell data-label="Telefon">
                             {user.phone || "-"}
                             {user.phone_confirmed_at && (
@@ -4839,7 +4880,7 @@ function AdminDashboard() {
                               <StatusBadge status="active">Aktif</StatusBadge>
                             )}
                           </TableCell>
-                          <TableCell data-label="İşlemler">
+                          {/* <TableCell data-label="İşlemler">
                             <ActionButton
                               variant="primary"
                               onClick={() => handleViewUserDetails(user.id)}
@@ -4861,7 +4902,7 @@ function AdminDashboard() {
                                 ? "Kullanıcı Yap"
                                 : "Yönetici Yap"}
                             </ActionButton>
-                          </TableCell>
+                          </TableCell> */}
                         </TableRow>
                       ))}
                   </tbody>

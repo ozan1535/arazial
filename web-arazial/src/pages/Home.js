@@ -1067,7 +1067,7 @@ const Home = () => {
       );
 
       setAuctions(sortedData);
-      filterAuctions(sortedData);
+      filterAuctions(sortedData, selectedCity);
     } catch (error) {
       console.error("Error loading listings:", error);
     } finally {
@@ -1118,7 +1118,7 @@ const Home = () => {
   };
 
   // Filter auctions based on criteria
-  const filterAuctions = (dataToFilter = auctions) => {
+  const filterAuctions = (dataToFilter = auctions, selectedCity = "") => {
     console.log(
       "Starting filtering with",
       dataToFilter.length,
@@ -1251,13 +1251,12 @@ const Home = () => {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     console.log("Submitting search with city:", selectedCity);
-    filterAuctions();
+    filterAuctions(undefined, selectedCity);
   };
 
   // Reset all filters
   const resetFilters = () => {
     // Müsterinin istegi üzerine aktif açik artirmalara yönlendiriliyor.
-    // Eski kodlar yoruma eklendi.
     setSelectedCity("");
     filterAuctions();
     setCurrentPage(1);
@@ -1676,7 +1675,7 @@ const Home = () => {
               onClick={(e) => {
                 e.preventDefault();
                 setSelectedCity("Kütahya");
-                filterAuctions();
+                // filterAuctions();
               }}
             >
               Kütahya
@@ -1686,7 +1685,7 @@ const Home = () => {
               onClick={(e) => {
                 e.preventDefault();
                 setSelectedCity("Konya");
-                filterAuctions();
+                // filterAuctions();
               }}
             >
               Konya
@@ -1696,7 +1695,7 @@ const Home = () => {
               onClick={(e) => {
                 e.preventDefault();
                 setSelectedCity("Uşak");
-                filterAuctions();
+                // filterAuctions();
               }}
             >
               Uşak
@@ -1706,7 +1705,7 @@ const Home = () => {
               onClick={(e) => {
                 e.preventDefault();
                 setSelectedCity("");
-                filterAuctions();
+                //  filterAuctions();
               }}
             >
               Tüm Şehirler
@@ -2084,9 +2083,9 @@ const Home = () => {
                                 Başlamasına kalan:
                               </CountdownLabel>
                               <CountdownTimer
-                                endTime={new Date(
+                                endTime={
                                   listing.start_time || listing.startTime
-                                ).toISOString()}
+                                }
                                 compact={true}
                               />
                             </CountdownInfo>
