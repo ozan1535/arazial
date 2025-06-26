@@ -4802,10 +4802,10 @@ const AuctionDetail = () => {
             marginBottom: "0.5rem",
           }}
         >
-          <AuctionStatus status={currentStatus}>
+          {/*   <AuctionStatus status={currentStatus}>
             {getStatusIcon(currentStatus)}
             {getStatusText(currentStatus)}
-          </AuctionStatus>
+          </AuctionStatus> */}
 
           {auction.listing_type === "auction" &&
             (currentStatus === "active"
