@@ -1267,7 +1267,9 @@ const Home = () => {
   const getPaginatedAuctions = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return filteredAuctions.slice(startIndex, endIndex);
+    return filteredAuctions
+      .sort((a, b) => new Date(a.startTime) - new Date(b.startTime))
+      .slice(startIndex, endIndex);
   };
 
   // Handle city change
@@ -1825,7 +1827,7 @@ const Home = () => {
               </div>
             ) : (
               getPaginatedAuctions()
-                .sort((a, b) => new Date(a.startTime) - new Date(b.startTime))
+                /*  .sort((a, b) => new Date(a.startTime) - new Date(b.startTime)) */
                 .map((listing) => {
                   return (
                     <AuctionCard
