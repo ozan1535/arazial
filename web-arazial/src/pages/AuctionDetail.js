@@ -2553,14 +2553,13 @@ const BidCard = ({
                       <div
                         style={{
                           display: "flex",
+                          flexDirection: "column",
                           alignItems: "center",
-                          fontSize: "0.25rem",
-                          fontWeight: "600",
                           color: "var(--color-text)",
-                          margin: 0,
+                          marginTop: "-1rem",
                         }}
                       >
-                        <span style={{ fontSize: "0.75rem" }}>
+                        <span style={{ fontSize: "1.25rem", fontWeight: 700 }}>
                           {currentStatus === "active"
                             ? "Kalan süre:"
                             : "Kalan süre:"}
@@ -2598,7 +2597,7 @@ const BidCard = ({
                       /> */}
                     </div>
                   </div>
-                  <div
+                  {/* <div
                     className="mobile-layout"
                     style={{ justifyContent: "center" }}
                   >
@@ -2665,7 +2664,7 @@ const BidCard = ({
                               </StartTimeBadge>
                             ))}
                     </div>
-                  </div>
+                  </div> */}
                 </>
               )}
           </>
@@ -4793,7 +4792,7 @@ const AuctionDetail = () => {
 
       {/* Title and Status section - only visible on desktop */}
       <DesktopHeader>
-        <div
+        {/* <div
           style={{
             display: "flex",
             gap: "0.75rem",
@@ -4802,11 +4801,6 @@ const AuctionDetail = () => {
             marginBottom: "0.5rem",
           }}
         >
-          {/*   <AuctionStatus status={currentStatus}>
-            {getStatusIcon(currentStatus)}
-            {getStatusText(currentStatus)}
-          </AuctionStatus> */}
-
           {auction.listing_type === "auction" &&
             (currentStatus === "active"
               ? auction.end_time && (
@@ -4855,7 +4849,7 @@ const AuctionDetail = () => {
                     />
                   </StartTimeBadge>
                 ))}
-        </div>
+        </div> */}
 
         <AuctionTitle>{auction.title}</AuctionTitle>
 
@@ -5049,7 +5043,9 @@ const AuctionDetail = () => {
                   ))} 
           </div>*/}
 
-          <AuctionTitle>{auction.title}</AuctionTitle>
+          <AuctionTitle style={{ fontSize: "1.25rem", fontWeight: 700 }}>
+            {auction.title}
+          </AuctionTitle>
 
           <AuctionLocation>
             <LocationIcon />{" "}
@@ -5061,11 +5057,25 @@ const AuctionDetail = () => {
         {/* 4. PROPERTY DETAILS */}
         <div
           className="mobile-details-section"
-          style={{ padding: 0, margin: 0 }}
+          style={{
+            padding: 0,
+            margin: 0,
+          }}
         >
-          <Card className="details-card">
+          <Card
+            className="details-card"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
             <CardContent>
-              <PropertyGrid>
+              <PropertyGrid
+                style={{
+                  display: "grid",
+                  columnGap: "4rem",
+                }}
+              >
                 <PropertyItem>
                   <PropertyLabel>Ada No</PropertyLabel>
                   <PropertyValue>{auction.ada_no || "-"}</PropertyValue>

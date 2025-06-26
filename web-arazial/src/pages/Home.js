@@ -1001,6 +1001,11 @@ const Home = () => {
     loadListings();
   }, [listingType, auctionStatus]);
 
+  // Scroll top if the pagination function triggers
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [currentPage]);
+
   const loadListings = async () => {
     setIsLoading(true);
     try {
@@ -2142,14 +2147,14 @@ const Home = () => {
               <Button
                 variant="secondary"
                 size="small"
-                onClick={() =>
+                onClick={() => {
                   setCurrentPage((prev) =>
                     Math.min(
                       prev + 1,
                       Math.ceil(filteredAuctions.length / itemsPerPage)
                     )
-                  )
-                }
+                  );
+                }}
                 disabled={
                   currentPage ===
                   Math.ceil(filteredAuctions.length / itemsPerPage)
