@@ -5091,55 +5091,14 @@ function AdminDashboard() {
                         borderBottom: "2px solid rgba(0,0,0,0.2)",
                       }}
                     >
-                      {user.avatar_url ? (
-                        <div
-                          style={{
-                            width: "100%",
-                            height: "150px",
-                            // borderRadius: "50%",
-                            overflow: "hidden",
-                          }}
-                        >
-                          <img
-                            src={user.avatar_url}
-                            alt={user.full_name}
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover",
-                            }}
-                          />
-                        </div>
-                      ) : (
-                        <div
-                          style={{
-                            width: "100%",
-                            height: "150px",
-                            backgroundColor: "var(--color-background)",
-                            // borderRadius: "50%",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            color: "var(--color-text-secondary)",
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
-                          </svg>
-                        </div>
-                      )}
-                      <div style={{ margin: "0 1rem" }}>
+                      <div
+                        style={{
+                          margin: "0 1rem",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
                         <div
                           style={{
                             fontWeight: 600,
@@ -5150,7 +5109,6 @@ function AdminDashboard() {
                           {user.full_name || "-"}
                         </div>
                         <div>
-                          <span>Telefon: </span>
                           <span style={{ fontWeight: 600 }}>
                             {user.phone || "-"}
                             {user.phone_confirmed_at && (
@@ -5163,46 +5121,6 @@ function AdminDashboard() {
                               </span>
                             )}
                           </span>
-                        </div>
-                        <div>
-                          <span>Rol: </span>
-                          <span style={{ fontWeight: 600 }}>
-                            {user.role === "admin" ? "Yönetici" : "Kullanıcı"}
-                          </span>
-                        </div>
-                        <div>
-                          <span>Son Giriş: </span>
-                          <span style={{ fontWeight: 600 }}>
-                            {user.last_sign_in_at
-                              ? formatDate(user.last_sign_in_at)
-                              : "-"}
-                          </span>
-                        </div>
-                        <div>
-                          <span>Durum: </span>
-                          {user.is_banned ? (
-                            <StatusBadge status="error">Engelli</StatusBadge>
-                          ) : user.is_deleted ? (
-                            <StatusBadge status="error">Silinmiş</StatusBadge>
-                          ) : (
-                            <StatusBadge status="active">Aktif</StatusBadge>
-                          )}
-                        </div>
-                        <div>
-                          <ActionButton
-                            variant="primary"
-                            onClick={() =>
-                              handleUpdateUserRole(
-                                user.id,
-                                user.role === "admin" ? "user" : "admin"
-                              )
-                            }
-                            disabled={actionLoading}
-                          >
-                            {user.role === "admin"
-                              ? "Kullanıcı Yap"
-                              : "Yönetici Yap"}
-                          </ActionButton>
                         </div>
                       </div>
                     </div>
