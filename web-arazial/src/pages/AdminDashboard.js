@@ -207,7 +207,7 @@ const TableHeader = styled.th`
   color: var(--color-text);
   background-color: var(--color-background);
   white-space: nowrap; /* Prevent header text wrapping */
-    
+
   &:first-child {
     border-top-left-radius: var(--border-radius-lg);
   }
@@ -2972,137 +2972,287 @@ function AdminDashboard() {
                     </div>
                   </LoadingOverlay>
                 )}
-                <h3 style={{ marginBottom: "1rem", fontSize: "1.125rem" }}>
+                <h3 style={{ margin: "0.5rem", fontSize: "1.125rem" }}>
                   Son İhaleler
                 </h3>
-
-                {auctions.length > 0 ? (
-                  <TableContainer>
-                    <Table>
-                      <TableHead>
-                        <TableRow>
-                          <TableHeader style={{ width: "60px" }}></TableHeader>
-                          <TableHeader>Başlık</TableHeader>
-                          <TableHeader>Başlangıç Fiyatı</TableHeader>
-                          <TableHeader>Başlangıç Tarihi</TableHeader>
-                          <TableHeader>Bitiş Tarihi</TableHeader>
-                          <TableHeader>Durum</TableHeader>
-                          <TableHeader>İşlemler</TableHeader>
-                        </TableRow>
-                      </TableHead>
-                      <tbody>
-                        {auctions.map((auction) => (
-                          <TableRow key={auction.id}>
-                            <TableCell data-label="Görsel">
-                              {auction.images && auction.images.length > 0 ? (
-                                <div
-                                  style={{
-                                    width: "50px",
-                                    height: "50px",
-                                    borderRadius: "var(--border-radius-sm)",
-                                    overflow: "hidden",
-                                  }}
-                                >
-                                  <img
-                                    src={auction.images[0]}
-                                    alt={auction.title}
+                <DesktopView>
+                  {auctions.length > 0 ? (
+                    <TableContainer>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableHeader
+                              style={{ width: "60px" }}
+                            ></TableHeader>
+                            <TableHeader>Başlık</TableHeader>
+                            <TableHeader>Başlangıç Fiyatı</TableHeader>
+                            <TableHeader>Başlangıç Tarihi</TableHeader>
+                            <TableHeader>Bitiş Tarihi</TableHeader>
+                            <TableHeader>Durum</TableHeader>
+                            <TableHeader>İşlemler</TableHeader>
+                          </TableRow>
+                        </TableHead>
+                        <tbody>
+                          {auctions.map((auction) => (
+                            <TableRow key={auction.id}>
+                              <TableCell data-label="Görsel">
+                                {auction.images && auction.images.length > 0 ? (
+                                  <div
                                     style={{
-                                      width: "100%",
-                                      height: "100%",
-                                      objectFit: "cover",
+                                      width: "50px",
+                                      height: "50px",
+                                      borderRadius: "var(--border-radius-sm)",
+                                      overflow: "hidden",
                                     }}
-                                  />
-                                </div>
-                              ) : (
-                                <div
-                                  style={{
-                                    width: "50px",
-                                    height: "50px",
-                                    backgroundColor: "var(--color-background)",
-                                    borderRadius: "var(--border-radius-sm)",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                  }}
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
                                   >
-                                    <rect
-                                      x="3"
-                                      y="3"
-                                      width="18"
-                                      height="18"
-                                      rx="2"
-                                      ry="2"
+                                    <img
+                                      src={auction.images[0]}
+                                      alt={auction.title}
+                                      style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        objectFit: "cover",
+                                      }}
                                     />
-                                    <circle cx="8.5" cy="8.5" r="1.5" />
-                                    <polyline points="21 15 16 10 5 21" />
-                                  </svg>
-                                </div>
-                              )}
-                            </TableCell>
-                            <TableCell>{auction.title}</TableCell>
-                            <TableCell>
+                                  </div>
+                                ) : (
+                                  <div
+                                    style={{
+                                      width: "50px",
+                                      height: "50px",
+                                      backgroundColor:
+                                        "var(--color-background)",
+                                      borderRadius: "var(--border-radius-sm)",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                    }}
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="24"
+                                      height="24"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    >
+                                      <rect
+                                        x="3"
+                                        y="3"
+                                        width="18"
+                                        height="18"
+                                        rx="2"
+                                        ry="2"
+                                      />
+                                      <circle cx="8.5" cy="8.5" r="1.5" />
+                                      <polyline points="21 15 16 10 5 21" />
+                                    </svg>
+                                  </div>
+                                )}
+                              </TableCell>
+                              <TableCell>{auction.title}</TableCell>
+                              <TableCell>
+                                {auction.starting_price?.toLocaleString(
+                                  "tr-TR"
+                                )}{" "}
+                                TL
+                              </TableCell>
+                              <TableCell>
+                                {formatDate(auction.start_date)}
+                              </TableCell>
+                              <TableCell>
+                                {formatDate(auction.end_date)}
+                              </TableCell>
+                              <TableCell>
+                                <StatusBadge status={auction.status}>
+                                  {getStatusText(auction.status)}
+                                </StatusBadge>
+                              </TableCell>
+                              <TableCell>
+                                <ActionButton
+                                  variant="primary"
+                                  size="small"
+                                  onClick={() =>
+                                    handleViewAuctionDetails(auction.id)
+                                  }
+                                >
+                                  Detaylar
+                                </ActionButton>
+                                <ActionButton
+                                  variant="secondary"
+                                  size="small"
+                                  onClick={() =>
+                                    navigate(`/auctions/${auction.id}`)
+                                  }
+                                >
+                                  Görüntüle
+                                </ActionButton>
+                                <ActionButton
+                                  variant="danger"
+                                  size="small"
+                                  onClick={() =>
+                                    handleDeleteAuction(auction.id)
+                                  }
+                                >
+                                  Sil
+                                </ActionButton>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </tbody>
+                      </Table>
+                    </TableContainer>
+                  ) : (
+                    <p>Henüz oluşturulmuş ihale bulunmamaktadır.</p>
+                  )}
+                </DesktopView>
+                <MobileView>
+                  {auctions.map((auction) =>
+                    auctions.length > 0 ? (
+                      <div
+                        className="mobile-card-row"
+                        key={auction.id}
+                        style={{ marginBottom: "1rem" }}
+                      >
+                        <div className="mobile-card-header">
+                          {auction.images && auction.images.length > 0 ? (
+                            <div
+                              style={{
+                                width: "100%",
+                                height: "150px",
+                                borderRadius: "var(--border-radius-sm)",
+                                overflow: "hidden",
+                              }}
+                            >
+                              <img
+                                src={auction.images[0]}
+                                alt={auction.title}
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  objectFit: "cover",
+                                }}
+                              />
+                            </div>
+                          ) : (
+                            <div
+                              style={{
+                                width: "100%",
+                                height: "150px",
+                                backgroundColor: "var(--color-background)",
+                                borderRadius: "var(--border-radius-sm)",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <rect
+                                  x="3"
+                                  y="3"
+                                  width="18"
+                                  height="18"
+                                  rx="2"
+                                  ry="2"
+                                />
+                                <circle cx="8.5" cy="8.5" r="1.5" />
+                                <polyline points="21 15 16 10 5 21" />
+                              </svg>
+                            </div>
+                          )}
+                          <div style={{ margin: "0.5rem" }}>
+                            <div style={{ fontWeight: "600" }}>
+                              {auction.title}
+                            </div>
+                            <StatusBadge status={auction.status}>
+                              {getStatusText(auction.status)}
+                            </StatusBadge>
+                          </div>
+                        </div>
+
+                        <div
+                          className="mobile-card-content"
+                          style={{ margin: "0.5rem" }}
+                        >
+                          <div className="item">
+                            <span className="label">Başlangıç Fiyatı: </span>
+                            <span style={{ fontWeight: 600 }}>
                               {auction.starting_price?.toLocaleString("tr-TR")}{" "}
                               TL
-                            </TableCell>
-                            <TableCell>
+                            </span>
+                          </div>
+                          <div className="item">
+                            <span className="label">Başlangıç Tarihi: </span>
+                            <span style={{ fontWeight: 600 }}>
                               {formatDate(auction.start_date)}
-                            </TableCell>
-                            <TableCell>
+                            </span>
+                          </div>
+                          <div className="item">
+                            <span className="label">Bitiş Tarihi: </span>
+                            <span style={{ fontWeight: 600 }}>
                               {formatDate(auction.end_date)}
-                            </TableCell>
-                            <TableCell>
-                              <StatusBadge status={auction.status}>
-                                {getStatusText(auction.status)}
-                              </StatusBadge>
-                            </TableCell>
-                            <TableCell>
-                              <ActionButton
-                                variant="primary"
-                                size="small"
-                                onClick={() =>
-                                  handleViewAuctionDetails(auction.id)
-                                }
-                              >
-                                Detaylar
-                              </ActionButton>
-                              <ActionButton
-                                variant="secondary"
-                                size="small"
-                                onClick={() =>
-                                  navigate(`/auctions/${auction.id}`)
-                                }
-                              >
-                                Görüntüle
-                              </ActionButton>
-                              <ActionButton
-                                variant="danger"
-                                size="small"
-                                onClick={() => handleDeleteAuction(auction.id)}
-                              >
-                                Sil
-                              </ActionButton>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </TableContainer>
-                ) : (
-                  <p>Henüz oluşturulmuş ihale bulunmamaktadır.</p>
-                )}
+                            </span>
+                          </div>
+                        </div>
 
-                <div style={{ marginTop: "1rem" }}>
+                        <div
+                          className="mobile-card-actions"
+                          style={{ margin: "0.5rem" }}
+                        >
+                          <ActionButton
+                            // variant="primary"
+                            // size="small"
+                            onClick={() => handleViewAuctionDetails(auction.id)}
+                            style={{ padding: "0 1rem", minWidth: "0" }}
+                          >
+                            Detaylar
+                          </ActionButton>
+                          <ActionButton
+                            style={{ padding: "0 1rem", minWidth: "0" }}
+                            // variant="secondary"
+                            // size="small"
+                            onClick={() => navigate(`/auctions/${auction.id}`)}
+                          >
+                            Görüntüle
+                          </ActionButton>
+
+                          <ActionButton
+                            style={{ padding: "0 1rem", minWidth: "0" }}
+                            // variant="danger"
+                            // size="small"
+                            onClick={() => {
+                              if (
+                                window.confirm(
+                                  "Bu ilanı silmek istediğinize emin misiniz?"
+                                )
+                              ) {
+                                handleDeleteAuction(auction.id);
+                              }
+                            }}
+                          >
+                            Sil
+                          </ActionButton>
+                        </div>
+                      </div>
+                    ) : (
+                      <p>Henüz oluşturulmuş ihale bulunmamaktadır.</p>
+                    )
+                  )}
+                </MobileView>
+                <div style={{ marginTop: "1rem", padding: "0.5rem" }}>
                   <Button
                     variant="secondary"
                     size="small"
@@ -3112,8 +3262,8 @@ function AdminDashboard() {
                   </Button>
                 </div>
               </CardContainer>
-
-              <CardContainer>
+              <br />
+              <CardContainer style={{ padding: "0.5rem" }}>
                 {loading && (
                   <LoadingOverlay>
                     <div>
@@ -3254,7 +3404,7 @@ function AdminDashboard() {
               </CardContainer>
             </GridContainer>
 
-            <CardContainer>
+            <CardContainer style={{ padding: "0.5rem" }}>
               {loading && (
                 <LoadingOverlay>
                   <div>
@@ -3671,15 +3821,20 @@ function AdminDashboard() {
                       auction.status === auctionFilter
                   )
                   .map((item) => (
-                    <div className="mobile-card-row" key={item.id}>
+                    <div
+                      className="mobile-card-row"
+                      key={item.id}
+                      style={{ marginBottom: "1rem" }}
+                    >
                       <div className="mobile-card-header">
                         {item.images && item.images.length > 0 ? (
                           <div
                             style={{
-                              width: "50px",
-                              height: "50px",
+                              width: "100%",
+                              height: "150px",
                               borderRadius: "var(--border-radius-sm)",
-                              overflow: "hidden",
+                              //overflow: "hidden",
+                              objectFit: "cover",
                               marginRight: "12px",
                             }}
                           >
@@ -3730,12 +3885,8 @@ function AdminDashboard() {
                             </svg>
                           </div>
                         )}
-                        <div>
-                          <div
-                            style={{ fontWeight: "600", marginBottom: "4px" }}
-                          >
-                            {item.title}
-                          </div>
+                        <div style={{ margin: "0.5rem" }}>
+                          <div style={{ fontWeight: "600" }}>{item.title}</div>
                           <StatusBadge
                             status={item.status}
                             style={{ padding: "2px 8px", fontSize: "12px" }}
@@ -3745,39 +3896,49 @@ function AdminDashboard() {
                         </div>
                       </div>
 
-                      <div className="mobile-card-content">
+                      <div
+                        className="mobile-card-content"
+                        style={{ margin: "0.5rem" }}
+                      >
                         <div className="item">
-                          <div className="label">Tür</div>
-                          <div>
+                          <span className="label">Tür: </span>
+                          <span style={{ fontWeight: 600 }}>
                             {item.listing_type === "auction" ||
                             item.listingType === "auction"
                               ? "İhale"
                               : "Satın al"}
-                          </div>
+                          </span>
                         </div>
                         <div className="item">
-                          <div className="label">Fiyat</div>
-                          <div>
+                          <span className="label">Fiyat: </span>
+                          <span style={{ fontWeight: 600 }}>
                             {item.starting_price?.toLocaleString("tr-TR")} TL
-                          </div>
+                          </span>
                         </div>
                         <div className="item">
-                          <div className="label">Bitiş Tarihi</div>
-                          <div>{formatDate(item.end_date || item.endDate)}</div>
+                          <span className="label">Bitiş Tarihi: </span>
+                          <span style={{ fontWeight: 600 }}>
+                            {formatDate(item.end_date || item.endDate)}
+                          </span>
                         </div>
                       </div>
 
-                      <div className="mobile-card-actions">
+                      <div
+                        className="mobile-card-actions"
+                        style={{ margin: "0.5rem" }}
+                      >
                         <ActionButton
-                          variant="primary"
-                          size="small"
+                          // variant="primary"
+                          // size="small"
                           onClick={() => handleViewAuctionDetails(item.id)}
+                          style={{ padding: "0 1rem", minWidth: "0" }}
                         >
                           Detaylar
                         </ActionButton>
                         <ActionButton
-                          variant="warning"
-                          size="small"
+                          style={{ padding: "0 1rem", minWidth: "0" }}
+                          // variant="warning"
+                          // size="small"
                           onClick={() => {
                             fetchAuctionDetails(item.id);
                             setSelectedAuctionId(item.id);
@@ -3787,8 +3948,9 @@ function AdminDashboard() {
                           Düzenle
                         </ActionButton>
                         <ActionButton
-                          variant="danger"
-                          size="small"
+                          style={{ padding: "0 1rem", minWidth: "0" }}
+                          // variant="danger"
+                          // size="small"
                           onClick={() => {
                             if (
                               window.confirm(
@@ -4752,84 +4914,85 @@ function AdminDashboard() {
                   </div>
                 </LoadingOverlay>
               )}
-
-              {/* Single table for all listings */}
-              <TableContainer>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableHeader style={{ width: "60px" }}></TableHeader>
-                      <TableHeader>Ad Soyad</TableHeader>
-                      {/* <TableHeader>E-posta</TableHeader> */}
-                      <TableHeader>Telefon</TableHeader>
-                      <TableHeader>Rol</TableHeader>
-                      <TableHeader>Son Giriş</TableHeader>
-                      <TableHeader>Durum</TableHeader>
-                      <TableHeader>İşlemler</TableHeader>
-                    </TableRow>
-                  </TableHead>
-                  <tbody>
-                    {users
-                      .filter(
-                        (user) =>
-                          auctionFilter === "all" || user.role === auctionFilter
-                      )
-                      .map((user) => (
-                        <TableRow key={user.id}>
-                          <TableCell>
-                            {user.avatar_url ? (
-                              <div
-                                style={{
-                                  width: "50px",
-                                  height: "50px",
-                                  borderRadius: "50%",
-                                  overflow: "hidden",
-                                }}
-                              >
-                                <img
-                                  src={user.avatar_url}
-                                  alt={user.full_name}
+              <DesktopView>
+                {/* Single table for all listings */}
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableHeader style={{ width: "60px" }}></TableHeader>
+                        <TableHeader>Ad Soyad</TableHeader>
+                        {/* <TableHeader>E-posta</TableHeader> */}
+                        <TableHeader>Telefon</TableHeader>
+                        <TableHeader>Rol</TableHeader>
+                        <TableHeader>Son Giriş</TableHeader>
+                        <TableHeader>Durum</TableHeader>
+                        <TableHeader>İşlemler</TableHeader>
+                      </TableRow>
+                    </TableHead>
+                    <tbody>
+                      {users
+                        .filter(
+                          (user) =>
+                            auctionFilter === "all" ||
+                            user.role === auctionFilter
+                        )
+                        .map((user) => (
+                          <TableRow key={user.id}>
+                            <TableCell>
+                              {user.avatar_url ? (
+                                <div
                                   style={{
-                                    width: "100%",
-                                    height: "100%",
-                                    objectFit: "cover",
+                                    width: "50px",
+                                    height: "50px",
+                                    borderRadius: "50%",
+                                    overflow: "hidden",
                                   }}
-                                />
-                              </div>
-                            ) : (
-                              <div
-                                style={{
-                                  width: "50px",
-                                  height: "50px",
-                                  backgroundColor: "var(--color-background)",
-                                  borderRadius: "50%",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  color: "var(--color-text-secondary)",
-                                }}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="24"
-                                  height="24"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
                                 >
-                                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                  <circle cx="12" cy="7" r="4" />
-                                </svg>
-                              </div>
-                            )}
-                          </TableCell>
-                          <TableCell data-label="Ad Soyad">
-                            {user.full_name || "-"}
-                          </TableCell>
-                          {/* <TableCell data-label="E-posta">
+                                  <img
+                                    src={user.avatar_url}
+                                    alt={user.full_name}
+                                    style={{
+                                      width: "100%",
+                                      height: "100%",
+                                      objectFit: "cover",
+                                    }}
+                                  />
+                                </div>
+                              ) : (
+                                <div
+                                  style={{
+                                    width: "50px",
+                                    height: "50px",
+                                    backgroundColor: "var(--color-background)",
+                                    borderRadius: "50%",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    color: "var(--color-text-secondary)",
+                                  }}
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  >
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                  </svg>
+                                </div>
+                              )}
+                            </TableCell>
+                            <TableCell data-label="Ad Soyad">
+                              {user.full_name || "-"}
+                            </TableCell>
+                            {/* <TableCell data-label="E-posta">
                             {user.email || "-"}
                             {user.email_confirmed_at && (
                               <span
@@ -4843,71 +5006,208 @@ function AdminDashboard() {
                               </span>
                             )}
                           </TableCell> */}
-                          <TableCell data-label="Telefon">
-                            {user.phone || "-"}
-                            {user.phone_confirmed_at && (
-                              <span
-                                style={{
-                                  marginLeft: "8px",
-                                  color: "var(--color-success)",
-                                  fontSize: "0.75rem",
-                                }}
+                            <TableCell data-label="Telefon">
+                              {user.phone || "-"}
+                              {user.phone_confirmed_at && (
+                                <span
+                                  style={{
+                                    marginLeft: "8px",
+                                    color: "var(--color-success)",
+                                    fontSize: "0.75rem",
+                                  }}
+                                >
+                                  ✓
+                                </span>
+                              )}
+                            </TableCell>
+                            <TableCell data-label="Rol">
+                              <StatusBadge
+                                status={
+                                  user.role === "admin" ? "active" : "completed"
+                                }
                               >
-                                ✓
-                              </span>
-                            )}
-                          </TableCell>
-                          <TableCell data-label="Rol">
-                            <StatusBadge
-                              status={
-                                user.role === "admin" ? "active" : "completed"
-                              }
-                            >
-                              {user.role === "admin" ? "Yönetici" : "Kullanıcı"}
-                            </StatusBadge>
-                          </TableCell>
-                          <TableCell data-label="Son Giriş">
-                            {user.last_sign_in_at
-                              ? formatDate(user.last_sign_in_at)
-                              : "-"}
-                          </TableCell>
-                          <TableCell data-label="Durum">
-                            {user.is_banned ? (
-                              <StatusBadge status="error">Engelli</StatusBadge>
-                            ) : user.is_deleted ? (
-                              <StatusBadge status="error">Silinmiş</StatusBadge>
-                            ) : (
-                              <StatusBadge status="active">Aktif</StatusBadge>
-                            )}
-                          </TableCell>
-                          <TableCell data-label="İşlemler">
-                            {/* <ActionButton
+                                {user.role === "admin"
+                                  ? "Yönetici"
+                                  : "Kullanıcı"}
+                              </StatusBadge>
+                            </TableCell>
+                            <TableCell data-label="Son Giriş">
+                              {user.last_sign_in_at
+                                ? formatDate(user.last_sign_in_at)
+                                : "-"}
+                            </TableCell>
+                            <TableCell data-label="Durum">
+                              {user.is_banned ? (
+                                <StatusBadge status="error">
+                                  Engelli
+                                </StatusBadge>
+                              ) : user.is_deleted ? (
+                                <StatusBadge status="error">
+                                  Silinmiş
+                                </StatusBadge>
+                              ) : (
+                                <StatusBadge status="active">Aktif</StatusBadge>
+                              )}
+                            </TableCell>
+                            <TableCell data-label="İşlemler">
+                              {/* <ActionButton
                               variant="primary"
                               onClick={() => handleViewUserDetails(user.id)}
                               disabled={actionLoading}
                             >
                               Detaylar
                             </ActionButton> */}
-                            <ActionButton
-                              variant="warning"
-                              onClick={() =>
-                                handleUpdateUserRole(
-                                  user.id,
-                                  user.role === "admin" ? "user" : "admin"
-                                )
-                              }
-                              disabled={actionLoading}
-                            >
-                              {user.role === "admin"
-                                ? "Kullanıcı Yap"
-                                : "Yönetici Yap"}
-                            </ActionButton>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </tbody>
-                </Table>
-              </TableContainer>
+                              <ActionButton
+                                variant="warning"
+                                onClick={() =>
+                                  handleUpdateUserRole(
+                                    user.id,
+                                    user.role === "admin" ? "user" : "admin"
+                                  )
+                                }
+                                disabled={actionLoading}
+                              >
+                                {user.role === "admin"
+                                  ? "Kullanıcı Yap"
+                                  : "Yönetici Yap"}
+                              </ActionButton>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </tbody>
+                  </Table>
+                </TableContainer>
+              </DesktopView>
+              <MobileView>
+                {users
+                  .filter(
+                    (user) =>
+                      auctionFilter === "all" || user.role === auctionFilter
+                  )
+                  .map((user) => (
+                    <div
+                      style={{
+                        margin: "1rem 0",
+                        borderBottom: "2px solid rgba(0,0,0,0.2)",
+                      }}
+                    >
+                      {user.avatar_url ? (
+                        <div
+                          style={{
+                            width: "100%",
+                            height: "150px",
+                            // borderRadius: "50%",
+                            overflow: "hidden",
+                          }}
+                        >
+                          <img
+                            src={user.avatar_url}
+                            alt={user.full_name}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          style={{
+                            width: "100%",
+                            height: "150px",
+                            backgroundColor: "var(--color-background)",
+                            // borderRadius: "50%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "var(--color-text-secondary)",
+                          }}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                          </svg>
+                        </div>
+                      )}
+                      <div style={{ margin: "0 1rem" }}>
+                        <div
+                          style={{
+                            fontWeight: 600,
+                            textAlign: "center",
+                            padding: "1rem 0",
+                          }}
+                        >
+                          {user.full_name || "-"}
+                        </div>
+                        <div>
+                          <span>Telefon: </span>
+                          <span style={{ fontWeight: 600 }}>
+                            {user.phone || "-"}
+                            {user.phone_confirmed_at && (
+                              <span
+                                style={{
+                                  color: "var(--color-success)",
+                                }}
+                              >
+                                ✓
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                        <div>
+                          <span>Rol: </span>
+                          <span style={{ fontWeight: 600 }}>
+                            {user.role === "admin" ? "Yönetici" : "Kullanıcı"}
+                          </span>
+                        </div>
+                        <div>
+                          <span>Son Giriş: </span>
+                          <span style={{ fontWeight: 600 }}>
+                            {user.last_sign_in_at
+                              ? formatDate(user.last_sign_in_at)
+                              : "-"}
+                          </span>
+                        </div>
+                        <div>
+                          <span>Durum: </span>
+                          {user.is_banned ? (
+                            <StatusBadge status="error">Engelli</StatusBadge>
+                          ) : user.is_deleted ? (
+                            <StatusBadge status="error">Silinmiş</StatusBadge>
+                          ) : (
+                            <StatusBadge status="active">Aktif</StatusBadge>
+                          )}
+                        </div>
+                        <div>
+                          <ActionButton
+                            variant="primary"
+                            onClick={() =>
+                              handleUpdateUserRole(
+                                user.id,
+                                user.role === "admin" ? "user" : "admin"
+                              )
+                            }
+                            disabled={actionLoading}
+                          >
+                            {user.role === "admin"
+                              ? "Kullanıcı Yap"
+                              : "Yönetici Yap"}
+                          </ActionButton>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </MobileView>
             </CardContainer>
           </>
         );
