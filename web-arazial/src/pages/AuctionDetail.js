@@ -1565,10 +1565,10 @@ const CurrencyInput = ({
 };
 
 const BidCardText = styled.div`
-  font-size: 0.9rem;
+  font-size: 0.75rem;
 
   @media (max-width: 768px) {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 `;
 
@@ -2317,7 +2317,9 @@ const BidCard = ({
                             //  fontSize: "1rem",
                           }}
                         >
-                          {currentStatus === "active" ? "Teklif: " : "Fiyat: "}
+                          {currentStatus === "active"
+                            ? "Güncel Teklif: "
+                            : "Başlangıç Fiyatı: "}
                           <strong
                             style={{
                               //  fontSize: "1",
@@ -4800,6 +4802,11 @@ const AuctionDetail = () => {
             marginBottom: "0.5rem",
           }}
         >
+          <AuctionStatus status={currentStatus}>
+            {getStatusIcon(currentStatus)}
+            {getStatusText(currentStatus)}
+          </AuctionStatus>
+
           {auction.listing_type === "auction" &&
             (currentStatus === "active"
               ? auction.end_time && (
