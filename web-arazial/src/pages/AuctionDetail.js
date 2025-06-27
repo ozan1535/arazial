@@ -1692,6 +1692,7 @@ const BidCard = ({
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showAuthLoading, setShowAuthLoading] = useState(false);
   const [shareMessage, setShareMessage] = useState("");
+  const navigate = useNavigate();
 
   // Handle share functionality
   const handleShare = async () => {
@@ -1846,10 +1847,17 @@ const BidCard = ({
             {/* Bid Form for Active Auctions */}
             {currentStatus === "active" && (
               <form
-                onSubmit={handleSubmitBid}
+                onSubmit={(e) => {
+                  if (user) {
+                    handleSubmitBid(e);
+                  } else {
+                    e.preventDefault();
+                    navigate("/login");
+                  }
+                }}
                 /*  style={{ marginBottom: isMobile ? "0.5rem" : "1rem" }} */
               >
-                {!user && !authLoading && (
+                {/* {!user && !authLoading && (
                   <p
                     style={{
                       textAlign: "center",
@@ -1858,44 +1866,51 @@ const BidCard = ({
                   >
                     Teklif vermek için <a href="/login">giriş yapın</a>.
                   </p>
-                )}
-                {user && (
-                  <>
+                )} */}
+                {/* {user && ( */}
+                <>
+                  <div
+                    style={{
+                      backgroundColor: "rgba(var(--color-primary-rgb), 0.05)",
+                      borderRadius: "var(--border-radius-md)",
+                      border: "1px solid rgba(var(--color-primary-rgb), 0.1)",
+                      //marginBottom: "0.75rem",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <OfferButton
+                      type="submit"
+                      disabled={submitLoading || authLoading}
+                      style={{ width: "100%", marginTop: 0 }}
+                    >
+                      {submitLoading ? <LoadingIcon /> : "Teklif Ver"}
+                    </OfferButton>
                     <div
                       style={{
-                        backgroundColor: "rgba(var(--color-primary-rgb), 0.05)",
-                        borderRadius: "var(--border-radius-md)",
-                        border: "1px solid rgba(var(--color-primary-rgb), 0.1)",
-                        //marginBottom: "0.75rem",
-                        overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.5rem",
+                        padding: "1rem 1rem 0 1rem",
                       }}
                     >
-                      <OfferButton
-                        type="submit"
-                        disabled={submitLoading || authLoading}
-                        style={{ width: "100%", marginTop: 0 }}
-                      >
-                        {submitLoading ? <LoadingIcon /> : "Teklif Ver"}
-                      </OfferButton>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: "0.5rem",
-                          padding: "1rem 1rem 0 1rem",
-                        }}
-                      >
-                        {!isOfferListing && (
-                          <>
-                            {/* Bid Form for Active Auctions */}
-                            {currentStatus === "active" && (
-                              <form
-                                onSubmit={handleSubmitBid}
-                                /*  style={{
+                      {!isOfferListing && (
+                        <>
+                          {/* Bid Form for Active Auctions */}
+                          {currentStatus === "active" && (
+                            <form
+                              onSubmit={() => {
+                                if (user) {
+                                  handleSubmitBid(e);
+                                } else {
+                                  e.preventDefault();
+                                  navigate("/login");
+                                }
+                              }}
+                              /*  style={{
                                   marginBottom: isMobile ? "0.5rem" : "1rem",
                                 }} */
-                              >
-                                {!user && !authLoading && (
+                            >
+                              {/* {!user && !authLoading && (
                                   <p
                                     style={{
                                       textAlign: "center",
@@ -1907,154 +1922,154 @@ const BidCard = ({
                                     Teklif vermek için{" "}
                                     <a href="/login">giriş yapın</a>.
                                   </p>
-                                )}
-                                {user && (
-                                  <>
+                                )} */}
+                              {user && (
+                                <>
+                                  <div
+                                    style={{
+                                      backgroundColor:
+                                        "rgba(var(--color-primary-rgb), 0.05)",
+                                      borderRadius: "var(--border-radius-md)",
+                                      border:
+                                        "1px solid rgba(var(--color-primary-rgb), 0.1)",
+                                      marginBottom: "0.75rem",
+                                      overflow: "hidden",
+                                    }}
+                                  >
                                     <div
                                       style={{
-                                        backgroundColor:
-                                          "rgba(var(--color-primary-rgb), 0.05)",
-                                        borderRadius: "var(--border-radius-md)",
-                                        border:
-                                          "1px solid rgba(var(--color-primary-rgb), 0.1)",
-                                        marginBottom: "0.75rem",
-                                        overflow: "hidden",
+                                        display: "flex",
+                                        gap: "0.5rem",
+                                        alignItems: "center",
+                                        padding: "0.75rem 1rem 0.5rem 1rem",
+                                        fontSize: "0.75rem",
+                                        position: "relative",
                                       }}
                                     >
-                                      <div
+                                      <BidCardText
                                         style={{
-                                          display: "flex",
-                                          gap: "0.5rem",
-                                          alignItems: "center",
-                                          padding: "0.75rem 1rem 0.5rem 1rem",
-                                          fontSize: "0.75rem",
-                                          position: "relative",
+                                          position: "absolute",
+                                          left: 0,
+                                          top: "10px",
+                                          flex: 1,
+                                          textAlign: "left",
                                         }}
                                       >
-                                        <BidCardText
-                                          style={{
-                                            position: "absolute",
-                                            left: 0,
-                                            top: "10px",
-                                            flex: 1,
-                                            textAlign: "left",
-                                          }}
-                                        >
-                                          Güncel Teklif:{" "}
-                                          <span style={{ fontWeight: "bold" }}>
-                                            {formatPrice(getMinimumBidAmount())}
-                                          </span>
-                                        </BidCardText>
-                                        <BidCardText
-                                          style={{
-                                            position: "absolute",
-                                            right: 0,
-                                            top: "10px",
-                                            textAlign: "left",
-                                            whiteSpace: "nowrap",
-                                          }}
-                                        >
-                                          Teminat Tutarı:{" "}
-                                          <span style={{ fontWeight: "bold" }}>
-                                            {formatPrice(
-                                              auction.deposit_amount || 0
-                                            )}
-                                          </span>
-                                        </BidCardText>
-                                      </div>
-
-                                      <div
+                                        Güncel Teklif:{" "}
+                                        <span style={{ fontWeight: "bold" }}>
+                                          {formatPrice(getMinimumBidAmount())}
+                                        </span>
+                                      </BidCardText>
+                                      <BidCardText
                                         style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-
-                                          alignItems: "center",
+                                          position: "absolute",
+                                          right: 0,
+                                          top: "10px",
+                                          textAlign: "left",
+                                          whiteSpace: "nowrap",
                                         }}
                                       >
-                                        <BidCardText
+                                        Teminat Tutarı:{" "}
+                                        <span style={{ fontWeight: "bold" }}>
+                                          {formatPrice(
+                                            auction.deposit_amount || 0
+                                          )}
+                                        </span>
+                                      </BidCardText>
+                                    </div>
+
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      <BidCardText
+                                        style={{
+                                          flex: 1,
+                                          textAlign: "left",
+                                        }}
+                                      >
+                                        Minimum Artış:{" "}
+                                        <span style={{ fontWeight: "bold" }}>
+                                          {formatPrice(
+                                            auction.minIncrement ||
+                                              auction.min_increment
+                                          )}
+                                        </span>
+                                      </BidCardText>
+
+                                      {(currentStatus === "active" ||
+                                        currentStatus === "upcoming") && (
+                                        <button
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            handleShare();
+                                          }}
                                           style={{
-                                            flex: 1,
-                                            textAlign: "left",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "0.5rem",
+                                            backgroundColor:
+                                              "var(--color-primary)",
+                                            color: "white",
+                                            border: "none",
+                                            borderRadius: "4px",
+                                            padding: "0.5rem 0.75rem",
+                                            fontSize: "0.875rem",
+                                            fontWeight: "500",
+                                            cursor: "pointer",
+                                            transition: "all 0.2s ease",
+                                            margin: "1rem 0",
                                           }}
                                         >
-                                          Minimum Artış:{" "}
-                                          <span style={{ fontWeight: "bold" }}>
-                                            {formatPrice(
-                                              auction.minIncrement ||
-                                                auction.min_increment
-                                            )}
-                                          </span>
-                                        </BidCardText>
-
-                                        {(currentStatus === "active" ||
-                                          currentStatus === "upcoming") && (
-                                          <button
-                                            onClick={(e) => {
-                                              e.preventDefault();
-                                              handleShare();
-                                            }}
-                                            style={{
-                                              display: "flex",
-                                              alignItems: "center",
-                                              gap: "0.5rem",
-                                              backgroundColor:
-                                                "var(--color-primary)",
-                                              color: "white",
-                                              border: "none",
-                                              borderRadius: "4px",
-                                              padding: "0.5rem 0.75rem",
-                                              fontSize: "0.875rem",
-                                              fontWeight: "500",
-                                              cursor: "pointer",
-                                              transition: "all 0.2s ease",
-                                              margin: "1rem 0",
-                                            }}
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="16"
+                                            height="16"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
                                           >
-                                            <svg
-                                              xmlns="http://www.w3.org/2000/svg"
-                                              width="16"
-                                              height="16"
-                                              viewBox="0 0 24 24"
-                                              fill="none"
-                                              stroke="currentColor"
-                                              strokeWidth="2"
-                                              strokeLinecap="round"
-                                              strokeLinejoin="round"
-                                            >
-                                              <circle
-                                                cx="18"
-                                                cy="5"
-                                                r="3"
-                                              ></circle>
-                                              <circle
-                                                cx="6"
-                                                cy="12"
-                                                r="3"
-                                              ></circle>
-                                              <circle
-                                                cx="18"
-                                                cy="19"
-                                                r="3"
-                                              ></circle>
-                                              <line
-                                                x1="8.59"
-                                                y1="13.51"
-                                                x2="15.42"
-                                                y2="17.49"
-                                              ></line>
-                                              <line
-                                                x1="15.41"
-                                                y1="6.51"
-                                                x2="8.59"
-                                                y2="10.49"
-                                              ></line>
-                                            </svg>
-                                            Paylaş
-                                          </button>
-                                        )}
-                                      </div>
+                                            <circle
+                                              cx="18"
+                                              cy="5"
+                                              r="3"
+                                            ></circle>
+                                            <circle
+                                              cx="6"
+                                              cy="12"
+                                              r="3"
+                                            ></circle>
+                                            <circle
+                                              cx="18"
+                                              cy="19"
+                                              r="3"
+                                            ></circle>
+                                            <line
+                                              x1="8.59"
+                                              y1="13.51"
+                                              x2="15.42"
+                                              y2="17.49"
+                                            ></line>
+                                            <line
+                                              x1="15.41"
+                                              y1="6.51"
+                                              x2="8.59"
+                                              y2="10.49"
+                                            ></line>
+                                          </svg>
+                                          Paylaş
+                                        </button>
+                                      )}
+                                    </div>
 
-                                      {/*  <div
+                                    {/*  <div
                                         style={{
                                           display: "flex",
                                           gap: "0.5rem",
@@ -2065,7 +2080,7 @@ const BidCard = ({
                                           justifyContent: "space-between",
                                         }}
                                       > */}
-                                      {/*  <div
+                                    {/*  <div
                                           style={{
                                             textAlign: "left",
                                             whiteSpace: "nowrap",
@@ -2079,7 +2094,7 @@ const BidCard = ({
                                           </span>
                                         </div> */}
 
-                                      {/* <button
+                                    {/* <button
                                           onClick={(e) => {
                                             e.preventDefault();
                                             handleShare();
@@ -2141,66 +2156,66 @@ const BidCard = ({
                                           </svg>
                                           Paylaş
                                         </button> */}
-                                      {/* </div> */}
-                                    </div>
-                                    {bidError && (
-                                      <p
-                                        style={{
-                                          color: "red",
-                                          fontSize: "0.875rem",
-                                          marginTop: "0.5rem",
-                                          marginBottom: "0",
-                                        }}
-                                      >
-                                        {bidError}
-                                      </p>
-                                    )}
-                                  </>
-                                )}
-                              </form>
-                            )}
-                          </>
-                        )}
-                      </div>
+                                    {/* </div> */}
+                                  </div>
+                                  {bidError && (
+                                    <p
+                                      style={{
+                                        color: "red",
+                                        fontSize: "0.875rem",
+                                        marginTop: "0.5rem",
+                                        marginBottom: "0",
+                                      }}
+                                    >
+                                      {bidError}
+                                    </p>
+                                  )}
+                                </>
+                              )}
+                            </form>
+                          )}
+                        </>
+                      )}
                     </div>
+                  </div>
 
-                    {/* <OfferButton
+                  {/* <OfferButton
                       type="submit"
                       disabled={submitLoading || authLoading}
                       style={{ width: "100%", marginTop: 0 }}
                     >
                       {submitLoading ? <LoadingIcon /> : "Teklif Ver"}
                     </OfferButton> */}
-                    {shareMessage && (
-                      <div
-                        style={{
-                          textAlign: "center",
-                          backgroundColor: "rgba(16, 185, 129, 0.1)",
-                          color: "rgb(5, 150, 105)",
-                          padding: "0.5rem",
-                          borderRadius: "4px",
-                          fontSize: "0.875rem",
-                          marginTop: "0.5rem",
-                          marginBottom: "0.5rem",
-                        }}
-                      >
-                        {shareMessage}
-                      </div>
-                    )}
-                    {bidError && (
-                      <p
-                        style={{
-                          color: "red",
-                          fontSize: "0.875rem",
-                          marginTop: "0.5rem",
-                          marginBottom: "0",
-                        }}
-                      >
-                        {bidError}
-                      </p>
-                    )}
-                  </>
-                )}
+                  {shareMessage && (
+                    <div
+                      style={{
+                        textAlign: "center",
+                        backgroundColor: "rgba(16, 185, 129, 0.1)",
+                        color: "rgb(5, 150, 105)",
+                        padding: "0.5rem",
+                        borderRadius: "4px",
+                        fontSize: "0.875rem",
+                        marginTop: "0.5rem",
+                        marginBottom: "0.5rem",
+                      }}
+                    >
+                      {shareMessage}
+                    </div>
+                  )}
+                  {bidError && (
+                    <p
+                      style={{
+                        color: "red",
+                        fontSize: "0.875rem",
+                        marginTop: "0.5rem",
+                        marginBottom: "0",
+                      }}
+                    >
+                      {bidError}
+                    </p>
+                  )}
+                </>
+                {/* )} */}
               </form>
             )}
             {/* Countdown Timer for active auctions */}
