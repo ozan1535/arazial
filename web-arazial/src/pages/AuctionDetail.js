@@ -3387,7 +3387,7 @@ const AuctionDetail = () => {
     }
   };
 
-  const handleSubmitBid = async (e) => {
+  const handleSubmitBid = async (e, hasItemDeposit = "") => {
     console.log("--- Executing handleSubmitBid ---");
     e.preventDefault();
     if (!isAuthenticated) {
@@ -3400,7 +3400,7 @@ const AuctionDetail = () => {
     }
 
     // Check if the user has paid the deposit
-    if (!hasDeposit) {
+    if (!hasDeposit && !hasItemDeposit) {
       if (hasPendingDeposit) {
         setBidError(
           "Depozito ödemeniz henüz tamamlanmamış. Lütfen ödemeyi tamamlayın veya yeni bir ödeme başlatın."
@@ -3410,7 +3410,7 @@ const AuctionDetail = () => {
       setShowPaymentModal(true);
       return;
     }
-
+    
     // For auctions, automatically use the minimum bid amount
     const amount = getMinimumBidAmount();
 
@@ -4270,6 +4270,22 @@ const AuctionDetail = () => {
         setPaymentMessage("Ödeme linki alınamadı");
         setPaymentMessageType("error");
         return;
+      }
+
+      if (user?.id) {
+        const depositStatus = await getDepositStatus(id, user.id);
+        setHasDeposit(depositStatus.hasCompleted);
+        setHasPendingDeposit(depositStatus.hasPending);
+        setDepositInfo(depositStatus.deposit);
+
+        handleSubmitBid(
+          { preventDefault: () => {} },
+          depositStatus.hasCompleted
+        );
+      } else {
+        setHasDeposit(false);
+        setHasPendingDeposit(false);
+        setDepositInfo(null);
       }
 
       // Payment initiation successful, redirect to PaymentLink
