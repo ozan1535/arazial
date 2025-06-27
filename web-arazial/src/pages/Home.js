@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Helmet } from "react-helmet-async";
-import { fetchAuctions, fetchNegotiations } from "../services/auctionService";
+import {
+  fetchAuctions,
+  fetchNegotiations,
+  getAuctionBids,
+} from "../services/auctionService";
 import { supabase } from "../services/supabase";
 import { useAuth } from "../context/AuthContext";
 import CountdownTimer from "../components/CountdownTimer";
@@ -1051,7 +1055,30 @@ const Home = () => {
       if (error) throw error;
 
       // Sort by recently added first for all listings
-      const sortedData = data.sort((a, b) => {
+      // const sortedData = data
+      //   .map(async (item) => {
+      //     const { data: bidsData, error: bidsError } = await getAuctionBids(
+      //       item.id
+      //     );
+      //     return { ...item, bids: bidsData };
+      //   })
+      //   .sort((a, b) => {
+      //     return (
+      //       new Date(b.created_at || b.createdAt) -
+      //       new Date(a.created_at || a.createdAt)
+      //     );
+      //   });
+      // Show as same value as Auction Details Page for Güncel Teklif
+      const sortedData = await Promise.all(
+        data.map(async (item) => {
+          const { data: bidsData, error: bidsError } = await getAuctionBids(
+            item.id
+          );
+          return { ...item, bids: bidsData };
+        })
+      );
+
+      sortedData.sort((a, b) => {
         return (
           new Date(b.created_at || b.createdAt) -
           new Date(a.created_at || a.createdAt)
@@ -1286,7 +1313,6 @@ const Home = () => {
           utcDate.getUTCMinutes(),
           utcDate.getUTCSeconds()
         );
-        console.log(now > startdate, now, startdate);
         if (now > startdate) {
           return { ...item, status: "active" };
         } else {
@@ -1502,22 +1528,76 @@ const Home = () => {
     );
   };
 
-  const getMinimumBidAmount = (listing) => {
-    // Eğer teklif geçmişi varsa en yüksek teklifi bul
-    if (Array.isArray(listing.bids) && listing.bids.length > 0) {
-      return Math.max(...listing.bids.map((bid) => bid.amount));
-    }
-    // Yoksa highest_bid, final_price, starting_price gibi alanlardan uygun olanı döndür
-    return (
-      listing.highest_bid ||
-      listing.final_price ||
-      listing.finalPrice ||
-      listing.starting_price ||
-      listing.startingPrice ||
-      listing.starting_bid ||
-      0
-    );
-  };
+  // const getMinimumBidAmount = (listing) => {
+  //   // Eğer teklif geçmişi varsa en yüksek teklifi bul
+  //   if (Array.isArray(listing.bids) && listing.bids.length > 0) {
+  //     return Math.max(...listing.bids.map((bid) => bid.amount));
+  //   }
+  //   // Yoksa highest_bid, final_price, starting_price gibi alanlardan uygun olanı döndür
+  //   return (
+  //     listing.highest_bid ||
+  //     listing.final_price ||
+  //     listing.finalPrice ||
+  //     listing.starting_price ||
+  //     listing.startingPrice ||
+  //     listing.starting_bid ||
+  //     0
+  //   );
+  // };
+
+  const getMinimumBidAmount = useCallback(
+    (auction) => {
+      if (!auction || auction.listing_type !== "auction") return 0;
+      const highestBid = auction?.bids?.[0]?.amount || 0;
+      const startPrice = auction.starting_price || 0;
+      const minIncrement = auction.min_increment || 1;
+
+      // If there are no bids, return the start price
+      if (highestBid === 0) {
+        return startPrice;
+      }
+
+      // Otherwise, return highest bid + minimum increment
+      return highestBid + minIncrement;
+    },
+    [auctions]
+  );
+
+  // useEffect(() => {
+  //   const fetchBidsForAuctions = async () => {
+  //     const updatedAuctions = await Promise.all(
+  //       auctions.map(async (auction) => {
+  //         if (auction.listing_type === "auction") {
+  //           const { data, error } = await supabase
+  //             .from("bids")
+  //             .select("*, profiles ( full_name, avatar_url )")
+  //             .eq("auction_id", auction.id)
+  //             .order("amount", { ascending: false });
+
+  //           if (error) {
+  //             console.error("Error fetching bids:", error);
+  //             return auction; // return unchanged auction on error
+  //           }
+
+  //           return {
+  //             ...auction,
+  //             bids: data || [],
+  //           };
+  //         } else {
+  //           return auction; // No change for non-auction types
+  //         }
+  //       })
+  //     );
+
+  //     setAuctions(updatedAuctions);
+  //   };
+
+  //   console.log(auctions, "HAHAHAHAHA");
+
+  //   if (auctions.length > 0) {
+  //     fetchBidsForAuctions();
+  //   }
+  // }, [auctions]);
 
   const handleShare = async (e, auction) => {
     e.stopPropagation(); // Prevent card click navigation
