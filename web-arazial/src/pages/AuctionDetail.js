@@ -2228,14 +2228,16 @@ const BidCard = ({
                   <div
                     style={{
                       display: "flex",
+                      flexDirection: "column",
                       alignItems: "center",
-                      fontSize: "0.25rem",
-                      fontWeight: "600",
+
                       color: "var(--color-text)",
                       margin: 0,
                     }}
                   >
-                    <span style={{ fontSize: "0.75rem" }}>Kalan süre:</span>
+                    <span style={{ fontSize: "1.25rem", fontWeight: "700" }}>
+                      Kalan süre:
+                    </span>
                     <CountdownTimer
                       endTime={auction.end_time}
                       compact={false}
@@ -2243,7 +2245,7 @@ const BidCard = ({
                     />
                   </div>
                 </div>
-                <div
+                {/* <div
                   style={{
                     display: "flex",
                     flexDirection: "column",
@@ -2276,7 +2278,7 @@ const BidCard = ({
                       />
                     </StartTimeBadge>
                   )}
-                </div>
+                </div> */}
               </div>
             )}
 
