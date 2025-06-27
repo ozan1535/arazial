@@ -3665,9 +3665,38 @@ const AuctionDetail = () => {
   const getAuctionStatus = useCallback(() => {
     if (!auction) return "loading";
     // For 'offer' type, status might be less relevant, but we keep the date logic for consistency
+    // const now = new Date();
+    // const startTime = new Date(auction.start_time);
+    // const endTime = new Date(auction.end_time);
     const now = new Date();
-    const startTime = new Date(auction.start_time);
-    const endTime = new Date(auction.end_time);
+    const utcStartDate = new Date(auction.startTime || auction.start_time);
+    const utcEndDate = new Date(auction.endTime || auction.end_time);
+
+    const startTime = new Date(
+      utcStartDate.getUTCFullYear(),
+      utcStartDate.getUTCMonth(),
+      utcStartDate.getUTCDate(),
+      utcStartDate.getUTCHours(),
+      utcStartDate.getUTCMinutes(),
+      utcStartDate.getUTCSeconds()
+    );
+    const endTime = new Date(
+      utcEndDate.getUTCFullYear(),
+      utcEndDate.getUTCMonth(),
+      utcEndDate.getUTCDate(),
+      utcEndDate.getUTCHours(),
+      utcEndDate.getUTCMinutes(),
+      utcEndDate.getUTCSeconds()
+    );
+
+    console.log(
+      now,
+      endTime,
+      "upcoming:",
+      now < startTime,
+      "ended:",
+      now > endTime
+    );
     if (now < startTime) return "upcoming";
     if (now > endTime) return "ended";
     return "active"; // Even offers can be considered 'active' during their listing window
