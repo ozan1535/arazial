@@ -3691,14 +3691,6 @@ const AuctionDetail = () => {
       utcEndDate.getUTCSeconds()
     );
 
-    console.log(
-      now,
-      endTime,
-      "upcoming:",
-      now < startTime,
-      "ended:",
-      now > endTime
-    );
     if (now < startTime) return "upcoming";
     if (now > endTime) return "ended";
     return "active"; // Even offers can be considered 'active' during their listing window
