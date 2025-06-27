@@ -1300,27 +1300,29 @@ const Home = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
 
-    return filteredAuctions
-      .map((item) => {
-        const now = new Date();
-        const utcDate = new Date(item.startTime || item.start_time);
+    return (
+      filteredAuctions
+        // .map((item) => {
+        //   const now = new Date();
+        //   const utcDate = new Date(item.startTime || item.start_time);
 
-        const startdate = new Date(
-          utcDate.getUTCFullYear(),
-          utcDate.getUTCMonth(),
-          utcDate.getUTCDate(),
-          utcDate.getUTCHours(),
-          utcDate.getUTCMinutes(),
-          utcDate.getUTCSeconds()
-        );
-        if (now > startdate) {
-          return { ...item, status: "active" };
-        } else {
-          return { ...item, status: "upcoming" };
-        }
-      })
-      .sort((a, b) => new Date(a.startTime) - new Date(b.startTime))
-      .slice(startIndex, endIndex);
+        //   const startdate = new Date(
+        //     utcDate.getUTCFullYear(),
+        //     utcDate.getUTCMonth(),
+        //     utcDate.getUTCDate(),
+        //     utcDate.getUTCHours(),
+        //     utcDate.getUTCMinutes(),
+        //     utcDate.getUTCSeconds()
+        //   );
+        //   if (now > startdate) {
+        //     return { ...item, status: "active" };
+        //   } else {
+        //     return { ...item, status: "upcoming" };
+        //   }
+        // })
+        .sort((a, b) => new Date(a.startTime) - new Date(b.startTime))
+        .slice(startIndex, endIndex)
+    );
   };
 
   // Handle city change
