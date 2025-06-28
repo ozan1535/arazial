@@ -1156,7 +1156,54 @@ const Home = () => {
       dataToFilter.length,
       "total listings"
     );
-    let filtered = [...dataToFilter];
+    let filtered = [...dataToFilter].map((item) => {
+      const now = new Date();
+      const utcStartDate = new Date(item.startTime || item.start_time);
+      const utcEndDate = new Date(item.endTime || item.end_time);
+
+      const startTime = new Date(
+        utcStartDate.getUTCFullYear(),
+        utcStartDate.getUTCMonth(),
+        utcStartDate.getUTCDate(),
+        utcStartDate.getUTCHours(),
+        utcStartDate.getUTCMinutes(),
+        utcStartDate.getUTCSeconds()
+      );
+      const endTime = new Date(
+        utcEndDate.getUTCFullYear(),
+        utcEndDate.getUTCMonth(),
+        utcEndDate.getUTCDate(),
+        utcEndDate.getUTCHours(),
+        utcEndDate.getUTCMinutes(),
+        utcEndDate.getUTCSeconds()
+      );
+      // const utcDate = new Date(item.startTime || item.start_time);
+
+      // const startdate = new Date(
+      //   utcDate.getUTCFullYear(),
+      //   utcDate.getUTCMonth(),
+      //   utcDate.getUTCDate(),
+      //   utcDate.getUTCHours(),
+      //   utcDate.getUTCMinutes(),
+      //   utcDate.getUTCSeconds()
+      // );
+
+      if (now < startTime) {
+        return { ...item, status: "upcoming" };
+      }
+      if (now > endTime) {
+        return { ...item, status: "ended" };
+      }
+      return { ...item, status: "active" };
+      // return "active";
+      // if (now > startdate) {
+      //   return { ...item, status: "active" };
+      // } else {
+      //   return { ...item, status: "upcoming" };
+      // }
+    });
+
+    // console.log(filtered, "FILTERED");
 
     // Filter by listing type if not "new" (new shows both types)
     if (listingType === "auction") {
@@ -1200,22 +1247,19 @@ const Home = () => {
           ? new Date(auction.end_date)
           : null;
 
+        // Comment all times as they break the logic
         switch (auctionStatus) {
           case "active":
             // Either explicitly marked as active or current time is within auction window
-            return (
-              status === "active" ||
-              (startTime && endTime && now >= startTime && now <= endTime)
-            );
+            return status === "active"; // || (startTime && endTime && now >= startTime && now <= endTime)
+
           case "upcoming":
             // Either explicitly marked as upcoming or start time is in the future
-            return status === "upcoming" || (startTime && now < startTime);
+            return status === "upcoming"; // || (startTime && now < startTime);
           case "ended":
             // Either explicitly marked as ended or end time is in the past
             return (
-              status === "ended" ||
-              status === "completed" ||
-              (endTime && now > endTime)
+              status === "ended" || status === "completed" //||  (endTime && now > endTime)
             );
           default:
             return true;
@@ -1300,55 +1344,57 @@ const Home = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
 
-    return filteredAuctions
-      .map((item) => {
-        const now = new Date();
-        const utcStartDate = new Date(item.startTime || item.start_time);
-        const utcEndDate = new Date(item.endTime || item.end_time);
+    return (
+      filteredAuctions
+        // .map((item) => {
+        //   const now = new Date();
+        //   const utcStartDate = new Date(item.startTime || item.start_time);
+        //   const utcEndDate = new Date(item.endTime || item.end_time);
 
-        const startTime = new Date(
-          utcStartDate.getUTCFullYear(),
-          utcStartDate.getUTCMonth(),
-          utcStartDate.getUTCDate(),
-          utcStartDate.getUTCHours(),
-          utcStartDate.getUTCMinutes(),
-          utcStartDate.getUTCSeconds()
-        );
-        const endTime = new Date(
-          utcEndDate.getUTCFullYear(),
-          utcEndDate.getUTCMonth(),
-          utcEndDate.getUTCDate(),
-          utcEndDate.getUTCHours(),
-          utcEndDate.getUTCMinutes(),
-          utcEndDate.getUTCSeconds()
-        );
-        // const utcDate = new Date(item.startTime || item.start_time);
+        //   const startTime = new Date(
+        //     utcStartDate.getUTCFullYear(),
+        //     utcStartDate.getUTCMonth(),
+        //     utcStartDate.getUTCDate(),
+        //     utcStartDate.getUTCHours(),
+        //     utcStartDate.getUTCMinutes(),
+        //     utcStartDate.getUTCSeconds()
+        //   );
+        //   const endTime = new Date(
+        //     utcEndDate.getUTCFullYear(),
+        //     utcEndDate.getUTCMonth(),
+        //     utcEndDate.getUTCDate(),
+        //     utcEndDate.getUTCHours(),
+        //     utcEndDate.getUTCMinutes(),
+        //     utcEndDate.getUTCSeconds()
+        //   );
+        //   // const utcDate = new Date(item.startTime || item.start_time);
 
-        // const startdate = new Date(
-        //   utcDate.getUTCFullYear(),
-        //   utcDate.getUTCMonth(),
-        //   utcDate.getUTCDate(),
-        //   utcDate.getUTCHours(),
-        //   utcDate.getUTCMinutes(),
-        //   utcDate.getUTCSeconds()
-        // );
+        //   // const startdate = new Date(
+        //   //   utcDate.getUTCFullYear(),
+        //   //   utcDate.getUTCMonth(),
+        //   //   utcDate.getUTCDate(),
+        //   //   utcDate.getUTCHours(),
+        //   //   utcDate.getUTCMinutes(),
+        //   //   utcDate.getUTCSeconds()
+        //   // );
 
-        if (now < startTime) {
-          return { ...item, status: "upcoming" };
-        }
-        if (now > endTime) {
-          return { ...item, status: "ended" };
-        }
-        return { ...item, status: "active" };
-        // return "active";
-        // if (now > startdate) {
+        //   if (now < startTime) {
+        //     return { ...item, status: "upcoming" };
+        //   }
+        //   if (now > endTime) {
+        //     return { ...item, status: "ended" };
+        //   }
         //   return { ...item, status: "active" };
-        // } else {
-        //   return { ...item, status: "upcoming" };
-        // }
-      })
-      .sort((a, b) => new Date(a.startTime) - new Date(b.startTime))
-      .slice(startIndex, endIndex);
+        //   // return "active";
+        //   // if (now > startdate) {
+        //   //   return { ...item, status: "active" };
+        //   // } else {
+        //   //   return { ...item, status: "upcoming" };
+        //   // }
+        // })
+        .sort((a, b) => new Date(a.startTime) - new Date(b.startTime))
+        .slice(startIndex, endIndex)
+    );
   };
 
   // Handle city change
