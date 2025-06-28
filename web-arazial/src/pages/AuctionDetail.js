@@ -3410,7 +3410,7 @@ const AuctionDetail = () => {
       setShowPaymentModal(true);
       return;
     }
-    
+
     // For auctions, automatically use the minimum bid amount
     const amount = getMinimumBidAmount();
 
