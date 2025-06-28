@@ -1226,6 +1226,9 @@ const Home = () => {
         filtered.length,
         "listings left"
       );
+    } else if (listingType === "new") {
+      // Add filter function in order to remove ended auctions
+      filtered = filtered.filter((item) => item.status !== "ended");
     }
 
     // Filter by auction status for auction listings
@@ -1344,57 +1347,9 @@ const Home = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
 
-    return (
-      filteredAuctions
-        // .map((item) => {
-        //   const now = new Date();
-        //   const utcStartDate = new Date(item.startTime || item.start_time);
-        //   const utcEndDate = new Date(item.endTime || item.end_time);
-
-        //   const startTime = new Date(
-        //     utcStartDate.getUTCFullYear(),
-        //     utcStartDate.getUTCMonth(),
-        //     utcStartDate.getUTCDate(),
-        //     utcStartDate.getUTCHours(),
-        //     utcStartDate.getUTCMinutes(),
-        //     utcStartDate.getUTCSeconds()
-        //   );
-        //   const endTime = new Date(
-        //     utcEndDate.getUTCFullYear(),
-        //     utcEndDate.getUTCMonth(),
-        //     utcEndDate.getUTCDate(),
-        //     utcEndDate.getUTCHours(),
-        //     utcEndDate.getUTCMinutes(),
-        //     utcEndDate.getUTCSeconds()
-        //   );
-        //   // const utcDate = new Date(item.startTime || item.start_time);
-
-        //   // const startdate = new Date(
-        //   //   utcDate.getUTCFullYear(),
-        //   //   utcDate.getUTCMonth(),
-        //   //   utcDate.getUTCDate(),
-        //   //   utcDate.getUTCHours(),
-        //   //   utcDate.getUTCMinutes(),
-        //   //   utcDate.getUTCSeconds()
-        //   // );
-
-        //   if (now < startTime) {
-        //     return { ...item, status: "upcoming" };
-        //   }
-        //   if (now > endTime) {
-        //     return { ...item, status: "ended" };
-        //   }
-        //   return { ...item, status: "active" };
-        //   // return "active";
-        //   // if (now > startdate) {
-        //   //   return { ...item, status: "active" };
-        //   // } else {
-        //   //   return { ...item, status: "upcoming" };
-        //   // }
-        // })
-        .sort((a, b) => new Date(a.startTime) - new Date(b.startTime))
-        .slice(startIndex, endIndex)
-    );
+    return filteredAuctions
+      .sort((a, b) => new Date(a.startTime) - new Date(b.startTime))
+      .slice(startIndex, endIndex);
   };
 
   // Handle city change
