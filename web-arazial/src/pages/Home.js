@@ -1374,6 +1374,14 @@ const Home = () => {
     navigate(`/auctions/${auctionId}`);
   };
 
+  const formatNumber = (number) => {
+    if (number === undefined || number === null) return "";
+    return parseFloat(number).toLocaleString("tr-TR", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+  };
+
   const formatPrice = (price) => {
     return (
       new Intl.NumberFormat("tr-TR", {
@@ -2092,7 +2100,7 @@ const Home = () => {
                           {listing.area_size && listing.area_unit && (
                             <MetaItem>
                               <GridIcon />
-                              {listing.area_size}
+                              {formatNumber(listing.area_size) || "-"}
                               {listing.area_unit}
                             </MetaItem>
                           )}
