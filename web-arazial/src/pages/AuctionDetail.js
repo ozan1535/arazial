@@ -4272,6 +4272,16 @@ const AuctionDetail = () => {
         return;
       }
 
+      // Payment initiation successful, redirect to PaymentLink
+      window.location.href = data.paymentLink;
+    } catch (error) {
+      console.error("Payment error details:", error);
+      setPaymentMessage(
+        error.message || "Ödeme işlemi sırasında bir hata oluştu."
+      );
+      setPaymentMessageType("error");
+    } finally {
+      setPaymentProcessing(false);
       if (user?.id) {
         const depositStatus = await getDepositStatus(id, user.id);
         setHasDeposit(depositStatus.hasCompleted);
@@ -4287,17 +4297,6 @@ const AuctionDetail = () => {
         setHasPendingDeposit(false);
         setDepositInfo(null);
       }
-
-      // Payment initiation successful, redirect to PaymentLink
-      window.location.href = data.paymentLink;
-    } catch (error) {
-      console.error("Payment error details:", error);
-      setPaymentMessage(
-        error.message || "Ödeme işlemi sırasında bir hata oluştu."
-      );
-      setPaymentMessageType("error");
-    } finally {
-      setPaymentProcessing(false);
     }
   };
 
