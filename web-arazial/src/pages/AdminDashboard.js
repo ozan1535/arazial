@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styled, { css } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
@@ -1176,6 +1176,7 @@ function AdminDashboard() {
   const [uploading, setUploading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const [depositAmount, setDepositAmount] = useState(""); // <-- Add missing state
+  const [depositsToRefund, setDepositsToRefund] = useState([]);
 
   // Add state for tabs and filters
   const [auctionFilter, setAuctionFilter] = useState("all");
@@ -2244,6 +2245,7 @@ function AdminDashboard() {
         emlak_tipi: auctionForm.emlak_tipi,
         imar_durumu: auctionForm.imar_durumu,
         ilan_sahibi: auctionForm.ilan_sahibi,
+        ada_no: auctionForm.ada_no,
         deposit_amount: depositAmount, // <-- Add deposit_amount to update data
       };
 
@@ -2860,6 +2862,116 @@ function AdminDashboard() {
     } finally {
       setActionLoading(false);
     }
+  };
+
+  const handleAddAllAvailableDepositsToRefund = useCallback(() => {
+    if (depositsToRefund?.length) {
+      setDepositsToRefund([]);
+      return;
+    }
+    let filteredDeposits = [];
+    deposits.forEach((deposit) => {
+      if (
+        deposit.status === "completed" &&
+        deposit.payment_uid &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+          deposit.payment_uid
+        )
+      ) {
+        filteredDeposits = [...filteredDeposits, deposit];
+      }
+    });
+    setDepositsToRefund(filteredDeposits);
+  }, [deposits, depositsToRefund, setDepositAmount]);
+
+  const handleAddSingleAvailableDepositsToRefund = useCallback(
+    (deposit) => {
+      if (depositsToRefund.some((item) => item.id === deposit.id)) {
+        setDepositsToRefund((prev) =>
+          prev.filter((depositItem) => depositItem.id !== deposit.id)
+        );
+        return;
+      }
+
+      setDepositsToRefund((prev) => [...prev, deposit]);
+    },
+    [depositsToRefund, setDepositsToRefund]
+  );
+
+  const handleAllDepositRefund = async () => {
+    if (depositsToRefund.length === 0) {
+      alert("İade edilecek depozit seçilmedi.");
+      return;
+    }
+
+    const confirmAll = window.confirm(
+      `${depositsToRefund.length} kullanıcı için toplu iade işlemi başlatılacak. Emin misiniz?`
+    );
+
+    if (!confirmAll) return;
+
+    setActionLoading(true);
+
+    for (const deposit of depositsToRefund) {
+      try {
+        if (!deposit.payment_uid) {
+          console.warn(`Deposit ${deposit.id} için UID eksik. Atlanıyor.`);
+          continue;
+        }
+
+        console.log("Initiating refund for deposit:", {
+          depositId: deposit.id,
+          uid: deposit.payment_uid,
+          amount: deposit.amount,
+        });
+
+        // Refund the deposit
+        const { data, error } = await supabase.functions.invoke(
+          "deposit-refund",
+          {
+            body: {
+              uid: deposit.payment_uid,
+              amount: deposit.amount,
+              description: `Refund for auction #${selectedAuctionId} deposit`,
+            },
+          }
+        );
+
+        if (error || !data.success) {
+          console.error("Refund failed for deposit", deposit.id, error || data);
+          continue;
+        }
+
+        console.log("Refund successful:", data);
+
+        // Update deposit status
+        const { data: updateData, error: updateError } =
+          await supabase.functions.invoke("update-deposit-status", {
+            body: {
+              payment_id: deposit.payment_id,
+              status: "refunded",
+              refund_message: data.message,
+            },
+          });
+
+        if (updateError || !updateData.success) {
+          console.warn(
+            `Refund successful but failed to update DB for deposit ${deposit.id}`
+          );
+          alert(
+            `İade başarılı (${deposit.amount} TL - ${deposit.profiles?.full_name}), ancak veritabanı güncellenemedi.`
+          );
+        } else {
+          console.log(`Deposit ${deposit.id} updated successfully`);
+        }
+      } catch (error) {
+        console.error(`Hata oluştu (${deposit.id}):`, error);
+      }
+    }
+
+    alert("Toplu iade işlemi tamamlandı.");
+    await fetchAuctionDeposits(selectedAuctionId);
+    setActionLoading(false);
   };
 
   const renderContent = () => {
@@ -5681,6 +5793,15 @@ function AdminDashboard() {
                           <TableHeader>Ödeme Tarihi</TableHeader>
                           <TableHeader>Durum</TableHeader>
                           <TableHeader>İşlemler</TableHeader>
+                          <TableHeader>
+                            Toplu İade
+                            <input
+                              type="checkbox"
+                              style={{ marginLeft: "1rem" }}
+                              onClick={handleAddAllAvailableDepositsToRefund}
+                              checked={depositsToRefund?.length}
+                            />
+                          </TableHeader>
                         </TableRow>
                       </TableHead>
                       <tbody>
@@ -5773,10 +5894,38 @@ function AdminDashboard() {
                                   </span>
                                 )}
                             </TableCell>
+                            <TableCell data-label="Toplu İade">
+                              <input
+                                type="checkbox"
+                                disabled={
+                                  !(
+                                    deposit.status === "completed" &&
+                                    deposit.payment_uid &&
+                                    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+                                      deposit.payment_uid
+                                    )
+                                  )
+                                }
+                                checked={depositsToRefund.some(
+                                  (item) => item.id === deposit.id
+                                )}
+                                onClick={() =>
+                                  handleAddSingleAvailableDepositsToRefund(
+                                    deposit
+                                  )
+                                }
+                              />
+                            </TableCell>
                           </TableRow>
                         ))}
                       </tbody>
                     </Table>
+                    <button
+                      onClick={handleAllDepositRefund}
+                      disabled={!depositsToRefund.length}
+                    >
+                      Toplu İade Yap
+                    </button>
                   </TableContainer>
                 ) : (
                   <EmptyState>
