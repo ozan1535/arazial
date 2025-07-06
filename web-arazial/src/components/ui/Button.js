@@ -9,6 +9,7 @@ const variants = {
     
     &:hover {
       background-color: var(--color-primary-dark);
+      color: white;
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(15, 52, 96, 0.35);
     }
