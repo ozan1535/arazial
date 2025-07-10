@@ -273,6 +273,7 @@ const Dashboard = () => {
     past: [],
   });
   const [userBids, setUserBids] = useState([]);
+  const [userOffers, setUserOffers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userStats, setUserStats] = useState({
@@ -281,7 +282,6 @@ const Dashboard = () => {
     wonAuctions: 0,
     totalSpent: 0,
   });
-
   useEffect(() => {
     // Wait for auth to be loaded
     if (authLoading) return;
@@ -295,7 +295,7 @@ const Dashboard = () => {
     // Initial data load
     loadUserBids();
     loadUserStats();
-
+    loadUserOffers();
     // Clean up subscription when component unmounts
     return () => {
       // No need to unsubscribe as appState is removed
@@ -432,6 +432,28 @@ const Dashboard = () => {
       });
     } catch (error) {
       console.error("Error loading user stats:", error);
+    }
+  };
+
+  const loadUserOffers = async () => {
+    try {
+      const { data: userOffers, error: userOffersError } = await supabase
+        .from("offers")
+        .select(
+          `
+    *,
+    auctions (
+      *
+    )
+  `
+        )
+        .eq("user_id", user.id);
+
+      if (userOffersError) throw userOffersError;
+
+      setUserOffers(userOffers);
+    } catch (error) {
+      console.error("Error loading user offers:", error);
     }
   };
 
@@ -633,6 +655,118 @@ const Dashboard = () => {
               </button>
             </div>
           )}
+        </div>
+      )}
+      <SectionTitle>Satın al Tekliflerim</SectionTitle>
+      {error ? (
+        <EmptyState>
+          <EmptyStateIcon>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </EmptyStateIcon>
+          <EmptyStateTitle>Hata Oluştu</EmptyStateTitle>
+          <EmptyStateMessage>{error}</EmptyStateMessage>
+        </EmptyState>
+      ) : userOffers.length === 0 ? (
+        <EmptyState>
+          <EmptyStateIcon>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+              />
+            </svg>
+          </EmptyStateIcon>
+          <EmptyStateTitle>Henüz Satın Alma Yapmadınız.</EmptyStateTitle>
+          <EmptyStateMessage>
+            Henüz hiçbir satın alma yapmadınız. İhalelere göz atarak satın alma
+            yapabilirsiniz.
+          </EmptyStateMessage>
+        </EmptyState>
+      ) : (
+        <div>
+          <BidsList>
+            {userOffers.map((offer) => (
+              <BidItem
+                key={offer.id}
+                onClick={() => handleAuctionClick(offer.auctions.id)}
+              >
+                <BidItemContent>
+                  <BidItemTitle
+                    style={{
+                      fontSize: "1.1rem",
+                      fontWeight: 700,
+                      marginBottom: "0.3rem",
+                    }}
+                  >
+                    {offer.auctions?.title || "Arsa İhalesi"}
+                  </BidItemTitle>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.2rem",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "1rem",
+                        color: "var(--color-primary)",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Teklif: {formatPrice(offer.amount)}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "0.95rem",
+                        color: "var(--color-text-secondary)",
+                      }}
+                    >
+                      Tarih: {formatDate(offer.created_at)}
+                    </span>
+                    <BidItemStatus
+                      status={
+                        offer.status === "pending"
+                          ? "active"
+                          : offer.status === "accepted"
+                          ? "won"
+                          : offer.status === "rejected"
+                          ? "lost"
+                          : ""
+                      }
+                    >
+                      {offer.status === "pending"
+                        ? "Bekleniyor"
+                        : offer.status === "accepted"
+                        ? "Kabul Edildi"
+                        : offer.status === "rejected"
+                        ? "Reddedildi"
+                        : ""}
+                    </BidItemStatus>
+                  </div>
+                </BidItemContent>
+              </BidItem>
+            ))}
+          </BidsList>
         </div>
       )}
 

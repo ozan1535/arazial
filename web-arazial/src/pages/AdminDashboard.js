@@ -1564,6 +1564,7 @@ function AdminDashboard() {
       const auctionData = {
         title: auctionForm.title,
         description: auctionForm.description,
+        city: auctionForm.city,
         starting_price: price,
         start_price: price,
         min_increment:
@@ -4197,42 +4198,43 @@ function AdminDashboard() {
                     step="0.01"
                   />
                 </FormGroup>
-
-                <FormGroup>
-                  <Label
-                    htmlFor={
-                      auctionForm.listingType === "auction"
-                        ? "minIncrement"
-                        : "offerIncrement"
-                    }
-                  >
-                    {auctionForm.listingType === "auction"
-                      ? "Minimum Artış Tutarı (TL)"
-                      : "Teklif Artış Tutarı (TL)"}
-                  </Label>
-                  <Input
-                    type="number"
-                    id={
-                      auctionForm.listingType === "auction"
-                        ? "minIncrement"
-                        : "offerIncrement"
-                    }
-                    name={
-                      auctionForm.listingType === "auction"
-                        ? "minIncrement"
-                        : "offerIncrement"
-                    }
-                    value={
-                      auctionForm.listingType === "auction"
-                        ? auctionForm.minIncrement
-                        : auctionForm.offerIncrement
-                    }
-                    onChange={handleAuctionFormChange}
-                    required
-                    min="0"
-                    step="0.01"
-                  />
-                </FormGroup>
+                {auctionForm.listingType !== "offer" && (
+                  <FormGroup>
+                    <Label
+                      htmlFor={
+                        auctionForm.listingType === "auction"
+                          ? "minIncrement"
+                          : "offerIncrement"
+                      }
+                    >
+                      {auctionForm.listingType === "auction"
+                        ? "Minimum Artış Tutarı (TL)"
+                        : "Teklif Artış Tutarı (TL)"}
+                    </Label>
+                    <Input
+                      type="number"
+                      id={
+                        auctionForm.listingType === "auction"
+                          ? "minIncrement"
+                          : "offerIncrement"
+                      }
+                      name={
+                        auctionForm.listingType === "auction"
+                          ? "minIncrement"
+                          : "offerIncrement"
+                      }
+                      value={
+                        auctionForm.listingType === "auction"
+                          ? auctionForm.minIncrement
+                          : auctionForm.offerIncrement
+                      }
+                      onChange={handleAuctionFormChange}
+                      required
+                      min="0"
+                      step="0.01"
+                    />
+                  </FormGroup>
+                )}
               </FormRow>
               <FormRow>
                 <FormGroup>
@@ -4250,58 +4252,60 @@ function AdminDashboard() {
                 </FormGroup>
               </FormRow>
               {/* Dates & Times */}
-              <FormRow>
-                <FormGroup>
-                  <Label htmlFor="startDate">Başlangıç Tarihi</Label>
-                  <Input
-                    type="date"
-                    id="startDate"
-                    name="startDate"
-                    value={auctionForm.startDate}
-                    onChange={handleAuctionFormChange}
-                    required
-                  />
-                </FormGroup>
+              {auctionForm.listingType !== "offer" && (
+                <FormRow>
+                  <FormGroup>
+                    <Label htmlFor="startDate">Başlangıç Tarihi</Label>
+                    <Input
+                      type="date"
+                      id="startDate"
+                      name="startDate"
+                      value={auctionForm.startDate}
+                      onChange={handleAuctionFormChange}
+                      required
+                    />
+                  </FormGroup>
 
-                <FormGroup>
-                  <Label htmlFor="startTime">Başlangıç Saati</Label>
-                  <Input
-                    type="time"
-                    id="startTime"
-                    name="startTime"
-                    value={auctionForm.startTime}
-                    onChange={handleAuctionFormChange}
-                    required
-                  />
-                </FormGroup>
-              </FormRow>
+                  <FormGroup>
+                    <Label htmlFor="startTime">Başlangıç Saati</Label>
+                    <Input
+                      type="time"
+                      id="startTime"
+                      name="startTime"
+                      value={auctionForm.startTime}
+                      onChange={handleAuctionFormChange}
+                      required
+                    />
+                  </FormGroup>
+                </FormRow>
+              )}
+              {auctionForm.listingType !== "offer" && (
+                <FormRow>
+                  <FormGroup>
+                    <Label htmlFor="endDate">Bitiş Tarihi</Label>
+                    <Input
+                      type="date"
+                      id="endDate"
+                      name="endDate"
+                      value={auctionForm.endDate}
+                      onChange={handleAuctionFormChange}
+                      required
+                    />
+                  </FormGroup>
 
-              <FormRow>
-                <FormGroup>
-                  <Label htmlFor="endDate">Bitiş Tarihi</Label>
-                  <Input
-                    type="date"
-                    id="endDate"
-                    name="endDate"
-                    value={auctionForm.endDate}
-                    onChange={handleAuctionFormChange}
-                    required
-                  />
-                </FormGroup>
-
-                <FormGroup>
-                  <Label htmlFor="endTime">Bitiş Saati</Label>
-                  <Input
-                    type="time"
-                    id="endTime"
-                    name="endTime"
-                    value={auctionForm.endTime}
-                    onChange={handleAuctionFormChange}
-                    required
-                  />
-                </FormGroup>
-              </FormRow>
-
+                  <FormGroup>
+                    <Label htmlFor="endTime">Bitiş Saati</Label>
+                    <Input
+                      type="time"
+                      id="endTime"
+                      name="endTime"
+                      value={auctionForm.endTime}
+                      onChange={handleAuctionFormChange}
+                      required
+                    />
+                  </FormGroup>
+                </FormRow>
+              )}
               {/* Location */}
               <FormRow>
                 <FormGroup>
@@ -4625,95 +4629,100 @@ function AdminDashboard() {
                   />
                 </FormGroup>
 
-                <FormGroup>
-                  <Label
-                    htmlFor={
-                      auctionForm.listingType === "auction"
-                        ? "minIncrement"
-                        : "offerIncrement"
-                    }
-                  >
-                    {auctionForm.listingType === "auction"
-                      ? "Minimum Artış Tutarı (TL)"
-                      : "Teklif Artış Tutarı (TL)"}
-                  </Label>
-                  <Input
-                    type="number"
-                    id={
-                      auctionForm.listingType === "auction"
-                        ? "minIncrement"
-                        : "offerIncrement"
-                    }
-                    name={
-                      auctionForm.listingType === "auction"
-                        ? "minIncrement"
-                        : "offerIncrement"
-                    }
-                    value={
-                      auctionForm.listingType === "auction"
-                        ? auctionForm.minIncrement
-                        : auctionForm.offerIncrement
-                    }
-                    onChange={handleAuctionFormChange}
-                    required
-                    min="0"
-                    step="0.01"
-                  />
-                </FormGroup>
+                {auctionForm.listingType !== "offer" && (
+                  <FormGroup>
+                    <Label
+                      htmlFor={
+                        auctionForm.listingType === "auction"
+                          ? "minIncrement"
+                          : "offerIncrement"
+                      }
+                    >
+                      {auctionForm.listingType === "auction"
+                        ? "Minimum Artış Tutarı (TL)"
+                        : "Teklif Artış Tutarı (TL)"}
+                    </Label>
+                    <Input
+                      type="number"
+                      id={
+                        auctionForm.listingType === "auction"
+                          ? "minIncrement"
+                          : "offerIncrement"
+                      }
+                      name={
+                        auctionForm.listingType === "auction"
+                          ? "minIncrement"
+                          : "offerIncrement"
+                      }
+                      value={
+                        auctionForm.listingType === "auction"
+                          ? auctionForm.minIncrement
+                          : auctionForm.offerIncrement
+                      }
+                      onChange={handleAuctionFormChange}
+                      required
+                      min="0"
+                      step="0.01"
+                    />
+                  </FormGroup>
+                )}
               </FormRow>
 
               {/* Dates & Times */}
-              <FormRow>
-                <FormGroup>
-                  <Label htmlFor="startDate">Başlangıç Tarihi</Label>
-                  <Input
-                    type="date"
-                    id="startDate"
-                    name="startDate"
-                    value={auctionForm.startDate}
-                    onChange={handleAuctionFormChange}
-                    required
-                  />
-                </FormGroup>
+              {auctionForm.listingType !== "offer" && (
+                <FormRow>
+                  <FormGroup>
+                    <Label htmlFor="startDate">Başlangıç Tarihi</Label>
+                    <Input
+                      type="date"
+                      id="startDate"
+                      name="startDate"
+                      value={auctionForm.startDate}
+                      onChange={handleAuctionFormChange}
+                      required
+                    />
+                  </FormGroup>
 
-                <FormGroup>
-                  <Label htmlFor="startTime">Başlangıç Saati</Label>
-                  <Input
-                    type="time"
-                    id="startTime"
-                    name="startTime"
-                    value={auctionForm.startTime}
-                    onChange={handleAuctionFormChange}
-                    required
-                  />
-                </FormGroup>
-              </FormRow>
+                  <FormGroup>
+                    <Label htmlFor="startTime">Başlangıç Saati</Label>
+                    <Input
+                      type="time"
+                      id="startTime"
+                      name="startTime"
+                      value={auctionForm.startTime}
+                      onChange={handleAuctionFormChange}
+                      required
+                    />
+                  </FormGroup>
+                </FormRow>
+              )}
+              {auctionForm.listingType !== "offer" && (
+                <FormRow>
+                  <FormGroup>
+                    <Label htmlFor="endDate">Bitiş Tarihi</Label>
+                    <Input
+                      type="date"
+                      id="endDate"
+                      name="endDate"
+                      value={auctionForm.endDate}
+                      onChange={handleAuctionFormChange}
+                      required
+                    />
+                  </FormGroup>
 
-              <FormRow>
-                <FormGroup>
-                  <Label htmlFor="endDate">Bitiş Tarihi</Label>
-                  <Input
-                    type="date"
-                    id="endDate"
-                    name="endDate"
-                    value={auctionForm.endDate}
-                    onChange={handleAuctionFormChange}
-                    required
-                  />
-                </FormGroup>
-
-                <FormGroup>
-                  <Label htmlFor="endTime">Bitiş Saati</Label>
-                  <Input
-                    type="time"
-                    id="endTime"
-                    name="endTime"
-                    value={auctionForm.endTime}
-                    onChange={handleAuctionFormChange}
-                    required
-                  />
-                </FormGroup>
-              </FormRow>
+                  <FormGroup>
+                    <Label htmlFor="endTime">Bitiş Saati</Label>
+                    <Input
+                      type="time"
+                      id="endTime"
+                      name="endTime"
+                      value={auctionForm.endTime}
+                      onChange={handleAuctionFormChange}
+                      required
+                    />
+                  </FormGroup>
+                </FormRow>
+              )}
 
               {/* Location */}
               <FormRow>
@@ -5692,6 +5701,9 @@ function AdminDashboard() {
                           <TableHeader>Teklif Veren</TableHeader>
                           <TableHeader>Telefon</TableHeader>
                           <TableHeader>Teklif Tutarı</TableHeader>
+                          <TableHeader>TC No</TableHeader>
+                          <TableHeader>Devir Yapılacak Şehir</TableHeader>
+                          <TableHeader>İşlem Yöntemi</TableHeader>
                           <TableHeader>Teklif Tarihi</TableHeader>
                           <TableHeader>Durum</TableHeader>
                           <TableHeader>İşlemler</TableHeader>
@@ -5708,6 +5720,15 @@ function AdminDashboard() {
                             </TableCell>
                             <TableCell data-label="Teklif Tutarı">
                               {offer.amount?.toLocaleString("tr-TR")} TL
+                            </TableCell>
+                            <TableCell data-label="TC No">
+                              {offer.tc_no}
+                            </TableCell>
+                            <TableCell data-label="Devir Yapılacak Şehir">
+                              {offer.process_city}
+                            </TableCell>
+                            <TableCell data-label="İşlem Yöntemi">
+                              {offer.process_method}
                             </TableCell>
                             <TableCell data-label="Teklif Tarihi">
                               {formatDate(offer.created_at)}

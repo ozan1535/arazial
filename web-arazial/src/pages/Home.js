@@ -2135,39 +2135,42 @@ const Home = () => {
                       </AuctionDetails> */}
 
                         <AuctionDetails>
-                          <PriceInfo>
-                            <span>
-                              {listing.status === "active"
-                                ? "Güncel Teklif"
-                                : listing.status === "ended" ||
-                                  listing.status === "completed"
-                                ? "Kapanış Fiyatı"
-                                : "Başlangıç Fiyatı"}
-                            </span>
-                            <AuctionPrice>
-                              {formatPrice(
-                                listing.status === "active" ||
-                                  listing.status === "ended" ||
-                                  listing.status === "completed"
-                                  ? getMinimumBidAmount(listing)
-                                  : listing.starting_price ||
-                                      listing.startingPrice ||
-                                      listing.starting_bid ||
-                                      0
-                              )}
-                            </AuctionPrice>
-                          </PriceInfo>
-
-                          <PriceInfo>
-                            <span> Artış Tutarı:</span>
-                            <AuctionPrice>
-                              {formatPrice(
-                                listing.minIncrement ||
+                          {listing._display_type !== "offer" && (
+                            <PriceInfo>
+                              <span>
+                                {listing.status === "active"
+                                  ? "Güncel Teklif"
+                                  : listing.status === "ended" ||
+                                    listing.status === "completed"
+                                  ? "Kapanış Fiyatı"
+                                  : "Başlangıç Fiyatı"}
+                              </span>
+                              <AuctionPrice>
+                                {formatPrice(
+                                  listing.status === "active" ||
+                                    listing.status === "ended" ||
+                                    listing.status === "completed"
+                                    ? getMinimumBidAmount(listing)
+                                    : listing.starting_price ||
+                                        listing.startingPrice ||
+                                        listing.starting_bid ||
+                                        0
+                                )}
+                              </AuctionPrice>
+                            </PriceInfo>
+                          )}
+                          {listing._display_type !== "offer" && (
+                            <PriceInfo>
+                              <span> Artış Tutarı:</span>
+                              <AuctionPrice>
+                                {formatPrice(
                                   listing.minIncrement ||
-                                  0
-                              )}
-                            </AuctionPrice>
-                          </PriceInfo>
+                                    listing.minIncrement ||
+                                    0
+                                )}
+                              </AuctionPrice>
+                            </PriceInfo>
+                          )}
                           <PriceInfo>
                             <span>Teminat Tutarı</span>
                             <AuctionPrice>

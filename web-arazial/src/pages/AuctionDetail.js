@@ -1688,6 +1688,9 @@ const BidCard = ({
   showOfferForm,
   auction,
   handleTimerComplete,
+  setShowOfferProcessModal,
+  userExistingOffers,
+  setUserExistingOffers,
 }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showAuthLoading, setShowAuthLoading] = useState(false);
@@ -1842,7 +1845,91 @@ const BidCard = ({
         }}
       >
         {/* AUCTION BIDDING UI */}
-        {!isOfferListing && (
+        {isOfferListing ? (
+          <>
+            <BidCardText
+              style={{
+                fontSize: "1rem",
+                textAlign: "left",
+                whiteSpace: "nowrap",
+                marginBottom: "1rem",
+              }}
+            >
+              Teminat Tutarı:{" "}
+              <span style={{ fontWeight: "bold" }}>
+                {formatPrice(auction.deposit_amount || 0)}
+              </span>
+            </BidCardText>
+            <OfferButton
+              type="submit"
+              disabled={
+                submitLoading || authLoading || userExistingOffers?.length
+              }
+              style={{ width: "100%", marginTop: 0 }}
+              onClick={(e) => {
+                if (!user) {
+                  e.preventDefault();
+                  navigate("/login");
+                  return;
+                }
+                setShowOfferProcessModal(true);
+              }}
+              title={
+                userExistingOffers?.length
+                  ? `Zaten ${
+                      userExistingOffers?.[0]?.status === "pending"
+                        ? "beklemede olan"
+                        : "kabul edilmiş"
+                    } bir teklifiniz var.`
+                  : ""
+              }
+            >
+              {submitLoading ? <LoadingIcon /> : "Satın Al"}
+            </OfferButton>
+            <div>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleShare();
+                }}
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  backgroundColor: "var(--color-primary)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  padding: "0.5rem 0.75rem",
+                  fontSize: "0.875rem",
+                  fontWeight: "500",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  margin: "1rem 0",
+                  float: "right",
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="18" cy="5" r="3"></circle>
+                  <circle cx="6" cy="12" r="3"></circle>
+                  <circle cx="18" cy="19" r="3"></circle>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+                Paylaş
+              </button>
+            </div>
+          </>
+        ) : (
           <>
             {/* Bid Form for Active Auctions */}
             {currentStatus === "active" && (
@@ -2180,12 +2267,12 @@ const BidCard = ({
                   </div>
 
                   {/* <OfferButton
-                      type="submit"
-                      disabled={submitLoading || authLoading}
-                      style={{ width: "100%", marginTop: 0 }}
-                    >
-                      {submitLoading ? <LoadingIcon /> : "Teklif Ver"}
-                    </OfferButton> */}
+                    type="submit"
+                    disabled={submitLoading || authLoading}
+                    style={{ width: "100%", marginTop: 0 }}
+                  >
+                    {submitLoading ? <LoadingIcon /> : "Teklif Ver"}
+                  </OfferButton> */}
                   {shareMessage && (
                     <div
                       style={{
@@ -3065,6 +3152,8 @@ const AuctionDetail = () => {
   const [offerAmount, setOfferAmount] = useState("");
   const [offerError, setOfferError] = useState(null);
 
+  const [userExistingOffers, setUserExistingOffers] = useState([]);
+
   // Initialize offer amount with listing price for offer-type listings
   useEffect(() => {
     if (auction && auction.listing_type === "offer" && !offerAmount) {
@@ -3077,6 +3166,7 @@ const AuctionDetail = () => {
         setOfferAmount(listingPrice.toString());
       }
     }
+    setOfferProcessData((prev) => ({ ...prev, processCity: auction?.city }));
   }, [auction, offerAmount]);
 
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -3087,6 +3177,17 @@ const AuctionDetail = () => {
 
   // --- Add new state for payment handling ---
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showOfferProcessModal, setShowOfferProcessModal] = useState(false);
+  const [offerProcessBodyPage, setOfferProcessBodyPage] = useState(0);
+  const [offerProcessCheckboxes, setOfferProcessCheckboxes] = useState({
+    isKVKKRead: false,
+    officiallyAccepted: false,
+  });
+  const [offerProcessData, setOfferProcessData] = useState({
+    processMethod: "Tapuya bizzat geleceğim",
+    processCity: auction?.city || "",
+    idNo: "",
+  });
   const [hasDeposit, setHasDeposit] = useState(false);
   const [hasPendingDeposit, setHasPendingDeposit] = useState(false);
   const [depositInfo, setDepositInfo] = useState(null);
@@ -3535,6 +3636,21 @@ const AuctionDetail = () => {
       console.error("Error refreshing user's offers:", error);
     }
   }, [auction, user?.id]);
+
+  const hasUserExistingOffer = async () => {
+    const { data: existingOffers, error: checkError } = await supabase
+      .from("offers")
+      .select("id, status")
+      .eq("auction_id", auction?.id)
+      .eq("user_id", user?.id)
+      .in("status", ["pending", "accepted"])
+      .limit(1);
+    setUserExistingOffers(existingOffers);
+  };
+
+  useEffect(() => {
+    hasUserExistingOffer();
+  }, [auction]);
 
   const handleSubmitOffer = async (e) => {
     console.log("--- Executing handleSubmitOffer ---");
@@ -4092,12 +4208,34 @@ const AuctionDetail = () => {
         payment_id: orderId,
       });
 
+      if (auction.listing_type === "offer") {
+        const offerData = {
+          auction_id: auction.id,
+          user_id: user.id,
+          amount: auction.deposit_amount,
+          status: "pending",
+          payment_id: orderId,
+          tc_no: offerProcessData.idNo,
+          process_method: offerProcessData.processMethod,
+          process_city: offerProcessData.processCity,
+        };
+
+        const { data, error } = await supabase
+          .from("offers")
+          .insert([offerData]);
+      }
+
       console.log("Deposit record created:", depositRecord);
 
       // Prepare the payload for the payment-proxy-server
       const payload = {
         ReturnUrl:
-          window.location.origin + "/payment-callback?orderId=" + orderId,
+          window.location.origin +
+            "/payment-callback?orderId=" +
+            orderId +
+            "&isOffer=" +
+            auction.listingType ===
+          "offer",
         OrderId: orderId,
         ClientIp: clientIp,
         Installment: 1,
@@ -4299,10 +4437,19 @@ const AuctionDetail = () => {
       }
     }
   };
-
   // --- Update closePaymentModal to reset card info ---
   const closePaymentModal = () => {
     setShowPaymentModal(false);
+    setShowOfferProcessModal(false);
+
+    setOfferProcessData((prev) => ({
+      ...prev,
+      processMethod: "Tapuya bizzat geleceğim",
+      processCity: offerProcessData?.processCity || "",
+      idNo: "",
+    }));
+    setOfferProcessBodyPage(0);
+    setOfferProcessCheckboxes({ isKVKKRead: false, officiallyAccepted: false });
     setPaymentMessage("");
     setPaymentMessageType("");
     setPaymentStep("info");
@@ -4315,6 +4462,43 @@ const AuctionDetail = () => {
     // Clear bid/offer errors when modal is closed
     setBidError(null);
     setOfferError(null);
+  };
+
+  const isTcNoCorrect = (tcno) => {
+    tcno = String(tcno);
+    if (tcno.substring(0, 1) === "0") {
+      return false;
+    }
+    if (tcno.length !== 11) {
+      return false;
+      s;
+    }
+
+    const ilkon_array = tcno.substr(0, 10).split("");
+    let ilkon_total = 0;
+    let hane_tek = 0;
+    let hane_cift = 0;
+
+    for (let i = 0; i < 9; ++i) {
+      const j = parseInt(ilkon_array[i], 10);
+      if (i % 2 === 1) {
+        hane_cift += j;
+      } else {
+        hane_tek += j;
+      }
+      ilkon_total += j;
+    }
+
+    if ((hane_tek * 7 - hane_cift) % 10 !== parseInt(tcno.substr(-2, 1), 10)) {
+      return false;
+    }
+
+    ilkon_total += parseInt(ilkon_array[9], 10);
+    if (ilkon_total % 10 !== parseInt(tcno.substr(-1), 10)) {
+      return false;
+    }
+
+    return true;
   };
 
   // Function to proceed to payment form
@@ -4700,6 +4884,280 @@ const AuctionDetail = () => {
     );
   };
 
+  const renderOfferProcessModal = () => {
+    if (!auction) return null;
+
+    return (
+      <PaymentModalOverlay
+        isVisible={showOfferProcessModal}
+        onClick={closePaymentModal}
+      >
+        <PaymentModalContent onClick={(e) => e.stopPropagation()}>
+          <PaymentModalHeader>
+            <PaymentModalTitle>Satın Al</PaymentModalTitle>
+            <button
+              onClick={closePaymentModal}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                color: "var(--color-text-secondary)",
+              }}
+            >
+              <CloseIcon />
+            </button>
+          </PaymentModalHeader>
+
+          <PaymentModalBody>
+            {offerProcessBodyPage === 0 ? (
+              <div>
+                <div style={{ marginTop: "0.5rem" }}>
+                  <h5>İşlem Yöntemi Seçiniz</h5>
+                  <select
+                    style={{ maxWidth: "250px" }}
+                    onChange={(e) =>
+                      setOfferProcessData((prev) => ({
+                        ...prev,
+                        processMethod: e.target.value,
+                      }))
+                    }
+                    defaultValue={offerProcessData.processMethod}
+                  >
+                    <option>Tapuya bizzat geleceğim</option>
+                    <option>
+                      Noter vekaleti vererek işlemin sizin tarafınızdan
+                      yapılmasını istiyorum
+                    </option>
+                  </select>
+                </div>
+                <div style={{ marginTop: "0.5rem" }}>
+                  <h5>Tapu Devri Yapılacak İl Seçimi</h5>
+                  <select
+                    onChange={(e) =>
+                      setOfferProcessData((prev) => ({
+                        ...prev,
+                        processCity: e.target.value,
+                      }))
+                    }
+                    defaultValue={offerProcessData?.processCity}
+                  >
+                    <option value={offerProcessData?.processCity}>
+                      {offerProcessData?.processCity}
+                    </option>
+                    <option value="İzmir">İzmir</option>
+                    <option value="Manisa">Manisa</option>
+                    <option value="Balıkesir">Balıkesir</option>
+                  </select>
+                </div>
+                <div style={{ marginTop: "0.5rem" }}>
+                  <h5>TC Kimlik Numarası</h5>
+                  <input
+                    type="text"
+                    placeholder="TC No"
+                    value={offerProcessData.idNo}
+                    onChange={(e) =>
+                      setOfferProcessData((prev) => ({
+                        ...prev,
+                        idNo: e.target.value,
+                      }))
+                    }
+                    required
+                  />
+                </div>
+                <div>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={offerProcessCheckboxes.isKVKKRead}
+                      onChange={() =>
+                        setOfferProcessCheckboxes((prev) => ({
+                          ...prev,
+                          isKVKKRead: !prev.isKVKKRead,
+                        }))
+                      }
+                    />
+                    <span style={{ marginLeft: "0.5rem" }}>
+                      Satın alma şartlarını ve KVKK metnini okudum, onaylıyorum
+                    </span>
+                  </label>
+                  <br />
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={offerProcessCheckboxes.officiallyAccepted}
+                      onChange={(e) =>
+                        setOfferProcessCheckboxes((prev) => ({
+                          ...prev,
+                          officiallyAccepted: !prev.officiallyAccepted,
+                        }))
+                      }
+                    />
+                    <span style={{ marginLeft: "0.5rem" }}>
+                      Tapu işlemlerinin resmi sürece bağlı olduğunu kabul
+                      ediyorum
+                    </span>
+                  </label>
+                </div>
+              </div>
+            ) : offerProcessBodyPage === 1 ? (
+              <>
+                <PaymentAmount>
+                  <PaymentAmountLabel>Ödenecek Tutar:</PaymentAmountLabel>
+                  <PaymentAmountValue>
+                    {formatPrice(auction.deposit_amount || 0)}
+                  </PaymentAmountValue>
+                </PaymentAmount>
+
+                {/* Mock form fields for payment - to be replaced with actual payment processor later */}
+                <div
+                  style={{
+                    marginBottom: "1.5rem",
+                    "@media (max-width: 768px)": {
+                      marginBottom: "1rem",
+                    },
+                  }}
+                >
+                  <InputGroup>
+                    <InputLabel>Kart Sahibi</InputLabel>
+                    <Input
+                      type="text"
+                      placeholder="Ad Soyad"
+                      value={cardOwner}
+                      onChange={handleCardOwnerChange}
+                      disabled={paymentProcessing}
+                      required
+                    />
+                  </InputGroup>
+                  <InputGroup>
+                    <InputLabel>Kart Numarası</InputLabel>
+                    <Input
+                      type="text"
+                      placeholder="1234 5678 9012 3456"
+                      value={cardNumber}
+                      onChange={handleCardNumberChange}
+                      disabled={paymentProcessing}
+                      required
+                    />
+                  </InputGroup>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "1rem",
+                      "@media (max-width: 768px)": {
+                        flexDirection: "column",
+                        gap: "0.75rem",
+                      },
+                    }}
+                  >
+                    <InputGroup
+                      style={{
+                        flex: 1,
+                        "@media (max-width: 768px)": {
+                          flex: "none",
+                        },
+                      }}
+                    >
+                      <InputLabel>Son Kullanma Tarihi</InputLabel>
+                      <Input
+                        type="text"
+                        placeholder="MM/YY"
+                        value={cardExpiry}
+                        onChange={handleExpiryChange}
+                        disabled={paymentProcessing}
+                        required
+                        maxLength={5}
+                      />
+                    </InputGroup>
+                    <InputGroup
+                      style={{
+                        flex: 1,
+                        "@media (max-width: 768px)": {
+                          flex: "none",
+                        },
+                      }}
+                    >
+                      <InputLabel>CVV</InputLabel>
+                      <Input
+                        type="text"
+                        placeholder="123"
+                        value={cardCvv}
+                        onChange={handleCvvChange}
+                        disabled={paymentProcessing}
+                        required
+                      />
+                    </InputGroup>
+                  </div>
+                </div>
+                {paymentMessage && (
+                  <PaymentMessage type={paymentMessageType}>
+                    {paymentMessage}
+                  </PaymentMessage>
+                )}
+              </>
+            ) : null}
+          </PaymentModalBody>
+
+          <PaymentModalFooter>
+            <>
+              <Button
+                onClick={() => {
+                  if (offerProcessBodyPage === 0) {
+                    closePaymentModal();
+                  } else {
+                    setOfferProcessBodyPage((prev) => prev - 1);
+                  }
+                }}
+                style={{
+                  backgroundColor: "transparent",
+                  color: "var(--color-text)",
+                  border: "1px solid var(--color-border)",
+                  "@media (max-width: 768px)": {
+                    flex: 1,
+                    fontSize: "0.875rem",
+                    padding: "0.75rem 1rem",
+                  },
+                }}
+              >
+                {offerProcessBodyPage === 0 ? "İptal" : "Geri"}
+              </Button>
+              <Button
+                onClick={() => {
+                  if (offerProcessBodyPage === 1) {
+                    handleRealPayment();
+                    return;
+                  }
+                  if (!isTcNoCorrect(offerProcessData.idNo)) {
+                    alert("TC kimlik numarası geçersiz.");
+                    return;
+                  }
+                  setOfferProcessBodyPage((prev) => prev + 1);
+                }}
+                //onClick={proceedToPayment}
+                // style={{
+                //   minWidth: "140px",
+                //   opacity: agreementAccepted ? 1 : 0.5,
+                //   cursor: agreementAccepted ? "pointer" : "not-allowed",
+                //   "@media (max-width: 768px)": {
+                //     flex: 1,
+                //     fontSize: "0.875rem",
+                //     padding: "0.75rem 1rem",
+                //   },
+                // }}
+                disabled={
+                  (offerProcessBodyPage === 0 && !offerProcessData.idNo) ||
+                  !offerProcessCheckboxes.isKVKKRead ||
+                  !offerProcessCheckboxes.officiallyAccepted
+                }
+              >
+                {offerProcessBodyPage === 1 ? "Ödeme Yap" : "İleri"}
+              </Button>
+            </>
+          </PaymentModalFooter>
+        </PaymentModalContent>
+      </PaymentModalOverlay>
+    );
+  };
+
   if (loading && !auction) {
     return (
       <PageContainer>
@@ -5024,6 +5482,9 @@ const AuctionDetail = () => {
             showOfferForm={showOfferForm}
             auction={auction}
             handleTimerComplete={handleTimerComplete}
+            setShowOfferProcessModal={setShowOfferProcessModal}
+            userExistingOffers={userExistingOffers}
+            setUserExistingOffers={setUserExistingOffers}
           />
         </div>
 
@@ -5414,6 +5875,9 @@ const AuctionDetail = () => {
               showOfferForm={showOfferForm}
               auction={auction}
               handleTimerComplete={handleTimerComplete}
+              setShowOfferProcessModal={setShowOfferProcessModal}
+              userExistingOffers={userExistingOffers}
+              setUserExistingOffers={setUserExistingOffers}
             />
           </DesktopBidCard>
         </Column>
@@ -5501,6 +5965,8 @@ const AuctionDetail = () => {
 
       {/* Add Payment Modal */}
       {renderPaymentModal()}
+      {/* Add Offer Process Modal */}
+      {renderOfferProcessModal()}
       {showExtensionNotification && (
         <ExtensionNotification>
           <svg
