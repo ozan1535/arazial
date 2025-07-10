@@ -1228,7 +1228,9 @@ const Home = () => {
       );
     } else if (listingType === "new") {
       // Add filter function in order to remove ended auctions
-      filtered = filtered.filter((item) => item.status !== "ended");
+      filtered = filtered.filter(
+        (item) => item.status !== "ended" || item.listing_type === "offer"
+      );
     }
 
     // Filter by auction status for auction listings
@@ -2135,30 +2137,34 @@ const Home = () => {
                       </AuctionDetails> */}
 
                         <AuctionDetails>
-                          {listing._display_type !== "offer" && (
-                            <PriceInfo>
-                              <span>
-                                {listing.status === "active"
-                                  ? "Güncel Teklif"
-                                  : listing.status === "ended" ||
-                                    listing.status === "completed"
-                                  ? "Kapanış Fiyatı"
-                                  : "Başlangıç Fiyatı"}
-                              </span>
-                              <AuctionPrice>
-                                {formatPrice(
-                                  listing.status === "active" ||
+                          <PriceInfo>
+                            <span>
+                              {listing.status === "active" ||
+                              listing.listing_type === "offer"
+                                ? "Güncel Teklif"
+                                : listing.status === "ended" ||
+                                  listing.status === "completed"
+                                ? "Kapanış Fiyatı"
+                                : "Başlangıç Fiyatı"}
+                            </span>
+                            <AuctionPrice>
+                              {formatPrice(
+                                listing.listing_type === "offer"
+                                  ? listing.starting_price ||
+                                      listing.startingPrice ||
+                                      listing.starting_bid ||
+                                      0
+                                  : listing.status === "active" ||
                                     listing.status === "ended" ||
                                     listing.status === "completed"
-                                    ? getMinimumBidAmount(listing)
-                                    : listing.starting_price ||
-                                        listing.startingPrice ||
-                                        listing.starting_bid ||
-                                        0
-                                )}
-                              </AuctionPrice>
-                            </PriceInfo>
-                          )}
+                                  ? getMinimumBidAmount(listing)
+                                  : listing.starting_price ||
+                                    listing.startingPrice ||
+                                    listing.starting_bid ||
+                                    0
+                              )}
+                            </AuctionPrice>
+                          </PriceInfo>
                           {listing._display_type !== "offer" && (
                             <PriceInfo>
                               <span> Artış Tutarı:</span>

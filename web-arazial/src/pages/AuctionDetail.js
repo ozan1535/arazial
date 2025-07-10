@@ -382,6 +382,7 @@ const ImageGallery = styled.div`
   gap: 0.5rem;
   padding: 0.5rem;
   overflow-x: auto;
+  max-width: 750px;
 
   @media (max-width: 768px) {
     padding: 0.25rem 1rem 0;
@@ -1847,19 +1848,6 @@ const BidCard = ({
         {/* AUCTION BIDDING UI */}
         {isOfferListing ? (
           <>
-            <BidCardText
-              style={{
-                fontSize: "1rem",
-                textAlign: "left",
-                whiteSpace: "nowrap",
-                marginBottom: "1rem",
-              }}
-            >
-              Teminat Tutarı:{" "}
-              <span style={{ fontWeight: "bold" }}>
-                {formatPrice(auction.deposit_amount || 0)}
-              </span>
-            </BidCardText>
             <OfferButton
               type="submit"
               disabled={
@@ -1886,6 +1874,41 @@ const BidCard = ({
             >
               {submitLoading ? <LoadingIcon /> : "Satın Al"}
             </OfferButton>
+            <div style={{ position: "relative", margin: "1rem 0" }}>
+              <BidCardText
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  top: "10px",
+                  flex: 1,
+                  textAlign: "left",
+                  marginLeft: "0.5rem",
+                }}
+              >
+                Güncel Teklif:{" "}
+                <span style={{ fontWeight: "bold" }}>
+                  {formatPrice(
+                    auction?.startingPrice || auction?.starting_price
+                  ) || 0}
+                </span>
+              </BidCardText>
+              <BidCardText
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  top: "10px",
+                  textAlign: "left",
+                  whiteSpace: "nowrap",
+                  marginRight: "0.5rem",
+                }}
+              >
+                Teminat Tutarı:{" "}
+                <span style={{ fontWeight: "bold" }}>
+                  {formatPrice(auction.deposit_amount || 0)}
+                </span>
+              </BidCardText>
+            </div>
+
             <div>
               <button
                 onClick={(e) => {

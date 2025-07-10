@@ -2034,17 +2034,15 @@ function AdminDashboard() {
           console.error("Error fetching offers:", offersError);
           setSelectedAuctionOffers([]);
         } else {
-          // Process offers to maintain consistent data structure
-          const processedOffers = (offersData || []).map((offer) => ({
-            ...offer,
-          }));
-          console.log("Processed offers:", processedOffers);
-          setSelectedAuctionOffers(processedOffers);
+          setSelectedAuctionOffers(offersData || []);
         }
       }
 
       // 3. Fetch deposits for this auction (only for auction-type listings)
-      if (auctionData.listing_type === "auction") {
+      if (
+        auctionData.listing_type === "auction" ||
+        auctionData.listing_type === "offer"
+      ) {
         try {
           await fetchAuctionDeposits(auctionId);
         } catch (depositError) {
@@ -5745,7 +5743,14 @@ function AdminDashboard() {
                                     variant="success"
                                     size="small"
                                     onClick={() => handleAcceptOffer(offer.id)}
-                                    disabled={actionLoading}
+                                    disabled={
+                                      actionLoading ||
+                                      deposits.find(
+                                        (deposit) =>
+                                          deposit.payment_id ===
+                                          offer.payment_id
+                                      ).status !== "completed"
+                                    }
                                   >
                                     Kabul Et
                                   </ActionButton>
@@ -5753,7 +5758,14 @@ function AdminDashboard() {
                                     variant="danger"
                                     size="small"
                                     onClick={() => handleRejectOffer(offer.id)}
-                                    disabled={actionLoading}
+                                    disabled={
+                                      actionLoading ||
+                                      deposits.find(
+                                        (deposit) =>
+                                          deposit.payment_id ===
+                                          offer.payment_id
+                                      ).status !== "completed"
+                                    }
                                   >
                                     Reddet
                                   </ActionButton>
