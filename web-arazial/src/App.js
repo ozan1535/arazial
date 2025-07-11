@@ -246,6 +246,10 @@ const AuthLayout = ({ children }) => {
 const App = () => {
   // Handle the Supabase email confirmation auth state
   const [handlingRedirect, setHandlingRedirect] = useState(true);
+  const [paymentForAuctionDetails, setPaymentForAuctionDetails] = useState({
+    isSuccessful: false,
+    auctionId: "",
+  });
 
   useEffect(() => {
     // Failsafe: Set a maximum timeout for handling redirects
@@ -622,7 +626,10 @@ const App = () => {
             path="/auctions/:id"
             element={
               <Layout>
-                <AuctionDetail />
+                <AuctionDetail
+                  paymentForAuctionDetails={paymentForAuctionDetails}
+                  setPaymentForAuctionDetails={setPaymentForAuctionDetails}
+                />
               </Layout>
             }
           />
@@ -654,7 +661,9 @@ const App = () => {
             path="/payment-callback"
             element={
               <Layout>
-                <PaymentCallback />
+                <PaymentCallback
+                  setPaymentForAuctionDetails={setPaymentForAuctionDetails}
+                />
               </Layout>
             }
           />

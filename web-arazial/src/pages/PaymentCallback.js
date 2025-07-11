@@ -56,7 +56,7 @@ const PaymentDetails = styled.div`
   }
 `;
 
-const PaymentCallback = () => {
+const PaymentCallback = ({ setPaymentForAuctionDetails }) => {
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState(null);
@@ -125,6 +125,17 @@ const PaymentCallback = () => {
               console.error("Error updating deposit status:", updateError);
             } else {
               console.log("Deposit status updated to completed");
+              const { data: relevantAuction, error } = await supabase
+                .from("deposits")
+                .select("auction_id")
+                .eq("payment_id", orderId)
+                .single();
+              if (relevantAuction && !error) {
+                setPaymentForAuctionDetails({
+                  isSuccessful: true,
+                  auctionId: relevantAuction.auction_id,
+                });
+              }
             }
           } catch (updateErr) {
             console.error("Error updating deposit status:", updateErr);

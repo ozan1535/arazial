@@ -3153,7 +3153,10 @@ const ExtensionNotification = styled.div`
   }
 `;
 
-const AuctionDetail = () => {
+const AuctionDetail = ({
+  paymentForAuctionDetails,
+  setPaymentForAuctionDetails,
+}) => {
   // Version check to help with debugging cache issues
   const CODE_VERSION = "2024-12-20-v2";
   console.log("AuctionDetail code version:", CODE_VERSION);
@@ -3379,7 +3382,16 @@ const AuctionDetail = () => {
       isAuthenticated,
       authLoading,
     });
-  }, [user, isAuthenticated, authLoading]);
+
+    if (
+      paymentForAuctionDetails.isSuccessful &&
+      paymentForAuctionDetails.auctionId === id &&
+      isAuthenticated &&
+      auction
+    ) {
+      handleSubmitBid({ preventDefault: () => {} }, true);
+    }
+  }, [user, isAuthenticated, authLoading, auction, paymentForAuctionDetails]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -3511,7 +3523,7 @@ const AuctionDetail = () => {
     }
   };
 
-  const handleSubmitBid = async (e, hasItemDeposit = "") => {
+  const handleSubmitBid = async (e, hasItemDeposit = false) => {
     console.log("--- Executing handleSubmitBid ---");
     e.preventDefault();
     if (!isAuthenticated) {
@@ -3638,6 +3650,7 @@ const AuctionDetail = () => {
       setBidError(error.message || "Teklif gönderilirken bir hata oluştu.");
     } finally {
       setSubmitLoading(false);
+      setPaymentForAuctionDetails({ isSuccessful: false, auctionId: "" });
     }
   };
 
@@ -4443,21 +4456,6 @@ const AuctionDetail = () => {
       setPaymentMessageType("error");
     } finally {
       setPaymentProcessing(false);
-      if (user?.id) {
-        const depositStatus = await getDepositStatus(id, user.id);
-        setHasDeposit(depositStatus.hasCompleted);
-        setHasPendingDeposit(depositStatus.hasPending);
-        setDepositInfo(depositStatus.deposit);
-
-        handleSubmitBid(
-          { preventDefault: () => {} },
-          depositStatus.hasCompleted
-        );
-      } else {
-        setHasDeposit(false);
-        setHasPendingDeposit(false);
-        setDepositInfo(null);
-      }
     }
   };
   // --- Update closePaymentModal to reset card info ---
