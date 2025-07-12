@@ -1898,12 +1898,12 @@ const BidCard = ({
               <WhatsappButton />
               <PhoneButton />
             </div>
-            <div style={{ position: "relative", margin: "2rem 0" }}>
+            <div style={{ position: "relative", margin: "1rem 0" }}>
               <BidCardText
                 style={{
                   position: "absolute",
                   left: 0,
-                  top: "10px",
+                  top: "-10px",
                   flex: 1,
                   textAlign: "left",
                   marginLeft: "0.5rem",
@@ -1920,7 +1920,7 @@ const BidCard = ({
                 style={{
                   position: "absolute",
                   right: 0,
-                  top: "10px",
+                  top: "-10px",
                   textAlign: "left",
                   whiteSpace: "nowrap",
                   marginRight: "0.5rem",
