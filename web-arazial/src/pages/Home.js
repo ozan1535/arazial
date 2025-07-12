@@ -2151,9 +2151,7 @@ const Home = () => {
                             <AuctionPrice>
                               {formatPrice(
                                 listing.listing_type === "offer"
-                                  ? listing?.finalPrice ||
-                                      listing?.final_price ||
-                                      listing?.starting_price ||
+                                  ? listing?.starting_price ||
                                       listing?.startingPrice ||
                                       0
                                   : listing.status === "active" ||

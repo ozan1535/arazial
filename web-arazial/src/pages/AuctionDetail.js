@@ -1912,11 +1912,7 @@ const BidCard = ({
                 Güncel Fiyat:{" "}
                 <span style={{ fontWeight: "bold" }}>
                   {formatPrice(
-                    auction?.finalPrice ||
-                      auction?.final_price ||
-                      auction?.starting_price ||
-                      auction?.startingPrice ||
-                      0
+                    auction?.starting_price || auction?.startingPrice || 0
                   ) || 0}
                 </span>
               </BidCardText>
