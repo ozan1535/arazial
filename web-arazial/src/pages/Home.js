@@ -2139,9 +2139,10 @@ const Home = () => {
                         <AuctionDetails>
                           <PriceInfo>
                             <span>
-                              {listing.status === "active" ||
-                              listing.listing_type === "offer"
+                              {listing.status === "active"
                                 ? "Güncel Teklif"
+                                : listing.listing_type === "offer"
+                                ? "Güncel Fiyat"
                                 : listing.status === "ended" ||
                                   listing.status === "completed"
                                 ? "Kapanış Fiyatı"
