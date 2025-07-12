@@ -4842,11 +4842,8 @@ const AuctionDetail = ({
                   <PaymentAmountLabel>Kalan Ödeme Tutarı:</PaymentAmountLabel>
                   <PaymentAmountValue>
                     {formatPrice(
-                      (auction?.finalPrice ||
-                        auction?.final_price ||
-                        auction?.starting_price ||
-                        auction?.startingPrice ||
-                        0) - auction.deposit_amount || 0
+                      (auction?.starting_price || auction?.startingPrice || 0) -
+                        auction.deposit_amount || 0
                     )}
                   </PaymentAmountValue>
                 </PaymentAmount>
