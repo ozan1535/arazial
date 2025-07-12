@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 // Styled wrapper for the button
 const ButtonWrapper = styled.a`
-  padding: 0.25rem 0.5rem;
+  padding: 0.5rem 0.5rem;
   background: var(--color-primary);
   border-radius: 10px;
   cursor: pointer;
