@@ -1909,7 +1909,7 @@ const BidCard = ({
                   marginLeft: "0.5rem",
                 }}
               >
-                Güncel Teklif:{" "}
+                Güncel Fiyat:{" "}
                 <span style={{ fontWeight: "bold" }}>
                   {formatPrice(
                     auction?.finalPrice ||
