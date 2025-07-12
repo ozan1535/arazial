@@ -1216,6 +1216,10 @@ function AdminDashboard() {
     phone: "",
   });
 
+  const today = new Date();
+
+  const todayFormattedDate = today.toISOString().split("T")[0];
+
   // Add new state variables at the top with other state declarations
   const [deposits, setDeposits] = useState([]);
   const [depositStats, setDepositStats] = useState(null);
@@ -1570,7 +1574,7 @@ function AdminDashboard() {
         min_increment:
           auctionForm.listingType === "auction" ? minIncrement : null,
         offer_increment:
-          auctionForm.listingType === "offer" ? offerIncrement : null,
+          auctionForm.listingType === "offer" ? offerIncrement || 1 : null,
         listing_type: auctionForm.listingType,
         // start_date: formatDateForDatabase(auctionForm.startDate),
         // end_date: formatDateForDatabase(auctionForm.endDate),
@@ -1581,19 +1585,19 @@ function AdminDashboard() {
         //   formatDateForDatabase(auctionForm.endDate, auctionForm.endTime) ||
         //   new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
         start_date: formatDateForDatabase(
-          auctionForm.startDate,
+          auctionForm.startDate || todayFormattedDate,
           auctionForm.startTime
         ),
         end_date: formatDateForDatabase(
-          auctionForm.endDate,
+          auctionForm.endDate || todayFormattedDate,
           auctionForm.endTime
         ),
         start_time: formatDateForDatabase(
-          auctionForm.startDate,
+          auctionForm.startDate || todayFormattedDate,
           auctionForm.startTime
         ),
         end_time: formatDateForDatabase(
-          auctionForm.endDate,
+          auctionForm.endDate || todayFormattedDate,
           auctionForm.endTime
         ),
         location: locationString,
@@ -2218,22 +2222,22 @@ function AdminDashboard() {
         min_increment:
           auctionForm.listingType === "auction" ? minIncrement : null,
         offer_increment:
-          auctionForm.listingType === "offer" ? offerIncrement : null,
+          auctionForm.listingType === "offer" ? offerIncrement || 1 : null,
         listing_type: auctionForm.listingType,
         start_date: formatDateForDatabase(
-          auctionForm.startDate,
+          auctionForm.startDate || todayFormattedDate,
           auctionForm.startTime
         ),
         end_date: formatDateForDatabase(
-          auctionForm.endDate,
+          auctionForm.endDate || todayFormattedDate,
           auctionForm.endTime
         ),
         start_time: formatDateForDatabase(
-          auctionForm.startDate,
+          auctionForm.startDate || todayFormattedDate,
           auctionForm.startTime
         ),
         end_time: formatDateForDatabase(
-          auctionForm.endDate,
+          auctionForm.endDate || todayFormattedDate,
           auctionForm.endTime
         ),
         location: locationString,
@@ -5697,10 +5701,10 @@ function AdminDashboard() {
                       <TableHead>
                         <TableRow>
                           <TableHeader>Teklif Veren</TableHeader>
+                          <TableHeader>İkamet</TableHeader>
                           <TableHeader>Telefon</TableHeader>
-                          <TableHeader>Teklif Tutarı</TableHeader>
-                          <TableHeader>TC No</TableHeader>
-                          <TableHeader>Devir Yapılacak Şehir</TableHeader>
+                          <TableHeader>Peşinat Tutarı</TableHeader>
+                          <TableHeader>Kalan Ödeme</TableHeader>
                           <TableHeader>İşlem Yöntemi</TableHeader>
                           <TableHeader>Teklif Tarihi</TableHeader>
                           <TableHeader>Durum</TableHeader>
@@ -5713,17 +5717,22 @@ function AdminDashboard() {
                             <TableCell data-label="Teklif Veren">
                               {offer.profiles?.full_name || "İsimsiz"}
                             </TableCell>
+                            <TableCell data-label="Teklif Veren">
+                              {offer?.residence}
+                            </TableCell>
                             <TableCell data-label="Telefon">
                               {offer.profiles?.phone_number || "-"}
                             </TableCell>
-                            <TableCell data-label="Teklif Tutarı">
+                            <TableCell data-label="Peşinat Tutarı">
                               {offer.amount?.toLocaleString("tr-TR")} TL
                             </TableCell>
-                            <TableCell data-label="TC No">
-                              {offer.tc_no}
-                            </TableCell>
-                            <TableCell data-label="Devir Yapılacak Şehir">
-                              {offer.process_city}
+                            <TableCell data-label="Kalan Ödeme">
+                              {(
+                                auctions.find(
+                                  (item) => item.id === offer.auction_id
+                                ).final_price - offer.amount
+                              )?.toLocaleString("tr-TR")}{" "}
+                              TL
                             </TableCell>
                             <TableCell data-label="İşlem Yöntemi">
                               {offer.process_method}

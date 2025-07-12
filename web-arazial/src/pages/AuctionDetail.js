@@ -17,6 +17,9 @@ import CountdownTimer from "../components/CountdownTimer";
 import ModernDateDisplay from "../components/ModernDateDisplay";
 import Button from "../components/ui/Button";
 import { PAYMENT_CONFIG } from "../config/payment";
+import { RoundedCheckbox } from "../components/RoundedChecbox";
+import WhatsappButton from "../components/WhatsappButton";
+import PhoneButton from "../components/PhoneButton";
 
 // Add at the top of the file:
 const PAYMENT_PROXY_URL = "https://srv759491.hstgr.cloud:4000/api/pay-request";
@@ -1888,7 +1891,11 @@ const BidCard = ({
                 Güncel Teklif:{" "}
                 <span style={{ fontWeight: "bold" }}>
                   {formatPrice(
-                    auction?.startingPrice || auction?.starting_price
+                    auction?.finalPrice ||
+                      auction?.final_price ||
+                      auction?.starting_price ||
+                      auction?.startingPrice ||
+                      0
                   ) || 0}
                 </span>
               </BidCardText>
@@ -1909,7 +1916,15 @@ const BidCard = ({
               </BidCardText>
             </div>
 
-            <div>
+            <div
+              style={{
+                display: "flex",
+                gap: 5,
+                alignItems: "center",
+              }}
+            >
+              <WhatsappButton />
+              <PhoneButton />
               <button
                 onClick={(e) => {
                   e.preventDefault();
@@ -2328,6 +2343,17 @@ const BidCard = ({
                 {/* )} */}
               </form>
             )}
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                gap: 5,
+              }}
+            >
+              <WhatsappButton />
+              <PhoneButton />
+            </div>
             {/* Countdown Timer for active auctions */}
             {currentStatus === "active" && (
               <div
@@ -2655,6 +2681,18 @@ const BidCard = ({
                     </div>
                   </div> */}
 
+                  <div
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: 5,
+                    }}
+                  >
+                    <WhatsappButton />
+                    <PhoneButton />
+                  </div>
+
                   {/* Countdown Timer */}
                   <div
                     style={{
@@ -2683,7 +2721,7 @@ const BidCard = ({
                           flexDirection: "column",
                           alignItems: "center",
                           color: "var(--color-text)",
-                          marginTop: "-1rem",
+                          //marginTop: "-1rem",
                         }}
                       >
                         <span style={{ fontSize: "1.25rem", fontWeight: 700 }}>
@@ -2915,6 +2953,7 @@ const PaymentModalTitle = styled.h3`
 `;
 
 const PaymentModalBody = styled.div`
+  max-height: 550px;
   padding: 1.5rem;
   flex: 1;
   overflow-y: auto;
@@ -3192,7 +3231,6 @@ const AuctionDetail = ({
         setOfferAmount(listingPrice.toString());
       }
     }
-    setOfferProcessData((prev) => ({ ...prev, processCity: auction?.city }));
   }, [auction, offerAmount]);
 
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -3209,11 +3247,18 @@ const AuctionDetail = ({
     isKVKKRead: false,
     officiallyAccepted: false,
   });
+  // const [offerProcessData, setOfferProcessData] = useState({
+  //   processMethod: "Tapuya bizzat geleceğim",
+  //   processCity: auction?.city || "",
+  //   idNo: "",
+  // });
   const [offerProcessData, setOfferProcessData] = useState({
-    processMethod: "Tapuya bizzat geleceğim",
-    processCity: auction?.city || "",
-    idNo: "",
+    residence: "Türkiye",
+    processMethod: "Taşınmaz Alım Vekaleti",
   });
+
+  console.log(offerProcessData, "offerProcessData");
+
   const [hasDeposit, setHasDeposit] = useState(false);
   const [hasPendingDeposit, setHasPendingDeposit] = useState(false);
   const [depositInfo, setDepositInfo] = useState(null);
@@ -4249,11 +4294,10 @@ const AuctionDetail = ({
           auction_id: auction.id,
           user_id: user.id,
           amount: auction.deposit_amount,
-          status: "pending",
+          // status: "pending",
           payment_id: orderId,
-          tc_no: offerProcessData.idNo,
-          process_method: offerProcessData.processMethod,
-          process_city: offerProcessData.processCity,
+          process_method: offerProcessData?.processMethod || "",
+          residence: offerProcessData?.residence || "",
         };
 
         const { data, error } = await supabase
@@ -4463,11 +4507,16 @@ const AuctionDetail = ({
     setShowPaymentModal(false);
     setShowOfferProcessModal(false);
 
+    // setOfferProcessData((prev) => ({
+    //   ...prev,
+    //   processMethod: "Tapuya bizzat geleceğim",
+    //   processCity: offerProcessData?.processCity || "",
+    //   idNo: "",
+    // }));
     setOfferProcessData((prev) => ({
       ...prev,
-      processMethod: "Tapuya bizzat geleceğim",
-      processCity: offerProcessData?.processCity || "",
-      idNo: "",
+      residence: "Türkiye",
+      processMethod: "Taşınmaz Alım Vekaleti",
     }));
     setOfferProcessBodyPage(0);
     setOfferProcessCheckboxes({ isKVKKRead: false, officiallyAccepted: false });
@@ -4904,7 +4953,6 @@ const AuctionDetail = ({
       </PaymentModalOverlay>
     );
   };
-
   const renderOfferProcessModal = () => {
     if (!auction) return null;
 
@@ -4932,102 +4980,118 @@ const AuctionDetail = ({
           <PaymentModalBody>
             {offerProcessBodyPage === 0 ? (
               <div>
-                <div style={{ marginTop: "0.5rem" }}>
-                  <h5>İşlem Yöntemi Seçiniz</h5>
-                  <select
-                    style={{ maxWidth: "250px" }}
-                    onChange={(e) =>
-                      setOfferProcessData((prev) => ({
-                        ...prev,
-                        processMethod: e.target.value,
-                      }))
-                    }
-                    defaultValue={offerProcessData.processMethod}
-                  >
-                    <option>Tapuya bizzat geleceğim</option>
-                    <option>
-                      Noter vekaleti vererek işlemin sizin tarafınızdan
-                      yapılmasını istiyorum
-                    </option>
-                  </select>
-                </div>
-                <div style={{ marginTop: "0.5rem" }}>
-                  <h5>Tapu Devri Yapılacak İl Seçimi</h5>
-                  <select
-                    onChange={(e) =>
-                      setOfferProcessData((prev) => ({
-                        ...prev,
-                        processCity: e.target.value,
-                      }))
-                    }
-                    defaultValue={offerProcessData?.processCity}
-                  >
-                    <option value={offerProcessData?.processCity}>
-                      {offerProcessData?.processCity}
-                    </option>
-                    <option value="İzmir">İzmir</option>
-                    <option value="Manisa">Manisa</option>
-                    <option value="Balıkesir">Balıkesir</option>
-                  </select>
-                </div>
-                <div style={{ marginTop: "0.5rem" }}>
-                  <h5>TC Kimlik Numarası</h5>
-                  <input
-                    type="text"
-                    placeholder="TC No"
-                    value={offerProcessData.idNo}
-                    onChange={(e) =>
-                      setOfferProcessData((prev) => ({
-                        ...prev,
-                        idNo: e.target.value,
-                      }))
-                    }
-                    required
-                  />
-                </div>
-                <div>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={offerProcessCheckboxes.isKVKKRead}
-                      onChange={() =>
-                        setOfferProcessCheckboxes((prev) => ({
-                          ...prev,
-                          isKVKKRead: !prev.isKVKKRead,
-                        }))
-                      }
-                    />
-                    <span style={{ marginLeft: "0.5rem" }}>
-                      Satın alma şartlarını ve KVKK metnini okudum, onaylıyorum
-                    </span>
-                  </label>
-                  <br />
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={offerProcessCheckboxes.officiallyAccepted}
-                      onChange={(e) =>
-                        setOfferProcessCheckboxes((prev) => ({
-                          ...prev,
-                          officiallyAccepted: !prev.officiallyAccepted,
-                        }))
-                      }
-                    />
-                    <span style={{ marginLeft: "0.5rem" }}>
-                      Tapu işlemlerinin resmi sürece bağlı olduğunu kabul
-                      ediyorum
-                    </span>
-                  </label>
-                </div>
+                <h5 style={{ textAlign: "center" }}>
+                  Nerede İkamet Ediyorsunuz?
+                </h5>
+                <p
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "var(--color-text-secondary)",
+                    textAlign: "center",
+                  }}
+                >
+                  Lütfen ikamet ettiğiniz yeri aşağıdan seçerek ilerleyiniz.
+                </p>
+
+                <RoundedCheckbox
+                  checked={offerProcessData.residence === "Türkiye"}
+                  onClick={() =>
+                    setOfferProcessData((prev) => ({
+                      ...prev,
+                      residence: "Türkiye",
+                    }))
+                  }
+                  label="Türkiye"
+                />
+                <RoundedCheckbox
+                  checked={offerProcessData.residence === "Yurtdışı"}
+                  onClick={() => {
+                    setOfferProcessData((prev) => ({
+                      ...prev,
+                      residence: "Yurtdışı",
+                    }));
+                  }}
+                  label="Yurtdışı"
+                />
               </div>
             ) : offerProcessBodyPage === 1 ? (
+              <div>
+                <h5 style={{ textAlign: "center" }}>
+                  Satış İşlemi Nasıl Yapılacak?
+                </h5>
+                <p
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "var(--color-text-secondary)",
+                    textAlign: "center",
+                  }}
+                >
+                  Lütfen tapu işleminin nasıl gerçekleştirmek istediğinizi
+                  seçiniz. Sürecin hızlı bir şekilde ilerlemesini istiyorsanız
+                  "Taşınmaz Alım Vekaleti" seçeneği ile ilerleyebilirsiniz.
+                </p>
+
+                <RoundedCheckbox
+                  checked={
+                    offerProcessData.processMethod === "Taşınmaz Alım Vekaleti"
+                  }
+                  onClick={() =>
+                    setOfferProcessData((prev) => ({
+                      ...prev,
+                      processMethod: "Taşınmaz Alım Vekaleti",
+                    }))
+                  }
+                  label="Taşınmaz Alım Vekaleti"
+                />
+                {offerProcessData.residence === "Türkiye" && (
+                  <>
+                    <RoundedCheckbox
+                      checked={
+                        offerProcessData.processMethod === "Telekonferans"
+                      }
+                      onClick={() => {
+                        setOfferProcessData((prev) => ({
+                          ...prev,
+                          processMethod: "Telekonferans",
+                        }));
+                      }}
+                      label="Telekonferans"
+                    />
+                    <RoundedCheckbox
+                      checked={
+                        offerProcessData.processMethod ===
+                        "Taşınmaz İkametgahında"
+                      }
+                      onClick={() => {
+                        setOfferProcessData((prev) => ({
+                          ...prev,
+                          processMethod: "Taşınmaz İkametgahında",
+                        }));
+                      }}
+                      label="Taşınmaz İkametgahında"
+                    />
+                  </>
+                )}
+              </div>
+            ) : offerProcessBodyPage === 2 ? (
               <>
-                <PaymentAmount>
+                {/*  <PaymentAmount>
                   <PaymentAmountLabel>Ödenecek Tutar:</PaymentAmountLabel>
                   <PaymentAmountValue>
                     {formatPrice(auction.deposit_amount || 0)}
                   </PaymentAmountValue>
-                </PaymentAmount>
+                </PaymentAmount> */}
+
+                <h5 style={{ textAlign: "center" }}>Kapora Ödeme</h5>
+                <p
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "var(--color-text-secondary)",
+                    textAlign: "center",
+                  }}
+                >
+                  Lütfen kapora ödemek için kredi kartı bilgilerinizi giriniz.
+                </p>
 
                 {/* Mock form fields for payment - to be replaced with actual payment processor later */}
                 <div
@@ -5114,6 +5178,37 @@ const AuctionDetail = ({
                     {paymentMessage}
                   </PaymentMessage>
                 )}
+                <hr style={{ marginBottom: "1rem" }} />
+                <PaymentAmount>
+                  <PaymentAmountLabel>Kapora Tutarı:</PaymentAmountLabel>
+                  <PaymentAmountValue>
+                    {formatPrice(auction.deposit_amount || 0)}
+                  </PaymentAmountValue>
+                </PaymentAmount>
+                <PaymentAmount>
+                  <PaymentAmountLabel>Kalan Ödeme Tutarı:</PaymentAmountLabel>
+                  <PaymentAmountValue>
+                    {formatPrice(
+                      (auction?.finalPrice ||
+                        auction?.final_price ||
+                        auction?.starting_price ||
+                        auction?.startingPrice ||
+                        0) - auction.deposit_amount || 0
+                    )}
+                  </PaymentAmountValue>
+                </PaymentAmount>
+
+                <h5 style={{ textAlign: "center" }}>Uyarı</h5>
+                <p
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "var(--color-text-secondary)",
+                    textAlign: "center",
+                  }}
+                >
+                  Kapora ödemesinin ardından süreç başlayacaktır. Satış
+                  departmanımız sizinle en kısa sürede iletişime geçecektir.
+                </p>
               </>
             ) : null}
           </PaymentModalBody>
@@ -5143,14 +5238,11 @@ const AuctionDetail = ({
               </Button>
               <Button
                 onClick={() => {
-                  if (offerProcessBodyPage === 1) {
+                  if (offerProcessBodyPage === 2) {
                     handleRealPayment();
                     return;
                   }
-                  if (!isTcNoCorrect(offerProcessData.idNo)) {
-                    alert("TC kimlik numarası geçersiz.");
-                    return;
-                  }
+
                   setOfferProcessBodyPage((prev) => prev + 1);
                 }}
                 //onClick={proceedToPayment}
@@ -5164,13 +5256,9 @@ const AuctionDetail = ({
                 //     padding: "0.75rem 1rem",
                 //   },
                 // }}
-                disabled={
-                  (offerProcessBodyPage === 0 && !offerProcessData.idNo) ||
-                  !offerProcessCheckboxes.isKVKKRead ||
-                  !offerProcessCheckboxes.officiallyAccepted
-                }
+                disabled={false}
               >
-                {offerProcessBodyPage === 1 ? "Ödeme Yap" : "İleri"}
+                {offerProcessBodyPage === 2 ? "Ödeme Yap" : "İleri"}
               </Button>
             </>
           </PaymentModalFooter>

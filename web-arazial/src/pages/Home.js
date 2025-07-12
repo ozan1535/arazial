@@ -1395,7 +1395,7 @@ const Home = () => {
   };
 
   const getStatusText = (status, itemType) => {
-    if (itemType === "offer") return "Satın al";
+    if (itemType === "offer") return "Satılık";
 
     switch (status) {
       case "active":
@@ -2150,9 +2150,10 @@ const Home = () => {
                             <AuctionPrice>
                               {formatPrice(
                                 listing.listing_type === "offer"
-                                  ? listing.starting_price ||
-                                      listing.startingPrice ||
-                                      listing.starting_bid ||
+                                  ? listing?.finalPrice ||
+                                      listing?.final_price ||
+                                      listing?.starting_price ||
+                                      listing?.startingPrice ||
                                       0
                                   : listing.status === "active" ||
                                     listing.status === "ended" ||
@@ -2212,7 +2213,7 @@ const Home = () => {
                           {listing._display_type === "offer" ? (
                             <AuctionStatus status="offer">
                               {getStatusIcon("offer", "offer")}
-                              Satın Al
+                              Satılık
                             </AuctionStatus>
                           ) : listing.status === "active" ? (
                             <CountdownInfo>
