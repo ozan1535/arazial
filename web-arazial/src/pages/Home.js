@@ -256,6 +256,13 @@ const TabButton = styled.button`
         : "rgba(59, 130, 246, 0.1)"};
     color: ${(props) => (props.$isActive ? "#fff" : "var(--color-primary)")};
   }
+
+  @media (max-width: 600px) {
+    padding: 0.75rem 0;
+    width: 33%;
+    font-size: 0.75rem;
+    text-align: center;
+  }
 `;
 
 const StatusTabs = styled.div`
@@ -1870,16 +1877,16 @@ const Home = () => {
         <PageContainer>
           <TabsContainer>
             <TabButton
-              $isActive={listingType === "auction"}
-              onClick={() => handleListingTypeChange("auction")}
-            >
-              AÇIK ARTIRMALAR
-            </TabButton>
-            <TabButton
               $isActive={listingType === "offer"}
               onClick={() => handleListingTypeChange("offer")}
             >
               SATIN ALINABİLİR
+            </TabButton>
+            <TabButton
+              $isActive={listingType === "auction"}
+              onClick={() => handleListingTypeChange("auction")}
+            >
+              AÇIK ARTIRMALAR
             </TabButton>
             <TabButton
               $isActive={listingType === "new"}
