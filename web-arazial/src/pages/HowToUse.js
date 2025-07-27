@@ -40,9 +40,7 @@ const HowItWorks = () => {
           <li>Süre sonunda en yüksek teklifi veren kullanıcı kazanır.</li>
           <li>Kazanan kişi ödeme yapmazsa teminat bedeli yanar.</li>
           <li>
-            Satış tamamlandığında, teminat bedeli satış fiyatından düşülmez. Bu
-            bedel, platformun sunduğu dijital hizmetler karşılığında tahsil
-            edilir.
+            Satış tamamlandığında, yatırılan teminat satış fiyatından düşülür.
           </li>
         </ul>
 
@@ -51,10 +49,11 @@ const HowItWorks = () => {
           <li>İlan sabit fiyatlıdır; pazarlık yapılamaz.</li>
           <li>Satın alma işlemi için teminat yatırılması zorunludur.</li>
           <li>
-            Satış tamamlandığında, yatırılan teminat satış fiyatından düşülmez.
+            atış tamamlandığında, yatırılan teminat satış fiyatından düşülür.
           </li>
           <li>
-            Bu tutar, dijital hizmet sunumu kapsamında alınır ve iade edilmez.
+            Ancak kullanıcı işlemi kendi isteğiyle iptal ederse, teminat iade
+            edilmez.
           </li>
         </ul>
 
@@ -77,7 +76,7 @@ const HowItWorks = () => {
         </p>
         <ul>
           <li>
-            Kullanıcı sadece açık artırmaya katılabilir veya hemen al
+            Kullanıcı sadece açık artırmaya katılabilir veya "hemen al"
             seçeneğiyle satın alma yapabilir.
           </li>
           <li>İlan yayınlama yetkisi yalnızca arazialcom’a aittir.</li>
@@ -85,9 +84,9 @@ const HowItWorks = () => {
             Açık artırmalarda teminat yatırılması zorunludur. Kazanan ödeme
             yapmazsa teminat yanar.
           </li>
+          <li>Hemen al işlemlerinde teminat, satış fiyatından düşülür.</li>
           <li>
-            Hemen al işlemlerinde teminat, satış fiyatından düşülmez ve iade
-            edilmez.
+            Kullanıcı işlemi kendi talebiyle iptal ederse, teminat iade edilmez.
           </li>
           <li>
             Sistem istismarı, sahte işlem veya kötüye kullanım tespit edilirse
@@ -142,8 +141,10 @@ const HowItWorks = () => {
           <li>Açık artırmada kazanamayan kullanıcının teminatı iade edilir.</li>
           <li>Kazanan ödeme yapmazsa teminat bedeli yanar.</li>
           <li>
-            Hemen al işlemlerinde teminat satış fiyatından düşülmez ve iade
-            edilmez.
+            Hemen al işlemlerinde yatırılan teminat satış fiyatından düşülür.
+          </li>
+          <li>
+            Kullanıcının işlemi iptal etmesi durumunda, teminat iade edilmez.
           </li>
         </ul>
 
