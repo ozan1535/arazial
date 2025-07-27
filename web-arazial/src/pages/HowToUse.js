@@ -49,7 +49,7 @@ const HowItWorks = () => {
           <li>İlan sabit fiyatlıdır; pazarlık yapılamaz.</li>
           <li>Satın alma işlemi için teminat yatırılması zorunludur.</li>
           <li>
-            atış tamamlandığında, yatırılan teminat satış fiyatından düşülür.
+            Satış tamamlandığında, yatırılan teminat satış fiyatından düşülür.
           </li>
           <li>
             Ancak kullanıcı işlemi kendi isteğiyle iptal ederse, teminat iade
