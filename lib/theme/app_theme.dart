@@ -6,17 +6,18 @@ class AppTheme {
   static const Color primaryColor = Color(0xFF0F3460); // Deep navy blue
   static const Color primaryLightColor = Color(0xFF1A4D8C); // Lighter navy
   static const Color primaryDarkColor = Color(0xFF071E3D); // Darker navy
-  
-  static const Color accentColor = Color(0xFFE94560); // Vivid accent for important actions
+
+  static const Color accentColor =
+      Color(0xFFE94560); // Vivid accent for important actions
   static const Color goldColor = Color(0xFFD4AF37); // Gold for premium feel
-  
+
   static const Color surfaceColor = Colors.white;
   static const Color backgroundColor = Color(0xFFF9FAFB);
   static const Color surfaceSecondaryColor = Color(0xFFF3F4F6);
-  
+
   static const Color textColor = Color(0xFF0A0F1C);
   static const Color textSecondaryColor = Color(0xFF4B5563);
-  
+
   static const Color errorColor = Color(0xFFE63946);
   static const Color successColor = Color(0xFF00A67E);
   static const Color warningColor = Color(0xFFFF9800);
@@ -59,7 +60,7 @@ class AppTheme {
         letterSpacing: 0.2,
       ),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 3,
       shadowColor: Colors.black.withOpacity(0.08),
       shape: RoundedRectangleBorder(
@@ -119,11 +120,13 @@ class AppTheme {
       contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(color: textSecondaryColor.withOpacity(0.2), width: 1.2),
+        borderSide:
+            BorderSide(color: textSecondaryColor.withOpacity(0.2), width: 1.2),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(color: textSecondaryColor.withOpacity(0.15), width: 1.2),
+        borderSide:
+            BorderSide(color: textSecondaryColor.withOpacity(0.15), width: 1.2),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
@@ -265,7 +268,7 @@ class AppTheme {
         letterSpacing: 0.2,
       ),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 5,
       shadowColor: Colors.black.withOpacity(0.3),
       shape: RoundedRectangleBorder(
@@ -436,4 +439,4 @@ class AppTheme {
       ),
     ),
   );
-} 
+}

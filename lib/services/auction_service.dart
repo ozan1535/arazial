@@ -48,6 +48,17 @@ class AuctionService {
       
       // Fetch fresh data with a direct approach
       debugPrint('Fetching fresh auctions data from Supabase');
+
+
+      // .select('''
+      //       *,
+      //       bids (
+      //         id, amount, created_at, user_id
+      //       ),
+      //       offers (
+      //         id, amount, status, created_at, user_id
+      //       )
+      //     ''')
       
       try {
         // Make the API call with a timeout and include all necessary fields
@@ -56,9 +67,6 @@ class AuctionService {
           .from('auctions')
           .select('''
             *,
-            bids (
-              id, amount, created_at, user_id
-            ),
             offers (
               id, amount, status, created_at, user_id
             )
@@ -325,17 +333,27 @@ class AuctionService {
   Future<Map<String, dynamic>> fetchAuctionById(String id) async {
     try {
       debugPrint('Fetching auction $id');
+
+      // .select('''
+      //     *,
+      //     bids (
+      //       id, amount, created_at, user_id, 
+      //       profiles:user_id (
+      //         username, full_name, avatar_url, email
+      //       )
+      //     ),
+      //     offers (
+      //       id, amount, status, message, created_at, updated_at, user_id,
+      //       profiles:user_id (
+      //         username, full_name, avatar_url, email
+      //       )
+      //     )
+      //   ''')
       
       final response = await _supabase
         .from('auctions')
         .select('''
           *,
-          bids (
-            id, amount, created_at, user_id, 
-            profiles:user_id (
-              username, full_name, avatar_url, email
-            )
-          ),
           offers (
             id, amount, status, message, created_at, updated_at, user_id,
             profiles:user_id (
@@ -397,7 +415,7 @@ class AuctionService {
         .insert({
           'auction_id': auctionId,
           'amount': amount,
-          'user_id': userId
+        //  'user_id': userId
         })
         .select()
         .single();

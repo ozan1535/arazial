@@ -14,10 +14,13 @@ import 'package:land_auction_app/widgets/bid_history.dart';
 import 'package:land_auction_app/widgets/bid_form.dart';
 import 'package:land_auction_app/widgets/countdown_timer.dart';
 import 'package:land_auction_app/widgets/place_bid_button.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 
 class AuctionDetailScreen extends StatefulWidget {
   final String auctionId;
-  
+
   const AuctionDetailScreen({
     super.key,
     required this.auctionId,
@@ -41,23 +44,26 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
   @override
   void initState() {
     super.initState();
-    final auctionProvider = provider.Provider.of<AuctionProvider>(context, listen: false);
+    final auctionProvider =
+        provider.Provider.of<AuctionProvider>(context, listen: false);
     _auctionStream = auctionProvider.subscribeToAuction(widget.auctionId);
     _bidsStream = auctionProvider.subscribeToAuctionBids(widget.auctionId);
-    
+
     // Set up user offers stream if user is authenticated
-    final authService = provider.Provider.of<AuthService>(context, listen: false);
+    final authService =
+        provider.Provider.of<AuthService>(context, listen: false);
     if (authService.currentUser != null) {
-      _userOffersStream = auctionProvider.streamUserOffersForAuction(widget.auctionId);
+      _userOffersStream =
+          auctionProvider.streamUserOffersForAuction(widget.auctionId);
     }
   }
-  
+
   @override
   void dispose() {
     _offerAmountController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -106,6 +112,28 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Type badge (Auction or Offer)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: isOfferListing
+                              ? theme.colorScheme.tertiary.withOpacity(0.1)
+                              : theme.colorScheme.primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          isOfferListing ? 'Satın Al' : 'Açık Arttırma',
+                          style: TextStyle(
+                            color: isOfferListing
+                                ? theme.colorScheme.tertiary
+                                : theme.colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+
                       Row(
                         children: [
                           Expanded(
@@ -116,35 +144,16 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
                               ),
                             ),
                           ),
-                          _buildStatusChip(context, auction),
+                          //  _buildStatusChip(context, auction),
                         ],
                       ),
-                      
-                      auction.isActive ? _buildCountdownTimer(auction) : const SizedBox.shrink(),
-                      
+
+                      !isOfferListing && auction.isActive
+                          ? _buildCountdownTimer(auction)
+                          : const SizedBox.shrink(),
+
                       const SizedBox(height: 16),
 
-                      // Type badge (Auction or Offer)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: isOfferListing 
-                              ? theme.colorScheme.tertiary.withOpacity(0.1)
-                              : theme.colorScheme.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          isOfferListing ? 'Pazarlıklı Satış' : 'Açık Arttırma',
-                          style: TextStyle(
-                            color: isOfferListing 
-                                ? theme.colorScheme.tertiary 
-                                : theme.colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                      
                       const SizedBox(height: 16),
 
                       // Location
@@ -165,232 +174,244 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
                         ],
                       ),
                       const SizedBox(height: 8),
-
+                      buildTabContent(context, auction, currencyFormat),
+                      // DAHA SONRA KULLANILABILIR
                       // Area
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.straighten,
-                            color: theme.colorScheme.primary,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            auction.formattedArea,
-                            style: theme.textTheme.bodyLarge,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
+                      // Row(
+                      //   children: [
+                      //     Icon(
+                      //       Icons.straighten,
+                      //       color: theme.colorScheme.primary,
+                      //     ),
+                      //     const SizedBox(width: 8),
+                      //     Text(
+                      //       auction.formattedArea,
+                      //       style: theme.textTheme.bodyLarge,
+                      //     ),
+                      //   ],
+                      // ),
+                      // const SizedBox(height: 16),
 
-                      // Add zoning information if available
-                      if (auction.zoningInfo.isNotEmpty) ...[
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.map_outlined,
-                              color: theme.colorScheme.primary,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                auction.zoningInfo,
-                                style: theme.textTheme.bodyLarge,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                      ],
+                      // // Add zoning information if available
+                      // if (auction.zoningInfo.isNotEmpty) ...[
+                      //   Row(
+                      //     children: [
+                      //       Icon(
+                      //         Icons.map_outlined,
+                      //         color: theme.colorScheme.primary,
+                      //       ),
+                      //       const SizedBox(width: 8),
+                      //       Expanded(
+                      //         child: Text(
+                      //           auction.zoningInfo,
+                      //           style: theme.textTheme.bodyLarge,
+                      //           overflow: TextOverflow.ellipsis,
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      //   const SizedBox(height: 16),
+                      // ],
 
-                      // Add owner info if available
-                      if (auction.ownerInfo != null && auction.ownerInfo!.isNotEmpty) ...[
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.person_outline,
-                              color: theme.colorScheme.primary,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'Satıcı: ${auction.ownerInfo}',
-                                style: theme.textTheme.bodyLarge,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                      ],
+                      // // Add owner info if available
+                      // if (auction.ownerInfo != null &&
+                      //     auction.ownerInfo!.isNotEmpty) ...[
+                      //   Row(
+                      //     children: [
+                      //       Icon(
+                      //         Icons.person_outline,
+                      //         color: theme.colorScheme.primary,
+                      //       ),
+                      //       const SizedBox(width: 8),
+                      //       Expanded(
+                      //         child: Text(
+                      //           'Satıcı: ${auction.ownerInfo}',
+                      //           style: theme.textTheme.bodyLarge,
+                      //           overflow: TextOverflow.ellipsis,
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      //   const SizedBox(height: 16),
+                      // ],
 
-                      // Description
-                      Text(
-                        'Açıklama',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _getAuctionDescription(auction),
-                        style: theme.textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 16),
+                      // // Description
+                      // Text(
+                      //   'Açıklama',
+                      //   style: theme.textTheme.titleMedium?.copyWith(
+                      //     fontWeight: FontWeight.bold,
+                      //   ),
+                      // ),
+                      // const SizedBox(height: 8),
+                      // Text(
+                      //   _getAuctionDescription(auction),
+                      //   style: theme.textTheme.bodyMedium,
+                      // ),
+                      // const SizedBox(height: 16),
 
-                      // Auction Details
-                      Text(
-                        isOfferListing ? 'İlan Detayları' : 'İhale Detayları',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      
-                      _buildDetailRow(
-                        isOfferListing ? 'Başlangıç Fiyatı' : 'Mevcut Teklif',
-                        currencyFormat.format(auction.currentPrice),
-                        theme,
-                        emphasize: true,
-                      ),
-                      
-                      if (!isOfferListing) 
-                        _buildDetailRow(
-                          'Minimum Teklif',
-                          currencyFormat.format(auction.minimumNextBid),
-                          theme,
-                          emphasize: true,
-                        ),
-                      
-                      if (isOfferListing)
-                        _buildDetailRow(
-                          'Minimum Artış Tutarı',
-                          currencyFormat.format(auction.offerIncrement ?? 0),
-                          theme,
-                        ),
-                      
-                      _buildDetailRow(
-                        'Başlangıç Fiyatı',
-                        currencyFormat.format(auction.startPrice),
-                        theme,
-                      ),
-                      
-                      if (!isOfferListing)
-                        _buildDetailRow(
-                          'Minimum Artış',
-                          currencyFormat.format(auction.minIncrement),
-                          theme,
-                        ),
-                      
-                      _buildDetailRow(
-                        'Başlangıç',
-                        DateFormat('dd MMM yyyy, HH:mm').format(auction.startTime),
-                        theme,
-                      ),
-                      
-                      _buildDetailRow(
-                        'Bitiş',
-                        DateFormat('dd MMM yyyy, HH:mm').format(auction.endTime),
-                        theme,
-                      ),
-                      
-                      const SizedBox(height: 16),
+                      // // Auction Details
+                      // Text(
+                      //   isOfferListing ? 'İlan Detayları' : 'İhale Detayları',
+                      //   style: theme.textTheme.titleMedium?.copyWith(
+                      //     fontWeight: FontWeight.bold,
+                      //   ),
+                      // ),
+                      // const SizedBox(height: 8),
 
-                      // Property Details Section (New)
-                      Text(
-                        'Emlak Detayları',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      
-                      // Property Grid
-                      GridView.count(
-                        crossAxisCount: 2,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        childAspectRatio: 2.8,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                        children: [
-                          // Property Type
-                          _buildPropertyGridItem(
-                            'Emlak Tipi',
-                            'ARSA',
-                            theme,
-                          ),
-                          
-                          // Area
-                          _buildPropertyGridItem(
-                            'Alan (m²)',
-                            auction.formattedArea.isEmpty ? '-' : auction.formattedArea,
-                            theme,
-                          ),
-                          
-                          // Zoning
-                          _buildPropertyGridItem(
-                            'İmar Durumu',
-                            auction.zoning ?? '-',
-                            theme,
-                          ),
-                          
-                          // Ada No
-                          _buildPropertyGridItem(
-                            'Ada No',
-                            auction.adaNo ?? '-',
-                            theme,
-                          ),
-                          
-                          // Parsel No
-                          _buildPropertyGridItem(
-                            'Parsel No',
-                            auction.parselNo ?? '-',
-                            theme,
-                          ),
-                          
-                          // Listing Owner
-                          _buildPropertyGridItem(
-                            'İlan Sahibi',
-                            auction.ownerInfo ?? 'Bilinmiyor',
-                            theme,
-                          ),
-                          
-                          // Listing Date
-                          _buildPropertyGridItem(
-                            'İlan Tarihi',
-                            DateFormat('dd MMM yyyy, HH:mm').format(auction.createdAt),
-                            theme,
-                          ),
-                          
-                          // Start Time (for auctions)
-                          _buildPropertyGridItem(
-                            'Başlangıç Zamanı',
-                            DateFormat('dd MMM yyyy, HH:mm').format(auction.startTime),
-                            theme,
-                          ),
-                          
-                          // End Time (for auctions)
-                          _buildPropertyGridItem(
-                            'Bitiş Zamanı',
-                            DateFormat('dd MMM yyyy, HH:mm').format(auction.endTime),
-                            theme,
-                          ),
-                        ],
-                      ),
-                      
-                      const SizedBox(height: 16),
+                      // _buildDetailRow(
+                      //   isOfferListing ? 'Başlangıç Fiyatı' : 'Mevcut Teklif',
+                      //   currencyFormat.format(auction.currentPrice),
+                      //   theme,
+                      //   emphasize: true,
+                      // ),
+
+                      // if (!isOfferListing)
+                      //   _buildDetailRow(
+                      //     'Minimum Teklif',
+                      //     currencyFormat.format(auction.minimumNextBid),
+                      //     theme,
+                      //     emphasize: true,
+                      //   ),
+
+                      // if (isOfferListing)
+                      //   _buildDetailRow(
+                      //     'Minimum Artış Tutarı',
+                      //     currencyFormat.format(auction.offerIncrement ?? 0),
+                      //     theme,
+                      //   ),
+
+                      // _buildDetailRow(
+                      //   'Başlangıç Fiyatı',
+                      //   currencyFormat.format(auction.startPrice),
+                      //   theme,
+                      // ),
+
+                      // if (!isOfferListing)
+                      //   _buildDetailRow(
+                      //     'Minimum Artış',
+                      //     currencyFormat.format(auction.minIncrement),
+                      //     theme,
+                      //   ),
+                      // if (!isOfferListing)
+                      //   _buildDetailRow(
+                      //     'Başlangıç',
+                      //     DateFormat('dd MMM yyyy, HH:mm')
+                      //         .format(auction.startTime),
+                      //     theme,
+                      //   ),
+
+                      // if (!isOfferListing)
+                      //   _buildDetailRow(
+                      //     'Bitiş',
+                      //     DateFormat('dd MMM yyyy, HH:mm')
+                      //         .format(auction.endTime),
+                      //     theme,
+                      //   ),
+
+                      // const SizedBox(height: 16),
+
+                      // // Property Details Section (New)
+                      // Text(
+                      //   'Emlak Detayları',
+                      //   style: theme.textTheme.titleMedium?.copyWith(
+                      //     fontWeight: FontWeight.bold,
+                      //   ),
+                      // ),
+                      // const SizedBox(height: 16),
+
+                      // // Property Grid
+                      // GridView.count(
+                      //   crossAxisCount: 2,
+                      //   shrinkWrap: true,
+                      //   physics: const NeverScrollableScrollPhysics(),
+                      //   childAspectRatio: 2.8,
+                      //   crossAxisSpacing: 16,
+                      //   mainAxisSpacing: 16,
+                      //   children: [
+                      //     // Property Type
+                      //     // _buildPropertyGridItem(
+                      //     //   'Emlak Tipi',
+                      //     //   'ARSA',
+                      //     //   theme,
+                      //     // ),
+
+                      //     // Area
+                      //     _buildPropertyGridItem(
+                      //       'Alan (m²)',
+                      //       auction.formattedArea.isEmpty
+                      //           ? '-'
+                      //           : auction.formattedArea,
+                      //       theme,
+                      //     ),
+
+                      //     // Zoning
+                      //     _buildPropertyGridItem(
+                      //       'İmar Durumu',
+                      //       auction.zoning ?? '-',
+                      //       theme,
+                      //     ),
+
+                      //     // Ada No
+                      //     _buildPropertyGridItem(
+                      //       'Ada No',
+                      //       auction.adaNo ?? '-',
+                      //       theme,
+                      //     ),
+
+                      //     // Parsel No
+                      //     _buildPropertyGridItem(
+                      //       'Parsel No',
+                      //       auction.parselNo ?? '-',
+                      //       theme,
+                      //     ),
+
+                      //     // Listing Owner
+                      //     _buildPropertyGridItem(
+                      //       'İlan Sahibi',
+                      //       auction.ownerInfo ?? 'Bilinmiyor',
+                      //       theme,
+                      //     ),
+
+                      //     // Listing Date
+                      //     _buildPropertyGridItem(
+                      //       'İlan Tarihi',
+                      //       DateFormat('dd MMM yyyy, HH:mm')
+                      //           .format(auction.createdAt),
+                      //       theme,
+                      //     ),
+
+                      //     if (!isOfferListing)
+                      //       // Start Time (for auctions)
+                      //       _buildPropertyGridItem(
+                      //         'Başlangıç Zamanı',
+                      //         DateFormat('dd MMM yyyy, HH:mm')
+                      //             .format(auction.startTime),
+                      //         theme,
+                      //       ),
+                      //     if (!isOfferListing)
+                      //       // End Time (for auctions)
+                      //       _buildPropertyGridItem(
+                      //         'Bitiş Zamanı',
+                      //         DateFormat('dd MMM yyyy, HH:mm')
+                      //             .format(auction.endTime),
+                      //         theme,
+                      //       ),
+                      //   ],
+                      // ),
+                      // DAHA SONRA KULLANILABILIR
+
+                      // const SizedBox(height: 16),
 
                       // Countdown for auctions
-                      if (!isOfferListing && auction.isActive) 
+                      if (!isOfferListing && auction.isActive)
                         AuctionCountdown(auction: auction),
-                      
+
                       const SizedBox(height: 16),
 
                       // Show appropriate UI based on listing type
-                      if (!isOfferListing) 
-                        _buildAuctionUI(auction, theme) 
-                      else 
+                      if (!isOfferListing)
+                        _buildAuctionUI(auction, theme)
+                      else
                         _buildOfferUI(auction, theme),
                     ],
                   ),
@@ -410,6 +431,7 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
           if (!auction.isActive) return const SizedBox.shrink();
 
           // Different button based on listing type
+
           return SafeArea(
             child: auction.isOfferType
                 ? Padding(
@@ -425,7 +447,7 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
+                        backgroundColor: const Color(0xFFEA580C),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -433,7 +455,7 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
                         ),
                       ),
                       child: const Text(
-                        'PAZARLIĞA BAŞLA',
+                        'SATIN AL',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -470,76 +492,77 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
       ),
     );
   }
-  
-  Widget _buildStatusChip(BuildContext context, Auction auction) {
-    final theme = Theme.of(context);
-    
-    Color chipColor;
-    String statusText;
-    IconData statusIcon;
-    
-    // First check if this is an offer-type listing
-    if (auction.isOfferType) {
-      chipColor = Colors.deepPurple;
-      statusText = 'Pazarlıklı';
-      statusIcon = Icons.handshake_outlined;
-    } else if (auction.isActive) {
-      chipColor = theme.colorScheme.primary;
-      statusText = 'Aktif';
-      statusIcon = Icons.local_fire_department_rounded;
-    } else if (auction.isUpcoming) {
-      chipColor = theme.colorScheme.tertiary;
-      statusText = 'Yaklaşan';
-      statusIcon = Icons.upcoming_rounded;
-    } else {
-      chipColor = Colors.grey;
-      statusText = 'Sona Erdi';
-      statusIcon = Icons.check_circle_outline_rounded;
-    }
-    
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: chipColor.withOpacity(0.1),
-        border: Border.all(color: chipColor),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            statusIcon,
-            size: 16,
-            color: chipColor,
-          ),
-          const SizedBox(width: 6),
-          Text(
-            statusText,
-            style: TextStyle(
-              color: chipColor,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  
-  Widget _buildDetailRow(String label, String value, ThemeData theme, {bool emphasize = false}) {
+
+  // Widget _buildStatusChip(BuildContext context, Auction auction) {
+  //   final theme = Theme.of(context);
+
+  //   Color chipColor;
+  //   String statusText;
+  //   IconData statusIcon;
+
+  //   // First check if this is an offer-type listing
+  //   if (auction.isOfferType) {
+  //     chipColor = const Color(0xFFEA580C);
+  //     statusText = 'Satın Al';
+  //     statusIcon = Icons.handshake_outlined;
+  //   } else if (auction.isActive) {
+  //     chipColor = theme.colorScheme.primary;
+  //     statusText = 'Aktif';
+  //     statusIcon = Icons.local_fire_department_rounded;
+  //   } else if (auction.isUpcoming) {
+  //     chipColor = theme.colorScheme.tertiary;
+  //     statusText = 'Yaklaşan';
+  //     statusIcon = Icons.upcoming_rounded;
+  //   } else {
+  //     chipColor = Colors.grey;
+  //     statusText = 'Sona Erdi';
+  //     statusIcon = Icons.check_circle_outline_rounded;
+  //   }
+
+  //   return Container(
+  //     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+  //     decoration: BoxDecoration(
+  //       color: chipColor.withOpacity(0.1),
+  //       border: Border.all(color: chipColor),
+  //       borderRadius: BorderRadius.circular(16),
+  //     ),
+  //     child: Row(
+  //       mainAxisSize: MainAxisSize.min,
+  //       children: [
+  //         Icon(
+  //           statusIcon,
+  //           size: 16,
+  //           color: chipColor,
+  //         ),
+  //         const SizedBox(width: 6),
+  //         Text(
+  //           statusText,
+  //           style: TextStyle(
+  //             color: chipColor,
+  //             fontWeight: FontWeight.bold,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  Widget _buildDetailRow(String label, String value, ThemeData theme,
+      {bool emphasize = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-              label,
+            label,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: emphasize ? theme.colorScheme.primary : Colors.grey[600],
               fontWeight: emphasize ? FontWeight.bold : FontWeight.normal,
             ),
           ),
           Text(
-              value,
+            value,
             style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: emphasize ? theme.colorScheme.primary : null,
@@ -561,8 +584,7 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
             placeholder: (context, url) => const Center(
               child: CircularProgressIndicator(),
             ),
-            errorWidget: (context, url, error) =>
-                const Icon(Icons.error),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
           );
         },
       );
@@ -592,7 +614,7 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
 
   Widget _buildCountdownTimer(Auction auction) {
     if (!auction.isActive) return const SizedBox();
-    
+
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(top: 16),
@@ -607,7 +629,7 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
         ),
         onFinish: () {
           provider.Provider.of<AuctionProvider>(context, listen: false)
-            .fetchAuctions(forceRefresh: true);
+              .fetchAuctions(forceRefresh: true);
         },
       ),
     );
@@ -626,7 +648,7 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        
+
         StreamBuilder<List<Bid>>(
           stream: _bidsStream,
           builder: (context, snapshot) {
@@ -641,7 +663,7 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
             }
 
             final bids = snapshot.data ?? [];
-            
+
             if (bids.isEmpty) {
               return const Text('Henüz bir teklif verilmemiş.');
             }
@@ -649,16 +671,17 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
             return BidHistory(bids: bids);
           },
         ),
-        
+
         const SizedBox(height: 16),
       ],
     );
   }
-  
+
   // UI for negotiable (offer) listings
   Widget _buildOfferUI(Auction auction, ThemeData theme) {
     // If no user is logged in, show login prompt
-    final authService = provider.Provider.of<AuthService>(context, listen: false);
+    final authService =
+        provider.Provider.of<AuthService>(context, listen: false);
     if (authService.currentUser == null) {
       return Card(
         margin: const EdgeInsets.symmetric(vertical: 16),
@@ -683,19 +706,19 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
         ),
       );
     }
-    
+
     // Show current user offers and offer form
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Pazarlık Durumu',
+          'Satın Alma Durumu',
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
         const SizedBox(height: 8),
-        
+
         // Show user offers
         if (_userOffersStream != null)
           StreamBuilder<List<Offer>>(
@@ -704,23 +727,25 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
-              
+
               if (snapshot.hasError) {
                 return Text('Hata: ${snapshot.error}');
               }
-              
+
               final offers = snapshot.data ?? [];
-              final activeOffer = offers.isNotEmpty 
+              final activeOffer = offers.isNotEmpty
                   ? offers.firstWhere(
-                      (o) => o.status == OfferStatus.pending || o.status == OfferStatus.accepted,
+                      (o) =>
+                          o.status == OfferStatus.pending ||
+                          o.status == OfferStatus.accepted,
                       orElse: () => offers.first,
                     )
                   : null;
-                  
+
               if (activeOffer != null) {
                 return _buildOfferStatusCard(activeOffer, theme);
               }
-              
+
               // No active offers, show offer form
               return _buildOfferForm(auction, theme);
             },
@@ -728,7 +753,7 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
       ],
     );
   }
-  
+
   // Card showing status of user's offer
   Widget _buildOfferStatusCard(Offer offer, ThemeData theme) {
     final formatter = NumberFormat.currency(
@@ -736,11 +761,11 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
       symbol: '₺',
       decimalDigits: 0,
     );
-    
+
     Color statusColor;
     String statusText;
     IconData statusIcon;
-    
+
     switch (offer.status) {
       case OfferStatus.pending:
         statusColor = Colors.amber;
@@ -763,7 +788,7 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
         statusIcon = Icons.undo;
         break;
     }
-    
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 16),
       child: Padding(
@@ -793,7 +818,6 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
               'Teklif Tarihi: ${DateFormat('dd MMM yyyy, HH:mm').format(offer.createdAt)}',
               style: theme.textTheme.bodySmall,
             ),
-            
             if (offer.status == OfferStatus.pending) ...[
               const SizedBox(height: 16),
               OutlinedButton.icon(
@@ -805,8 +829,8 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
                 ),
               ),
             ],
-            
-            if (offer.status == OfferStatus.rejected || offer.status == OfferStatus.withdrawn) ...[
+            if (offer.status == OfferStatus.rejected ||
+                offer.status == OfferStatus.withdrawn) ...[
               const SizedBox(height: 24),
               const Text('Yeni bir teklif verebilirsiniz:'),
               const SizedBox(height: 8),
@@ -821,7 +845,7 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
       ),
     );
   }
-  
+
   // Form to submit a new offer
   Widget _buildOfferForm(Auction auction, ThemeData theme) {
     return Card(
@@ -832,7 +856,7 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Pazarlığa Başla',
+              'Satın Al',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -843,7 +867,7 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
               style: theme.textTheme.bodyMedium,
             ),
             const SizedBox(height: 16),
-            
+
             // Error message
             if (_offerError != null) ...[
               Container(
@@ -874,7 +898,7 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
               ),
               const SizedBox(height: 16),
             ],
-            
+
             // Success message
             if (_offerSuccess != null) ...[
               Container(
@@ -905,7 +929,7 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
               ),
               const SizedBox(height: 16),
             ],
-            
+
             TextField(
               controller: _offerAmountController,
               decoration: InputDecoration(
@@ -914,15 +938,15 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
                 border: const OutlineInputBorder(),
                 prefixIcon: const Icon(Icons.money),
               ),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
             ),
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _isSubmittingOffer 
-                    ? null 
-                    : () => _submitOffer(auction),
+                onPressed:
+                    _isSubmittingOffer ? null : () => _submitOffer(auction),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: theme.colorScheme.primary,
                   foregroundColor: theme.colorScheme.onPrimary,
@@ -945,7 +969,7 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
       ),
     );
   }
-  
+
   // Submit an offer
   Future<void> _submitOffer(Auction auction) async {
     setState(() {
@@ -953,7 +977,7 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
       _offerSuccess = null;
       _isSubmittingOffer = true;
     });
-    
+
     final amountText = _offerAmountController.text.trim();
     if (amountText.isEmpty) {
       setState(() {
@@ -962,11 +986,12 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
       });
       return;
     }
-    
+
     // Parse amount
     double amount;
     try {
-      amount = double.parse(amountText.replaceAll('.', '').replaceAll(',', '.'));
+      amount =
+          double.parse(amountText.replaceAll('.', '').replaceAll(',', '.'));
     } catch (e) {
       setState(() {
         _offerError = 'Geçerli bir tutar girin.';
@@ -974,39 +999,44 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
       });
       return;
     }
-    
+
     // For offer-type listings, don't check for minimum amount
-    // Only check minimum amount for auction-type listings 
+    // Only check minimum amount for auction-type listings
     if (!auction.isOfferType && amount < auction.minimumNextOffer) {
       setState(() {
-        _offerError = 'Teklif en az ${NumberFormat.currency(locale: 'tr_TR', symbol: '₺', decimalDigits: 0).format(auction.minimumNextOffer)} olmalıdır.';
+        _offerError =
+            'Teklif en az ${NumberFormat.currency(locale: 'tr_TR', symbol: '₺', decimalDigits: 0).format(auction.minimumNextOffer)} olmalıdır.';
         _isSubmittingOffer = false;
       });
       return;
     }
-    
+
     try {
-      final auctionProvider = provider.Provider.of<AuctionProvider>(context, listen: false);
+      final auctionProvider =
+          provider.Provider.of<AuctionProvider>(context, listen: false);
       final result = await auctionProvider.submitOffer(auction.id, amount);
-      
+
       if (result['success'] == true) {
         setState(() {
           _offerSuccess = 'Teklifiniz başarıyla gönderildi.';
           _offerAmountController.clear();
         });
-        
+
         // Force refresh user offers to update UI immediately
-        final authService = provider.Provider.of<AuthService>(context, listen: false);
+        final authService =
+            provider.Provider.of<AuthService>(context, listen: false);
         if (authService.currentUser != null) {
           // This will trigger refresh of the _userOffersStream
-          await auctionProvider.getUserOffersForAuction(auction.id, authService.currentUser!.id);
-          
+          await auctionProvider.getUserOffersForAuction(
+              auction.id, authService.currentUser!.id);
+
           // Rebuild the UI to show the new offer status
           setState(() {});
         }
       } else {
         setState(() {
-          _offerError = result['error'] ?? 'Teklif gönderilirken bir hata oluştu.';
+          _offerError =
+              result['error'] ?? 'Teklif gönderilirken bir hata oluştu.';
         });
       }
     } catch (e) {
@@ -1019,7 +1049,7 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
       });
     }
   }
-  
+
   // Withdraw an offer
   Future<void> _withdrawOffer(String offerId) async {
     // Show loading indicator
@@ -1030,14 +1060,15 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
         child: CircularProgressIndicator(),
       ),
     );
-    
+
     try {
-      final auctionProvider = provider.Provider.of<AuctionProvider>(context, listen: false);
+      final auctionProvider =
+          provider.Provider.of<AuctionProvider>(context, listen: false);
       final result = await auctionProvider.withdrawOffer(offerId);
-      
+
       // Dismiss loading indicator
       Navigator.of(context, rootNavigator: true).pop();
-      
+
       if (result['success'] == true) {
         // Success message
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1046,9 +1077,10 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        
+
         // Force refresh user offers to update UI immediately
-        final authService = provider.Provider.of<AuthService>(context, listen: false);
+        final authService =
+            provider.Provider.of<AuthService>(context, listen: false);
         if (authService.currentUser != null) {
           // Trigger a UI rebuild right away
           setState(() {
@@ -1056,23 +1088,24 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
             _offerError = null;
             _offerSuccess = null;
           });
-          
+
           // Get the most recent data
           await auctionProvider.getUserOffersForAuction(
-            widget.auctionId,
-            authService.currentUser!.id
-          );
-          
+              widget.auctionId, authService.currentUser!.id);
+
           // Force the StreamBuilder to rebuild with updated data
           if (_userOffersStream != null) {
             setState(() {
-              _userOffersStream = auctionProvider.streamUserOffersForAuction(widget.auctionId);
+              _userOffersStream =
+                  auctionProvider.streamUserOffersForAuction(widget.auctionId);
             });
           }
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(result['error'] ?? 'Teklif geri çekilirken bir hata oluştu')),
+          SnackBar(
+              content: Text(
+                  result['error'] ?? 'Teklif geri çekilirken bir hata oluştu')),
         );
       }
     } catch (e) {
@@ -1102,4 +1135,130 @@ class _AuctionDetailScreenState extends State<AuctionDetailScreen> {
       ],
     );
   }
-} 
+
+  Widget buildTabContent(
+      BuildContext context, Auction auction, NumberFormat currencyFormat) {
+    final currencyFormat = NumberFormat.currency(
+      locale: 'tr_TR',
+      symbol: '₺',
+      decimalDigits: 0,
+    );
+
+    final List<Map<String, String>> productInfoItems = [
+      {
+        'label': 'Fiyat',
+        'value': currencyFormat.format(auction.startPrice),
+      },
+      {
+        'label': 'Metrekare',
+        'value': auction.formattedArea,
+      },
+      {
+        'label': 'Metrekare Birim Fiyatı',
+        'value': (auction.areaSize != null && auction.areaSize != 0)
+            ? currencyFormat.format(auction.startPrice / auction.areaSize!)
+            : '-',
+      },
+      {
+        'label': 'İmar Durumu',
+        'value': auction.zoning ?? '-',
+      },
+      {
+        'label': 'Ada / Parsel',
+        'value': '${auction.adaNo} / ${auction.parselNo}',
+      },
+      {
+        'label': 'İlan Tarihi',
+        'value': DateFormat('dd MMM yyyy, HH:mm').format(auction.createdAt),
+      },
+      {
+        'label': 'Başlangıç Tarihi',
+        'value': DateFormat('dd MMM yyyy, HH:mm').format(auction.startTime),
+      },
+      {
+        'label': 'Bitiş Tarihi',
+        'value': DateFormat('dd MMM yyyy, HH:mm').format(auction.endTime),
+      },
+    ];
+
+// UnderlineTabIndicator(
+//               borderSide: BorderSide(
+//                   color: Color.fromARGB(255, 211, 13, 13), width: 4.0),
+//               insets: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 40.0),
+//             ),
+
+    return DefaultTabController(
+      length: productInfoItems.length,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const TabBar(
+            indicatorSize: TabBarIndicatorSize.tab,
+            indicator: UnderlineTabIndicator(
+              borderSide: BorderSide(
+                  color: Color.fromARGB(255, 211, 13, 13), width: 4.0),
+              insets: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 40.0),
+            ),
+            labelStyle: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 211, 13, 13)),
+            unselectedLabelStyle:
+                TextStyle(fontSize: 15, color: Color.fromARGB(255, 0, 0, 0)),
+            labelPadding: EdgeInsets.zero,
+            tabs: [
+              Tab(text: "İlan Bilgileri"),
+              Tab(text: "Açıklama"),
+              Tab(text: "Konum"),
+              Tab(text: "Çevre"),
+            ],
+          ),
+          SizedBox(
+            height: 400,
+            child: TabBarView(
+              children: [
+                ListView.builder(
+                  itemCount: productInfoItems.length,
+                  itemBuilder: (context, index) {
+                    final item = productInfoItems[index];
+                    bool isEven = index % 2 == 0;
+                    return Container(
+                      color: isEven ? const Color(0xFFEFEFEF) : Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            item['label']!,
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          Text(
+                            item['value']!,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                SingleChildScrollView(
+                  // To ensure auction description is scrollable
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(_getAuctionDescription(auction)),
+                  ),
+                ),
+                Text("Konum"),
+                Text("ÇEVRE"),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
