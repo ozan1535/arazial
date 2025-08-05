@@ -1,10 +1,10 @@
 name: land_auction_app
 description: A Flutter application for land auctions.
-publish_to: 'none'
+publish_to: "none"
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -17,10 +17,12 @@ dependencies:
   flutter_countdown_timer: ^4.1.0
   cached_network_image: ^3.2.3
   google_fonts: ^5.1.0
-  supabase_flutter: ^1.10.25
+  supabase_flutter: ^2.9.1
   flutter_dotenv: ^5.1.0
   image_picker: ^1.0.4
-
+  sign_in_with_apple: ^6.0.0
+  url_launcher: ^6.0.9
+  share_plus: ^11.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

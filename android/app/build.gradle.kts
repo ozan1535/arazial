@@ -8,7 +8,8 @@ plugins {
 android {
     namespace = "com.example.land_auction_app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // ndkVersion = flutter.ndkVersion  // original dynamic version, kept as comment
+    ndkVersion = "27.0.12077973"  // hardcoded to fix plugin requirements
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

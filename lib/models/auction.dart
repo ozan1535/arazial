@@ -378,7 +378,7 @@ class Auction {
   String get listingTypeDisplay {
     switch (listingType) {
       case ListingType.offer:
-        return 'Pazarlıklı Satış';
+        return 'Satın Al';
       case ListingType.auction:
         return 'Açık Arttırma';
     }

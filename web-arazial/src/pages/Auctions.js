@@ -2480,7 +2480,7 @@ const Auctions = () => {
                 $isActive={listingType === 'offer'}
                 onClick={() => setListingType('offer')}
               >
-                Pazarlığa Başla
+                Satın Al
               </TabButton>
             </TabsContainer>
 
