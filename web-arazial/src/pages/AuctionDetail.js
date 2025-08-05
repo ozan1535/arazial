@@ -21,6 +21,8 @@ import { RoundedCheckbox } from "../components/RoundedChecbox";
 import WhatsappButton from "../components/WhatsappButton";
 import PhoneButton from "../components/PhoneButton";
 import ShareButton from "../components/ShareButton";
+import { getAuctionDetailsForSidebar } from "../helpers/helpers";
+import AuctionDetailTabItems from "../components/AuctionDetailTabItems";
 
 // Add at the top of the file:
 const PAYMENT_PROXY_URL = "https://srv759491.hstgr.cloud:4000/api/pay-request";
@@ -356,8 +358,7 @@ const Description = styled.div`
 // Add these new styled components for the main gallery
 const MainGalleryContainer = styled.div`
   position: relative;
-  width: 100%;
-
+  width: 550px;
   @media (max-width: 768px) {
     margin: 0;
     width: 100%;
@@ -369,7 +370,6 @@ const MainImage = styled.img`
   max-height: 300px;
   object-fit: contain;
   display: block;
-  border-radius: 4px 4px 0 0;
   cursor: pointer;
   background-color: #f8f9fa;
 
@@ -384,9 +384,9 @@ const MainImage = styled.img`
 const ImageGallery = styled.div`
   display: flex;
   gap: 0.5rem;
-  padding: 0.5rem;
+  padding: 0.5rem 0;
   overflow-x: auto;
-  max-width: 750px;
+  max-width: 550px;
 
   @media (max-width: 768px) {
     padding: 0.25rem 1rem 0;
@@ -411,14 +411,12 @@ const ImageGallery = styled.div`
 `;
 
 const ImageThumbnail = styled.div`
-  width: 60px;
-  height: 45px;
-  border-radius: 4px;
+  width: 100px;
+  height: 80px;
   background-position: center;
   background-size: cover;
   cursor: pointer;
-  border: 2px solid
-    ${(props) => (props.isActive ? "var(--color-primary)" : "transparent")};
+  flex-shrink: 0;
 `;
 
 const GalleryNavButton = styled.button`
@@ -1064,6 +1062,41 @@ const OfferStatusMessage = styled.div`
   }
 `;
 
+const SidebarContainer = styled.div`
+  margin-left: 1rem;
+  flex: 1;
+`;
+
+const InfoList = styled.ul`
+  padding-left: 0;
+  margin: 0;
+`;
+
+const InfoItem = styled.li`
+  list-style: none;
+  display: flex;
+  align-items: center;
+  height: 0.5rem;
+  margin-top: 0.5rem; // Space between items
+`;
+
+const Label = styled.span`
+  font-size: 0.75rem;
+  width: 100px;
+  display: inline-block;
+`;
+
+const Value = styled.span`
+  font-size: 0.75rem;
+  font-weight: bold;
+`;
+
+const HorizontalLine = styled.hr`
+  border: 0;
+  border-top: 1px solid #e0e0e0; // Light gray border for horizontal line
+  margin: 0; // Remove default margins
+`;
+
 // --- Add New Icon Component ---
 const OfferIcon = () => (
   <svg
@@ -1205,61 +1238,6 @@ const BidCardHeader = styled.div`
   justify-content: space-between;
   align-items: center;
 `;
-
-/* const ShareButton = styled.button`
-  background: rgba(17, 24, 39, 0.7);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-  border-radius: 8px;
-  padding: 0.4rem 0.8rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  z-index: 2;
-  font-size: 0.8rem;
-  font-weight: 600;
-
-  svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  &:hover {
-    background: rgba(17, 24, 39, 0.9);
-    transform: scale(1.05);
-  }
-`; */
-
-/* 
-
-<ShareButton onClick={handleShare} title="İlanı paylaş">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M7.217 10.907a2.25 2.25 0 100 4.186 2.25 2.25 0 000-4.186zM12 5.25v.01M12 18.75v.01M16.883 10.907a2.25 2.25 0 100 4.186 2.25 2.25 0 000-4.186zM6.117 6.117a2.25 2.25 0 100 4.186 2.25 2.25 0 000-4.186zM12 12.75a2.25 2.25 0 100-4.186 2.25 2.25 0 000 4.186z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M17.883 6.117a2.25 2.25 0 100 4.186 2.25 2.25 0 000-4.186zM6.117 17.883a2.25 2.25 0 100-4.186 2.25 2.25 0 000 4.186z"
-              />
-            </svg>
-            Paylaş
-          </ShareButton>
-
-
-*/
 
 // --- Add these helper functions after the existing utility functions ---
 
@@ -3561,63 +3539,6 @@ const AuctionDetail = ({
     return "active"; // Even offers can be considered 'active' during their listing window
   }, [auction]);
 
-  /* const getStatusText = (status) => {
-    switch (status) {
-      case "active":
-        return "Aktif";
-      case "ended":
-        return "Sona Erdi";
-      default:
-        return "";
-    }
-  }; */
-
-  /* const getStatusIcon = (status) => {
-    // Using same icons for simplicity, could be customized for offers
-    switch (status) {
-      case "active":
-        return <TimerIcon />;
-      case "upcoming":
-        return (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            width="16"
-            height="16"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-            />
-          </svg>
-        );
-      case "ended":
-        return (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            width="16"
-            height="16"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-            />
-          </svg>
-        );
-      default:
-        return null;
-    }
-  }; */
-
   // Only relevant for auctions
   const getMinimumBidAmount = useCallback(() => {
     if (!auction || auction.listing_type !== "auction") return 0;
@@ -5327,8 +5248,9 @@ const AuctionDetail = ({
           </AuctionLocation>
         </div>
 
+        <AuctionDetailTabItems auction={auction} />
         {/* 4. PROPERTY DETAILS */}
-        <div
+        {/*  <div
           className="mobile-details-section"
           style={{
             padding: 0,
@@ -5390,7 +5312,6 @@ const AuctionDetail = ({
                     />
                   </PropertyValue>
                 </PropertyItem>
-                {/* Show Auction Times only for Auctions */}
                 {!isOfferListing && (
                   <>
                     <PropertyItem>
@@ -5422,7 +5343,6 @@ const AuctionDetail = ({
           </Card>
         </div>
 
-        {/* 5. DESCRIPTION */}
         <div
           className="mobile-description-section"
           style={{
@@ -5438,7 +5358,7 @@ const AuctionDetail = ({
               </Description>
             </CardContent>
           </Card>
-        </div>
+        </div> */}
       </div>
 
       {/* DESKTOP LAYOUT - Original structure */}
@@ -5446,75 +5366,92 @@ const AuctionDetail = ({
         {/* --- Left Column (Details) --- */}
         <Column>
           {/* Image Gallery - always visible */}
-          <Card className="gallery-card">
-            <MainGalleryContainer>
-              <MainImage
-                src={auction.images[currentImageIndex]}
-                alt={auction.title}
-                onClick={() => openLightbox(currentImageIndex)}
-              />
+          <Card className="gallery-card" style={{ padding: "0.5rem" }}>
+            <div style={{ display: "flex" }}>
+              <div>
+                <MainGalleryContainer>
+                  <MainImage
+                    src={auction.images[currentImageIndex]}
+                    alt={auction.title}
+                    onClick={() => openLightbox(currentImageIndex)}
+                  />
 
-              <GalleryNavButton
-                direction="left"
-                onClick={prevImage}
-                disabled={auction.images.length <= 1}
-              >
-                <div style={{ fontSize: "0.5rem" }}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                  <GalleryNavButton
+                    direction="left"
+                    onClick={prevImage}
+                    disabled={auction.images.length <= 1}
                   >
-                    <polyline points="15 18 9 12 15 6" />
-                  </svg>
-                </div>
-              </GalleryNavButton>
+                    <div style={{ fontSize: "0.5rem" }}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="15 18 9 12 15 6" />
+                      </svg>
+                    </div>
+                  </GalleryNavButton>
 
-              <GalleryNavButton
-                direction="right"
-                onClick={nextImage}
-                disabled={auction.images.length <= 1}
-              >
-                {" "}
-                <div style={{ fontSize: "0.5rem" }}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                  <GalleryNavButton
+                    direction="right"
+                    onClick={nextImage}
+                    disabled={auction.images.length <= 1}
                   >
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </div>
-              </GalleryNavButton>
-            </MainGalleryContainer>
+                    {" "}
+                    <div style={{ fontSize: "0.5rem" }}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </div>
+                  </GalleryNavButton>
+                </MainGalleryContainer>
 
-            <ImageGallery>
-              {auction.images.map((img, index) => (
-                <ImageThumbnail
-                  key={index}
-                  style={{ backgroundImage: `url(${img})` }}
-                  title={`Resim ${index + 1}`}
-                  isActive={index === currentImageIndex}
-                  onClick={() => setCurrentImageIndex(index)}
-                />
-              ))}
-            </ImageGallery>
+                <ImageGallery>
+                  {auction.images.map((img, index) => (
+                    <ImageThumbnail
+                      key={index}
+                      style={{ backgroundImage: `url(${img})` }}
+                      title={`Resim ${index + 1}`}
+                      isActive={index === currentImageIndex}
+                      onClick={() => setCurrentImageIndex(index)}
+                    />
+                  ))}
+                </ImageGallery>
+              </div>
+              <SidebarContainer>
+                {getAuctionDetailsForSidebar(auction, isOfferListing)?.map(
+                  (item) => (
+                    <InfoList>
+                      <InfoItem>
+                        <Label>{item.name}</Label>
+                        <Value>{item.value}</Value>
+                      </InfoItem>
+                      <HorizontalLine />
+                    </InfoList>
+                  )
+                )}
+              </SidebarContainer>
+            </div>
           </Card>
 
           {/* Property Details Card */}
-          <Card className="details-card">
+          {/*  <Card className="details-card">
             <CardContent>
               <PropertyGrid>
                 <PropertyItem>
@@ -5558,7 +5495,7 @@ const AuctionDetail = ({
                     />
                   </PropertyValue>
                 </PropertyItem>
-                {/* Show Auction Times only for Auctions */}
+
                 {!isOfferListing && (
                   <>
                     <PropertyItem>
@@ -5587,16 +5524,18 @@ const AuctionDetail = ({
                 )}
               </PropertyGrid>
             </CardContent>
-          </Card>
+          </Card> */}
 
           {/* Description Card */}
-          <Card className="description-card">
+          {/*  <Card className="description-card">
             <CardContent>
               <Description>
                 {auction.description || "Açıklama girilmemiş."}
               </Description>
             </CardContent>
-          </Card>
+          </Card> */}
+
+          <AuctionDetailTabItems auction={auction} />
         </Column>
 
         {/* --- Right Column (Actions) --- */}
