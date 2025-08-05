@@ -8,6 +8,7 @@ import {
   fetchAuctions as fetchAuctionsService,
   fetchNegotiations,
 } from "../services/auctionService";
+import MapPicker from "../components/MapPicker";
 
 const PageContainer = styled.div`
   max-width: 1400px;
@@ -1184,6 +1185,9 @@ function AdminDashboard() {
   const [auctionForm, setAuctionForm] = useState({
     title: "",
     description: "",
+    features: "",
+    environment: "",
+    locationInfo: null,
     startingPrice: "",
     minIncrement: "",
     offerIncrement: "",
@@ -1215,6 +1219,13 @@ function AdminDashboard() {
     role: "user",
     phone: "",
   });
+
+  const handleLocationSelect = (coords) => {
+    setAuctionForm((prev) => ({
+      ...prev,
+      locationInfo: coords,
+    }));
+  };
 
   const today = new Date();
 
@@ -1265,6 +1276,9 @@ function AdminDashboard() {
     setAuctionForm({
       title: "",
       description: "",
+      features: "",
+      environment: "",
+      locationInfo: null,
       startingPrice: "",
       minIncrement: "",
       offerIncrement: "",
@@ -1568,6 +1582,9 @@ function AdminDashboard() {
       const auctionData = {
         title: auctionForm.title,
         description: auctionForm.description,
+        features: auctionForm.features,
+        locationInfo: auctionForm.locationInfo,
+        environment: auctionForm.environment,
         city: auctionForm.city,
         starting_price: price,
         start_price: price,
@@ -1653,6 +1670,9 @@ function AdminDashboard() {
       setAuctionForm({
         title: "",
         description: "",
+        features: "",
+        locationInfo: "",
+        environment: "",
         startingPrice: "",
         minIncrement: "",
         offerIncrement: "",
@@ -1955,6 +1975,9 @@ function AdminDashboard() {
       setAuctionForm({
         title: auctionData.title || "",
         description: auctionData.description || "",
+        features: auctionData.features || "",
+        locationInfo: auctionData.locationInfo || "",
+        environment: auctionData.environment || "",
         startingPrice:
           auctionData.starting_price?.toString() ||
           auctionData.startingPrice?.toString() ||
@@ -2218,6 +2241,9 @@ function AdminDashboard() {
       const auctionData = {
         title: auctionForm.title,
         description: auctionForm.description,
+        features: auctionForm.features,
+        locationInfo: auctionForm.locationInfo,
+        environment: auctionForm.environment,
         starting_price: price,
         min_increment:
           auctionForm.listingType === "auction" ? minIncrement : null,
@@ -4181,6 +4207,41 @@ function AdminDashboard() {
                 />
               </FormGroup>
 
+              <FormGroup>
+                <Label htmlFor="features">Özellikler</Label>
+                <TextArea
+                  id="features"
+                  name="features"
+                  value={auctionForm.features}
+                  onChange={handleAuctionFormChange}
+                  required
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label htmlFor="locationInfo">Konum</Label>
+                {/* <TextArea
+                  id="locationInfo"
+                  name="locationInfo"
+                  value={auctionForm.locationInfo}
+                  onChange={handleAuctionFormChange}
+                  required
+                /> */}
+                <MapPicker
+                  onLocationSelect={handleLocationSelect}
+                  coordinates={auctionForm?.locationInfo}
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label htmlFor="environment">Çevre</Label>
+                <TextArea
+                  id="environment"
+                  name="environment"
+                  value={auctionForm.environment}
+                  onChange={handleAuctionFormChange}
+                  required
+                />
+              </FormGroup>
+
               {/* Pricing */}
               <FormRow>
                 <FormGroup>
@@ -4611,6 +4672,40 @@ function AdminDashboard() {
                 />
               </FormGroup>
 
+              <FormGroup>
+                <Label htmlFor="features">Özellikler</Label>
+                <TextArea
+                  id="features"
+                  name="features"
+                  value={auctionForm.features}
+                  onChange={handleAuctionFormChange}
+                  required
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label htmlFor="locationInfo">Konum</Label>
+                {/*  <TextArea
+                  id="locationInfo"
+                  name="locationInfo"
+                  value={auctionForm.locationInfo}
+                  onChange={handleAuctionFormChange}
+                  required
+                /> */}
+                <MapPicker
+                  onLocationSelect={handleLocationSelect}
+                  coordinates={auctionForm?.locationInfo}
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label htmlFor="environment">Çevre</Label>
+                <TextArea
+                  id="environment"
+                  name="environment"
+                  value={auctionForm.environment}
+                  onChange={handleAuctionFormChange}
+                  required
+                />
+              </FormGroup>
               {/* Pricing */}
               <FormRow>
                 <FormGroup>
