@@ -12,6 +12,8 @@ import backgroundImage from "../assets/backgroundimage.png";
 import { resetFilters } from "../helpers/helpers";
 import SearchComponent from "../components/SearchComponent";
 import AuctionGridComponent from "../components/AuctionGridComponent";
+import { useAuth } from "../context/AuthContext";
+import { supabase } from "../supabaseClient";
 
 // Hero section and modern homepage styling
 const HeroSection = styled.section`
@@ -273,11 +275,14 @@ const Home = () => {
   const [listingType, setListingType] = useState("new"); // 'new', 'auction', 'offer'
   const [auctionStatus, setAuctionStatus] = useState("active"); // 'active', 'upcoming', 'ended'
   const [shareMessage, setShareMessage] = useState("");
+  const [userFavorites, setUserFavorites] = useState([]);
   const navigate = useNavigate();
+
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     loadListings();
-  }, [listingType, auctionStatus]);
+  }, [loading, listingType, auctionStatus]);
 
   // Scroll top if the pagination function triggers
   useEffect(() => {
@@ -290,6 +295,14 @@ const Home = () => {
       let data = [],
         error = null;
 
+      if (user) {
+        const { data: favoritesData, error: favoritesError } = await supabase
+          .from("favorites")
+          .select("auction_id")
+          .eq("user_id", user?.id);
+        if (favoritesError) throw favoritesError;
+        setUserFavorites(favoritesData);
+      }
       if (listingType === "auction" || listingType === "new") {
         // Load auctions
         const { data: auctionData, error: auctionError } =
@@ -1162,6 +1175,8 @@ const Home = () => {
             auctions={auctions}
             listingType={listingType}
             setShareMessage={setShareMessage}
+            userFavorites={userFavorites}
+            setUserFavorites={setUserFavorites}
           />
 
           {/* <AuctionsGrid>
