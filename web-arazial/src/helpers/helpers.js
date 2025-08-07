@@ -1,3 +1,5 @@
+import { supabase } from "../supabaseClient";
+
 export const formatDateWithHour = (dateString) => {
   if (!dateString) return "-";
   try {
@@ -388,4 +390,51 @@ export const resetFilters = (shouldRedirectHomePage = false, navigate) => {
   filterAuctions();
   setCurrentPage(1);
   handleListingTypeChange("new");
+};
+
+export const toggleFavorite = async (
+  e,
+  auctionId,
+  user,
+  userFavorites,
+  setUserFavorites
+) => {
+  e.stopPropagation();
+  e.preventDefault();
+  if (userFavorites.find((favourite) => favourite.auction_id === auctionId)) {
+    await removeFavorite(auctionId, setUserFavorites, user);
+  } else {
+    await addFavorite(auctionId, setUserFavorites, user);
+  }
+};
+
+export const addFavorite = async (auctionId, setUserFavorites, user) => {
+  const { data, error } = await supabase
+    .from("favorites")
+    .insert([{ user_id: user?.id, auction_id: auctionId }]);
+
+  if (error) {
+    console.error("Error adding favorite:", error.message);
+  } else {
+    setUserFavorites((prevFavorites) => [
+      ...prevFavorites,
+      { auction_id: auctionId },
+    ]);
+  }
+};
+
+export const removeFavorite = async (auctionId, setUserFavorites, user) => {
+  const { data, error } = await supabase
+    .from("favorites")
+    .delete()
+    .eq("user_id", user?.id)
+    .eq("auction_id", auctionId);
+
+  if (error) {
+    console.error("Error removing favorite:", error.message);
+  } else {
+    setUserFavorites((prevFavorites) =>
+      prevFavorites.filter((fav) => fav.auction_id !== auctionId)
+    );
+  }
 };
