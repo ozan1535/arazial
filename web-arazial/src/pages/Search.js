@@ -7,6 +7,7 @@ import Button from "../components/ui/Button";
 import { supabase } from "./../services/supabase";
 import AuctionGridComponent from "../components/AuctionGridComponent";
 import backgroundImage from "../assets/backgroundimage.png";
+import { useAuth } from "../context/AuthContext";
 
 const ShareNotification = styled.div`
   position: fixed;
@@ -201,6 +202,7 @@ const SearchResultInfo = styled.div`
 `;
 
 function Search() {
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [shareMessage, setShareMessage] = useState("");
@@ -210,6 +212,7 @@ function Search() {
     city: "",
   });
   const [auctionData, setAuctionData] = useState([]);
+  const [userFavorites, setUserFavorites] = useState([]);
 
   const { listingTypes, types, city } = searchFilters;
 
@@ -290,6 +293,13 @@ function Search() {
       //     (item) => itemToFilter === item.listing_type.trim().toLowerCase()
       //   );
       // }
+
+      const { data: favoritesData, error: favoritesError } = await supabase
+        .from("favorites")
+        .select("auction_id")
+        .eq("user_id", user?.id);
+      if (favoritesError) throw favoritesError;
+      setUserFavorites(favoritesData);
 
       setAuctionData(filteredData);
     } catch (error) {
@@ -472,6 +482,8 @@ function Search() {
             listingType="" //{isListingTypeOffer ? "offer" : "auction"}
             setShareMessage={setShareMessage}
             shouldRedirectHomePage={true}
+            userFavorites={userFavorites}
+            setUserFavorites={setUserFavorites}
           />
           <ShareNotification show={!!shareMessage}>
             {shareMessage}
