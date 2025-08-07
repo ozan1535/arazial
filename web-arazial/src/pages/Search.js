@@ -251,7 +251,7 @@ function Search() {
     setCurrentPage(0);
   };
 
-  const fetchData = async (filterBy = "") => {
+  const fetchData = async (isListType, itemToFilter) => {
     setIsLoading(true);
     setCurrentPage((prev) => prev + 1);
     try {
@@ -262,31 +262,36 @@ function Search() {
 
       let filteredData = data;
 
-      if (filterBy) {
-        filteredData = filteredData.filter(
-          (item) => filterBy === item.emlak_tipi.trim().toLowerCase()
-        );
-        setAuctionData(filteredData);
-        return;
-      }
-
-      if (types.length) {
-        filteredData = filteredData.filter((item) =>
-          types.includes(item.emlak_tipi.trim().toLowerCase())
-        );
-      }
-
       if (city) {
         filteredData = filteredData.filter(
           (item) => city.trim().toLowerCase() === item.city.trim().toLowerCase()
         );
       }
 
-      if (listingTypes.length) {
-        filteredData = filteredData.filter((item) =>
-          listingTypes.includes(item.listing_type.trim().toLowerCase())
+      if (isListType) {
+        filteredData = filteredData.filter(
+          (item) =>
+            itemToFilter.toLowerCase() ===
+            item.listing_type.trim().toLowerCase()
+        );
+      } else {
+        filteredData = filteredData.filter(
+          (item) =>
+            itemToFilter.toLowerCase() === item.emlak_tipi.trim().toLowerCase()
         );
       }
+
+      // if (types.length) {
+      //   filteredData = filteredData.filter(
+      //     (item) => itemToFilter === item.emlak_tipi.trim().toLowerCase()
+      //   );
+      // }
+
+      // if (listingTypes.length) {
+      //   filteredData = filteredData.filter(
+      //     (item) => itemToFilter === item.listing_type.trim().toLowerCase()
+      //   );
+      // }
 
       setAuctionData(filteredData);
     } catch (error) {
@@ -301,6 +306,8 @@ function Search() {
     { name: "Konya" },
     { name: "Uşak" },
   ];
+
+  console.log(auctionData);
 
   return (
     <Container>
@@ -377,7 +384,7 @@ function Search() {
           </HeroSection>
           <Card
             style={{ marginTop: "2rem" }}
-            onClick={() => handleSelectListingType("offer")}
+            onClick={() => fetchData(true, "offer")}
             $isActive={listingTypes.includes("offer")}
           >
             <IconContainerLeft>
@@ -392,7 +399,7 @@ function Search() {
           </Card>
           <Card
             style={{ marginBottom: "2rem" }}
-            onClick={() => handleSelectListingType("auction")}
+            onClick={() => fetchData(true, "auction")}
             $isActive={listingTypes.includes("auction")}
           >
             <IconContainerLeft>
@@ -411,7 +418,7 @@ function Search() {
                 (typeItem) => (
                   <Wrapper key={typeItem}>
                     <Row
-                      onClick={() => handleTypeClick(typeItem)}
+                      onClick={() => fetchData(false, typeItem)}
                       style={{
                         backgroundColor: types.includes(typeItem.toLowerCase())
                           ? "#4fbf6fff"
@@ -436,7 +443,7 @@ function Search() {
                 )
               )}
             </Wrapper>
-            <FilterButton onClick={() => fetchData("")}>Ara</FilterButton>
+            {/* <FilterButton onClick={() => fetchData("")}>Ara</FilterButton> */}
           </TypeContainer>
         </>
       ) : currentPage === 1 ? (

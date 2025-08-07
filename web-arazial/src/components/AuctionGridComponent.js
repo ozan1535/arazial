@@ -381,13 +381,16 @@ function AuctionGridComponent({
 
                 <AuctionStatusBadge
                   status={listing.status}
-                  type={listing._display_type}
+                  type={listing._display_type || listing.listing_type}
                 >
-                  {getStatusText(listing.status, listing._display_type)}
+                  {getStatusText(
+                    listing.status,
+                    listing._display_type || listing.listing_type
+                  )}
                 </AuctionStatusBadge>
-                {listingType === "new" && listing._display_type !== "offer" && (
-                  <AuctionTypeTag>Açık Arttırma</AuctionTypeTag>
-                )}
+                {listingType === "new" &&
+                  (listing._display_type || listing.listing_type) !==
+                    "offer" && <AuctionTypeTag>Açık Arttırma</AuctionTypeTag>}
               </AuctionImage>
               <AuctionContent>
                 <AuctionTitle>{listing.title || "Emlak İlanı"}</AuctionTitle>
@@ -508,7 +511,8 @@ function AuctionGridComponent({
                       )}
                     </AuctionPrice>
                   </PriceInfo>
-                  {listing._display_type !== "offer" && (
+                  {(listing._display_type || listing.listing_type) !==
+                    "offer" && (
                     <PriceInfo>
                       <span> Artış Tutarı:</span>
                       <AuctionPrice>
@@ -527,7 +531,8 @@ function AuctionGridComponent({
                 </AuctionDetails>
 
                 <AuctionDetails>
-                  {listing._display_type === "offer" ? (
+                  {(listing._display_type || listing.listing_type) ===
+                  "offer" ? (
                     <AuctionStatus status="offer">
                       {getStatusIcon("offer", "offer")}
                       Satılık
