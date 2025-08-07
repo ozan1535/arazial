@@ -3,9 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useAuth } from "../../context/AuthContext";
 import Button from "../../components/ui/Button";
-import { resetAllAuthStorage } from "../../services/authUtils";
 import logoImage from "../../assets/logo.png";
-import { IoSearchOutline } from "react-icons/io5";
+import { FaRegHeart } from "react-icons/fa";
 
 const NavbarContainer = styled.nav`
   background-color: ${(props) =>
@@ -630,6 +629,10 @@ const Navbar = () => {
                 </svg>
                 Profilim
               </NavLink>
+              <NavLink to="/favorites">
+                <FaRegHeart />
+                Favoriler
+              </NavLink>
               <NavLink to="/dashboard">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -845,6 +848,10 @@ const Navbar = () => {
                   />
                 </svg>
                 Profilim
+              </MobileNavLink>
+              <MobileNavLink to="/favorites" onClick={() => setIsOpen(false)}>
+                <FaRegHeart />
+                Favoriler
               </MobileNavLink>
               <MobileNavLink to="/dashboard" onClick={() => setIsOpen(false)}>
                 <svg

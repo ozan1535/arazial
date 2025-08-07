@@ -40,6 +40,7 @@ import KvkkAydinlatmaMetniPage from "./pages/KvkkAydinlatmaMetniPage";
 import HowToUse from "./pages/HowToUse";
 import Account from "./pages/Account";
 import Search from "./pages/Search";
+import Favorites from "./pages/Favorites";
 
 // Re-export for backward compatibility
 export { forceAuthRefresh, resetAllAuthStorage };
@@ -621,6 +622,14 @@ const App = () => {
             element={
               <Layout>
                 <Search />
+              </Layout>
+            }
+          />
+          <Route
+            path="/favorites"
+            element={
+              <Layout>
+                <Favorites />
               </Layout>
             }
           />
