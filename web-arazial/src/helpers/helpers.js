@@ -100,3 +100,292 @@ export const auctionDetailTabContent = (auction) => {
     },
   ];
 };
+
+export const cities = [
+  "Adana",
+  "Adıyaman",
+  "Afyonkarahisar",
+  "Ağrı",
+  "Aksaray",
+  "Amasya",
+  "Ankara",
+  "Antalya",
+  "Ardahan",
+  "Artvin",
+  "Aydın",
+  "Balıkesir",
+  "Bartın",
+  "Batman",
+  "Bayburt",
+  "Bilecik",
+  "Bingöl",
+  "Bitlis",
+  "Bolu",
+  "Burdur",
+  "Bursa",
+  "Çanakkale",
+  "Çankırı",
+  "Çorum",
+  "Denizli",
+  "Diyarbakır",
+  "Düzce",
+  "Edirne",
+  "Elazığ",
+  "Erzincan",
+  "Erzurum",
+  "Eskişehir",
+  "Gaziantep",
+  "Giresun",
+  "Gümüşhane",
+  "Hakkari",
+  "Hatay",
+  "Iğdır",
+  "Isparta",
+  "İstanbul",
+  "İzmir",
+  "Kahramanmaraş",
+  "Karabük",
+  "Karaman",
+  "Kars",
+  "Kastamonu",
+  "Kayseri",
+  "Kırıkkale",
+  "Kırklareli",
+  "Kırşehir",
+  "Kilis",
+  "Kocaeli",
+  "Konya",
+  "Kütahya",
+  "Malatya",
+  "Manisa",
+  "Mardin",
+  "Mersin",
+  "Muğla",
+  "Muş",
+  "Nevşehir",
+  "Niğde",
+  "Ordu",
+  "Osmaniye",
+  "Rize",
+  "Sakarya",
+  "Samsun",
+  "Şanlıurfa",
+  "Siirt",
+  "Sinop",
+  "Sivas",
+  "Şırnak",
+  "Tekirdağ",
+  "Tokat",
+  "Trabzon",
+  "Tunceli",
+  "Uşak",
+  "Van",
+  "Yalova",
+  "Yozgat",
+  "Zonguldak",
+];
+
+export const getStatusText = (status, itemType) => {
+  if (itemType === "offer") return "Satılık";
+
+  switch (status) {
+    case "active":
+      return "Aktif";
+    case "upcoming":
+      return "Yaklaşan";
+    case "completed":
+    case "ended":
+      return "Tamamlandı";
+    case "cancelled":
+      return "İptal Edildi";
+    default:
+      return status;
+  }
+};
+
+export const getAuctionLocation = (auction) => {
+  if (!auction) return "Konum bilgisi yok";
+
+  // If location is an object with city and district
+  if (auction.location && typeof auction.location === "object") {
+    const city = auction.location.city;
+    const district = auction.location.district;
+    if (city && district) return `${city}, ${district}`;
+    if (city) return city;
+  }
+
+  // If location is a string with commas, split and reverse to put city first
+  if (
+    auction.location &&
+    typeof auction.location === "string" &&
+    auction.location.includes(",")
+  ) {
+    return auction.location.split(",").reverse().join(", ").trim();
+  }
+
+  // If location is a simple string without commas
+  if (auction.location && typeof auction.location === "string") {
+    return auction.location;
+  }
+
+  // If neighborhood is specified
+  if (auction.neighborhood_name || auction.neighborhoodName) {
+    const neighborhood = auction.neighborhood_name || auction.neighborhoodName;
+
+    // If we also have city/district
+    if (auction.city || auction.district) {
+      const parts = [];
+      if (auction.city) parts.push(auction.city);
+      if (auction.district) parts.push(auction.district);
+      if (neighborhood) parts.push(neighborhood);
+      return parts.join(", ");
+    }
+
+    return neighborhood;
+  }
+
+  // If separate city/district fields
+  if (auction.city || auction.district) {
+    const parts = [];
+    if (auction.city) parts.push(auction.city);
+    if (auction.district) parts.push(auction.district);
+    return parts.join(", ");
+  }
+
+  // If we have address but no location
+  if (auction.address && typeof auction.address === "string") {
+    // Split by comma and reverse to put city first
+    const addressParts = auction.address.split(",");
+    if (addressParts.length > 1) {
+      return addressParts.reverse().join(", ").trim();
+    }
+    return auction.address;
+  }
+
+  return "Konum bilgisi yok";
+};
+
+export const handleShare = async (e, auction, setShareMessage) => {
+  e.stopPropagation(); // Prevent card click navigation
+  const shareUrl = `${window.location.origin}/auctions/${auction.id}`;
+  const shareTitle = auction.title || "Arazi İlanı";
+  const shareText = `${shareTitle} - arazialcom.net'de incele!`;
+
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title: shareTitle,
+        text: shareText,
+        url: shareUrl,
+      });
+    } else {
+      // Fallback to copy to clipboard
+      await navigator.clipboard.writeText(shareUrl);
+      setShareMessage("Link panoya kopyalandı!");
+      setTimeout(() => setShareMessage(""), 3000);
+    }
+  } catch (error) {
+    console.error("Error sharing:", error);
+    // Fallback for failed share attempts
+    await navigator.clipboard.writeText(shareUrl);
+    setShareMessage("Link panoya kopyalandı!");
+    setTimeout(() => setShareMessage(""), 3000);
+  }
+};
+
+export const formatPrice = (price) => {
+  return (
+    new Intl.NumberFormat("tr-TR", {
+      style: "decimal",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price || 0) + " ₺"
+  );
+};
+
+export const getStatusIcon = (status, listingType) => {
+  if (listingType === "offer") {
+    return (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={{ width: "1rem", height: "1rem", marginRight: "0.375rem" }}
+      >
+        <path d="M2 9h20M2 15h20" />
+        <rect x="4" y="4" width="16" height="16" rx="2" />
+        <line x1="12" y1="4" x2="12" y2="8" />
+        <line x1="12" y1="16" x2="12" y2="20" />
+      </svg>
+    );
+  }
+
+  switch (status) {
+    case "active":
+      return (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ width: "1rem", height: "1rem", marginRight: "0.375rem" }}
+        >
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+      );
+    case "upcoming":
+      return (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ width: "1rem", height: "1rem", marginRight: "0.375rem" }}
+        >
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+          <line x1="16" y1="2" x2="16" y2="6" />
+          <line x1="8" y1="2" x2="8" y2="6" />
+          <line x1="3" y1="10" x2="21" y2="10" />
+        </svg>
+      );
+    default:
+      return (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ width: "1rem", height: "1rem", marginRight: "0.375rem" }}
+        >
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+          <polyline points="22 4 12 14.01 9 11.01" />
+        </svg>
+      );
+  }
+};
+
+export const resetFilters = (shouldRedirectHomePage = false, navigate) => {
+  if (shouldRedirectHomePage) {
+    navigate("/");
+    return;
+  }
+  // Müsterinin istegi üzerine aktif açik artirmalara yönlendiriliyor.
+  setSelectedCity("");
+  filterAuctions();
+  setCurrentPage(1);
+  handleListingTypeChange("new");
+};
