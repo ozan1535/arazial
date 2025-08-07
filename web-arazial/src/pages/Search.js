@@ -1,12 +1,9 @@
-import { useCallback, useState } from "react";
+import { useEffect, useState } from "react";
 import { BsKeyFill } from "react-icons/bs";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { RiAuctionFill } from "react-icons/ri";
-import { FaArrowLeft } from "react-icons/fa";
 import styled from "styled-components";
-import SearchComponent from "../components/SearchComponent";
 import Button from "../components/ui/Button";
-import { fetchAuctions } from "../services/auctionService";
 import { supabase } from "./../services/supabase";
 import AuctionGridComponent from "../components/AuctionGridComponent";
 import backgroundImage from "../assets/backgroundimage.png";
@@ -216,40 +213,41 @@ function Search() {
 
   const { listingTypes, types, city } = searchFilters;
 
-  const handleSelectListingType = (listingType) => {
-    if (listingTypes.includes(listingType)) {
-      setSearchFilters((prev) => ({
-        ...prev,
-        listingTypes: prev.listingTypes.filter(
-          (listType) => listType !== listingType
-        ),
-      }));
-    } else {
-      setSearchFilters((prev) => ({
-        ...prev,
-        listingTypes: [...prev.listingTypes, listingType],
-      }));
-    }
-  };
+  // WE MIGHT NEED THE COMMENTS IN THE FUTURE
+  // const handleSelectListingType = (listingType) => {
+  //   if (listingTypes.includes(listingType)) {
+  //     setSearchFilters((prev) => ({
+  //       ...prev,
+  //       listingTypes: prev.listingTypes.filter(
+  //         (listType) => listType !== listingType
+  //       ),
+  //     }));
+  //   } else {
+  //     setSearchFilters((prev) => ({
+  //       ...prev,
+  //       listingTypes: [...prev.listingTypes, listingType],
+  //     }));
+  //   }
+  // };
 
-  const handleTypeClick = (type) => {
-    if (types.includes(type.toLowerCase())) {
-      setSearchFilters((prev) => ({
-        ...prev,
-        types: prev.types.filter((itemType) => itemType !== type.toLowerCase()),
-      }));
-    } else {
-      setSearchFilters((prev) => ({
-        ...prev,
-        types: [...prev.types, type.toLowerCase()],
-      }));
-    }
-  };
+  // const handleTypeClick = (type) => {
+  //   if (types.includes(type.toLowerCase())) {
+  //     setSearchFilters((prev) => ({
+  //       ...prev,
+  //       types: prev.types.filter((itemType) => itemType !== type.toLowerCase()),
+  //     }));
+  //   } else {
+  //     setSearchFilters((prev) => ({
+  //       ...prev,
+  //       types: [...prev.types, type.toLowerCase()],
+  //     }));
+  //   }
+  // };
 
-  const handleSearchAgain = () => {
-    setSearchFilters({ listingTypes: [], types: [], city: "" });
-    setCurrentPage(0);
-  };
+  // const handleSearchAgain = () => {
+  //   setSearchFilters({ listingTypes: [], types: [], city: "" });
+  //   setCurrentPage(0);
+  // };
 
   const fetchData = async (isListType, itemToFilter) => {
     setIsLoading(true);
@@ -307,7 +305,21 @@ function Search() {
     { name: "Uşak" },
   ];
 
-  console.log(auctionData);
+  // TEMPORARY SOLUTION
+  useEffect(() => {
+    const handleClickAnywhere = (event) => {
+      if (event.target.parentElement.innerText === "Arama") {
+        setSearchFilters({ listingTypes: [], types: [], city: "" });
+        setCurrentPage(0);
+      }
+    };
+
+    window.addEventListener("click", handleClickAnywhere);
+
+    return () => {
+      window.removeEventListener("click", handleClickAnywhere);
+    };
+  }, []);
 
   return (
     <Container>
@@ -452,16 +464,6 @@ function Search() {
             {auctionData.length ? (
               <h5>{`${auctionData.length} sonuç bulundu.`}</h5>
             ) : null}
-            <Button
-              style={{
-                padding: "0.5rem",
-                marginLeft: "0.5rem",
-                cursor: "pointer",
-              }}
-              onClick={handleSearchAgain}
-            >
-              Yeniden Arama Yap
-            </Button>
           </SearchResultInfo>
           <AuctionGridComponent
             items={auctionData}
