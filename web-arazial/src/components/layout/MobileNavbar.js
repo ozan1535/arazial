@@ -50,7 +50,7 @@ function MobileNavbar() {
         ) : (
           <IoHomeOutline size={24} />
         )}
-        <span>Anasayfa</span>
+        <span>Keşfet</span>
       </NavItem>
 
       <NavItem to="/search">
