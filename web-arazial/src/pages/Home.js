@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Helmet } from "react-helmet-async";
@@ -7,11 +7,11 @@ import {
   fetchNegotiations,
   getAuctionBids,
 } from "../services/auctionService";
-import { supabase } from "../services/supabase";
-import { useAuth } from "../context/AuthContext";
-import CountdownTimer from "../components/CountdownTimer";
 import Button from "../components/ui/Button";
 import backgroundImage from "../assets/backgroundimage.png";
+import { resetFilters } from "../helpers/helpers";
+import SearchComponent from "../components/SearchComponent";
+import AuctionGridComponent from "../components/AuctionGridComponent";
 
 // Hero section and modern homepage styling
 const HeroSection = styled.section`
@@ -56,21 +56,6 @@ const HeroContent = styled.div`
   z-index: 1;
 `;
 
-const HeroTitle = styled.h1`
-  font-size: 3.5rem;
-  font-weight: 700;
-  color: white;
-  margin-bottom: 1.5rem;
-  max-width: 800px;
-  line-height: 1.2;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-
-  @media (max-width: 768px) {
-    font-size: 2.25rem;
-    margin-bottom: 1rem;
-  }
-`;
-
 const HeroSubtitle = styled.p`
   font-size: 1.25rem;
   color: var(--color-primary-dark, #003366);
@@ -82,135 +67,6 @@ const HeroSubtitle = styled.p`
   @media (max-width: 768px) {
     font-size: 1rem;
     margin-bottom: 1.5rem;
-  }
-`;
-
-const SearchContainer = styled.div`
-  background-color: white;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-  max-width: 900px;
-
-  @media (max-width: 768px) {
-    padding: 0.75rem;
-    margin-bottom: 1.5rem;
-  }
-`;
-
-const SearchTabs = styled.div`
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid #eaeaea;
-  padding-bottom: 1rem;
-
-  @media (max-width: 768px) {
-    overflow-x: auto;
-    white-space: nowrap;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-  }
-`;
-
-const SearchTab = styled.button`
-  padding: 0.75rem 1.5rem;
-  background: ${(props) =>
-    props.active ? "var(--color-primary)" : "transparent"};
-  color: ${(props) => (props.active ? "white" : "var(--color-text)")};
-  border: none;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: ${(props) =>
-      props.active ? "var(--color-primary-dark)" : "rgba(0, 0, 0, 0.05)"};
-  }
-`;
-
-const SearchForm = styled.form`
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 1rem;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-`;
-
-const SearchInputGroup = styled.div`
-  width: 100%;
-`;
-
-const SearchInput = styled.div`
-  position: relative;
-
-  svg {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--color-text-secondary);
-    width: 1.25rem;
-    height: 1.25rem;
-  }
-
-  select,
-  input {
-    width: 100%;
-    padding: 1rem 1rem 1rem 3rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    font-size: 1rem;
-
-    &:focus {
-      outline: none;
-      border-color: var(--color-primary);
-      box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.15);
-    }
-
-    @media (max-width: 768px) {
-      padding: 0.75rem 0.75rem 0.75rem 2.5rem;
-      font-size: 0.9rem;
-    }
-  }
-
-  select {
-    -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236E6E6E' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-  }
-
-  @media (max-width: 768px) {
-    svg {
-      left: 0.75rem;
-      width: 1rem;
-      height: 1rem;
-    }
-
-    select {
-      background-position: right 0.75rem center;
-    }
-  }
-`;
-
-const SearchButton = styled(Button)`
-  padding: 1rem 2rem;
-  min-height: auto;
-  border-radius: 6px;
-  font-weight: 600;
-
-  @media (max-width: 768px) {
-    min-height: 45px;
-    padding: 0.5rem 1.5rem;
   }
 `;
 
@@ -391,387 +247,6 @@ const PageContainer = styled.div`
   }
 `;
 
-const SectionTitle = styled.h2`
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--color-text);
-  margin-bottom: 0.5rem;
-
-  @media (max-width: 768px) {
-    font-size: 1.75rem;
-  }
-`;
-
-const SectionDescription = styled.p`
-  color: var(--color-text-secondary);
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
-
-  @media (max-width: 768px) {
-    font-size: 1rem;
-  }
-`;
-
-const AuctionsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1rem;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-`;
-
-const AuctionCard = styled.div`
-  background-color: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-  }
-`;
-
-const AuctionImage = styled.div`
-  height: 200px;
-  background-color: #f9fafb;
-  position: relative;
-  overflow: hidden;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-  }
-
-  ${AuctionCard}:hover & img {
-    transform: scale(1.05);
-  }
-`;
-
-const AuctionStatusBadge = styled.div`
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  padding: 0.4rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  background-color: ${
-    (props) =>
-      props.type === "offer"
-        ? "rgba(234, 88, 12, 0.9)" // Orange for offers
-        : props.status === "active"
-        ? "rgba(5, 150, 105, 0.9)" // Green for active
-        : props.status === "upcoming"
-        ? "rgba(37, 99, 235, 0.9)" // Blue for upcoming
-        : props.status === "completed" || props.status === "ended"
-        ? "rgba(107, 114, 128, 0.9)" // Gray for completed
-        : "rgba(239, 68, 68, 0.9)" // Red for others
-  };
-  color: white;
-  z-index: 1;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-`;
-
-const AuctionContent = styled.div`
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-`;
-
-const AuctionTitle = styled.h3`
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-  color: var(--color-text);
-  line-height: 1.3;
-
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-height: 2.6em; /* Set a minimum height for 2 lines */
-`;
-
-/* 
- margin-bottom: 1rem;
-*/
-const AuctionLocation = styled.div`
-  display: flex;
-  align-items: center;
-
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
-
-  svg {
-    width: 1rem;
-    height: 1rem;
-    margin-right: 0.5rem;
-    flex-shrink: 0;
-  }
-`;
-
-/* 
- margin-top: 0.75rem;
-  margin-bottom: 1rem;
-*/
-const AuctionMeta = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
-`;
-
-const MetaItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  svg {
-    width: 1rem;
-    height: 1rem;
-    flex-shrink: 0;
-  }
-
-  strong {
-    color: var(--color-text);
-    font-weight: 600;
-  }
-`;
-
-const IncrementIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-    />
-  </svg>
-);
-
-const AuctionDetails = styled.div`
-  border-top: 1px solid #eaeaea;
-  padding-top: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: auto; /* Pushes this to the bottom */
-`;
-
-const PriceInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-
-  span:first-child {
-    font-size: 0.8rem;
-    color: var(--color-text-secondary);
-    margin-bottom: 0.25rem;
-  }
-`;
-
-const AuctionPrice = styled.div`
-  font-weight: 700;
-  font-size: 1.35rem;
-  color: var(--color-text);
-  text-wrap: nowrap;
-`;
-
-/* 
-CountdownInfo'dan çikarildi.
-flex-direction: column;
-  align-items: flex-end;
-
-  Mobil görünüm eklendi.
-*/
-const CountdownInfo = styled.div`
-  display: flex;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-  }
-`;
-
-const CountdownLabel = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  margin-bottom: 0.25rem;
-
-  svg {
-    width: 1em;
-    height: 1em;
-    color: ${(props) =>
-      props.status === "active" ? "rgb(5, 150, 105)" : "rgb(37, 99, 235)"};
-  }
-`;
-
-const AuctionStatus = styled.div`
-  display: flex;
-  align-items: center;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: ${(props) =>
-    props.status === "active"
-      ? "rgb(5, 150, 105)"
-      : props.status === "upcoming"
-      ? "rgb(37, 99, 235)"
-      : props.status === "offer"
-      ? "rgb(234, 88, 12)"
-      : "rgb(107, 114, 128)"};
-`;
-
-const ResponsiveButton = styled(Button)`
-  min-height: auto;
-  padding: 1rem 1.5rem;
-
-  @media (max-width: 768px) {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-  }
-`;
-
-// Icons
-const LocationIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
-    />
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
-    />
-  </svg>
-);
-
-const SearchIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-    />
-  </svg>
-);
-
-const BuildingIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z"
-    />
-  </svg>
-);
-
-const GridIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M6.75 6.75h10.5v10.5h-10.5z"
-    />
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M12 3.75v16.5m-8.25-8.25h16.5"
-    />
-  </svg>
-);
-
-const AuctionTypeTag = styled.div`
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  padding: 0.3rem 0.6rem;
-  border-radius: 4px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  background-color: rgba(0, 0, 0, 0.6);
-  color: white;
-  z-index: 1;
-`;
-
-const ShareButton = styled.button`
-  background: rgba(17, 24, 39, 0.7);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-  border-radius: 8px;
-  padding: 0.4rem 0.8rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  z-index: 2;
-  font-size: 0.8rem;
-  font-weight: 600;
-
-  svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  &:hover {
-    background: rgba(17, 24, 39, 0.9);
-    transform: scale(1.05);
-  }
-`;
-
 const ShareNotification = styled.div`
   position: fixed;
   bottom: 2rem;
@@ -799,214 +274,6 @@ const Home = () => {
   const [auctionStatus, setAuctionStatus] = useState("active"); // 'active', 'upcoming', 'ended'
   const [shareMessage, setShareMessage] = useState("");
   const navigate = useNavigate();
-  const { user } = useAuth();
-  // Turkish cities data for the dropdown
-  const cities = [
-    "Adana",
-    "Adıyaman",
-    "Afyonkarahisar",
-    "Ağrı",
-    "Aksaray",
-    "Amasya",
-    "Ankara",
-    "Antalya",
-    "Ardahan",
-    "Artvin",
-    "Aydın",
-    "Balıkesir",
-    "Bartın",
-    "Batman",
-    "Bayburt",
-    "Bilecik",
-    "Bingöl",
-    "Bitlis",
-    "Bolu",
-    "Burdur",
-    "Bursa",
-    "Çanakkale",
-    "Çankırı",
-    "Çorum",
-    "Denizli",
-    "Diyarbakır",
-    "Düzce",
-    "Edirne",
-    "Elazığ",
-    "Erzincan",
-    "Erzurum",
-    "Eskişehir",
-    "Gaziantep",
-    "Giresun",
-    "Gümüşhane",
-    "Hakkari",
-    "Hatay",
-    "Iğdır",
-    "Isparta",
-    "İstanbul",
-    "İzmir",
-    "Kahramanmaraş",
-    "Karabük",
-    "Karaman",
-    "Kars",
-    "Kastamonu",
-    "Kayseri",
-    "Kırıkkale",
-    "Kırklareli",
-    "Kırşehir",
-    "Kilis",
-    "Kocaeli",
-    "Konya",
-    "Kütahya",
-    "Malatya",
-    "Manisa",
-    "Mardin",
-    "Mersin",
-    "Muğla",
-    "Muş",
-    "Nevşehir",
-    "Niğde",
-    "Ordu",
-    "Osmaniye",
-    "Rize",
-    "Sakarya",
-    "Samsun",
-    "Şanlıurfa",
-    "Siirt",
-    "Sinop",
-    "Sivas",
-    "Şırnak",
-    "Tekirdağ",
-    "Tokat",
-    "Trabzon",
-    "Tunceli",
-    "Uşak",
-    "Van",
-    "Yalova",
-    "Yozgat",
-    "Zonguldak",
-  ];
-
-  // Sample districts for many cities - in a real app, this would be a complete database
-  const districts = {
-    İstanbul: [
-      "Kadıköy",
-      "Beşiktaş",
-      "Şişli",
-      "Üsküdar",
-      "Sarıyer",
-      "Beyoğlu",
-      "Fatih",
-      "Bahçelievler",
-      "Bakırköy",
-      "Ataşehir",
-    ],
-    Ankara: [
-      "Çankaya",
-      "Keçiören",
-      "Yenimahalle",
-      "Mamak",
-      "Etimesgut",
-      "Sincan",
-      "Altındağ",
-      "Gölbaşı",
-      "Pursaklar",
-      "Polatlı",
-    ],
-    İzmir: [
-      "Konak",
-      "Karşıyaka",
-      "Bornova",
-      "Buca",
-      "Çiğli",
-      "Gaziemir",
-      "Bayraklı",
-      "Menemen",
-      "Karabağlar",
-      "Torbalı",
-    ],
-    Antalya: [
-      "Muratpaşa",
-      "Konyaaltı",
-      "Kepez",
-      "Alanya",
-      "Manavgat",
-      "Serik",
-      "Kaş",
-      "Kemer",
-      "Kumluca",
-      "Aksu",
-    ],
-    Bursa: [
-      "Osmangazi",
-      "Nilüfer",
-      "Yıldırım",
-      "Gemlik",
-      "İnegöl",
-      "Mudanya",
-      "Kestel",
-      "Mustafakemalpaşa",
-      "Gürsu",
-      "Karacabey",
-    ],
-    Adana: [
-      "Seyhan",
-      "Çukurova",
-      "Yüreğir",
-      "Sarıçam",
-      "Ceyhan",
-      "Kozan",
-      "İmamoğlu",
-      "Karataş",
-      "Pozantı",
-      "Karaisalı",
-    ],
-    Konya: [
-      "Selçuklu",
-      "Meram",
-      "Karatay",
-      "Ereğli",
-      "Akşehir",
-      "Beyşehir",
-      "Çumra",
-      "Seydişehir",
-      "Ilgın",
-      "Kulu",
-    ],
-    Gaziantep: [
-      "Şahinbey",
-      "Şehitkamil",
-      "Nizip",
-      "İslahiye",
-      "Araban",
-      "Oğuzeli",
-      "Nurdağı",
-      "Karkamış",
-      "Yavuzeli",
-    ],
-    Mersin: [
-      "Akdeniz",
-      "Mezitli",
-      "Yenişehir",
-      "Toroslar",
-      "Tarsus",
-      "Erdemli",
-      "Silifke",
-      "Anamur",
-      "Mut",
-      "Gülnar",
-    ],
-    Kayseri: [
-      "Melikgazi",
-      "Kocasinan",
-      "Talas",
-      "Develi",
-      "Yahyalı",
-      "Bünyan",
-      "Pınarbaşı",
-      "Tomarza",
-      "Yeşilhisar",
-      "İncesu",
-    ],
-  };
 
   useEffect(() => {
     loadListings();
@@ -1343,13 +610,13 @@ const Home = () => {
   };
 
   // Reset all filters
-  const resetFilters = () => {
+  /*   const resetFilters = () => {
     // Müsterinin istegi üzerine aktif açik artirmalara yönlendiriliyor.
     setSelectedCity("");
     filterAuctions();
     setCurrentPage(1);
     handleListingTypeChange("new");
-  };
+  }; */
 
   // Get paginated results
   const getPaginatedAuctions = () => {
@@ -1377,10 +644,6 @@ const Home = () => {
   const handleStatusChange = (status) => {
     setAuctionStatus(status);
     setCurrentPage(1);
-  };
-
-  const handleAuctionClick = (auctionId) => {
-    navigate(`/auctions/${auctionId}`);
   };
 
   const formatNumber = (number) => {
@@ -1789,38 +1052,12 @@ const Home = () => {
             tekliflerinizi verin.
           </HeroSubtitle>
 
-          <SearchContainer>
-            <SearchForm onSubmit={handleSearchSubmit}>
-              <SearchInputGroup>
-                <SearchInput>
-                  <SearchIcon />
-                  <select value={selectedCity} onChange={handleCityChange}>
-                    <option value="">Tüm Şehirler</option>
-                    {cities.map((city) => (
-                      <option key={city} value={city}>
-                        {city}
-                      </option>
-                    ))}
-                  </select>
-                </SearchInput>
-              </SearchInputGroup>
-
-              <div style={{ display: "flex", gap: "0.5rem" }}>
-                <SearchButton type="submit" variant="primary" size="large">
-                  Ara
-                </SearchButton>
-
-                <ResponsiveButton
-                  type="button"
-                  variant="secondary"
-                  size="large"
-                  onClick={resetFilters}
-                >
-                  Sıfırla
-                </ResponsiveButton>
-              </div>
-            </SearchForm>
-          </SearchContainer>
+          <SearchComponent
+            selectedCity={selectedCity}
+            handleSearchSubmit={handleSearchSubmit}
+            handleCityChange={handleCityChange}
+            resetFilters={resetFilters}
+          />
 
           <PopularSearches>
             <a
@@ -1919,7 +1156,15 @@ const Home = () => {
             </StatusTabs>
           )}
 
-          <AuctionsGrid>
+          <AuctionGridComponent
+            items={getPaginatedAuctions()}
+            isLoading={isLoading}
+            auctions={auctions}
+            listingType={listingType}
+            setShareMessage={setShareMessage}
+          />
+
+          {/* <AuctionsGrid>
             {isLoading ? (
               // Show skeletons while loading
               Array(6)
@@ -1978,7 +1223,6 @@ const Home = () => {
               </div>
             ) : (
               getPaginatedAuctions()
-                /*  .sort((a, b) => new Date(a.startTime) - new Date(b.startTime)) */
                 .map((listing) => {
                   return (
                     <AuctionCard
@@ -1993,33 +1237,7 @@ const Home = () => {
                           }
                           alt={listing.title}
                         />
-                        {/* {(listing.status === "active" ||
-                        listing.status === "upcoming") && (
-                        <ShareButton
-                          onClick={(e) => handleShare(e, listing)}
-                          title="İlanı paylaş"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={2}
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M7.217 10.907a2.25 2.25 0 100 4.186 2.25 2.25 0 000-4.186zM12 5.25v.01M12 18.75v.01M16.883 10.907a2.25 2.25 0 100 4.186 2.25 2.25 0 000-4.186zM6.117 6.117a2.25 2.25 0 100 4.186 2.25 2.25 0 000-4.186zM12 12.75a2.25 2.25 0 100-4.186 2.25 2.25 0 000 4.186z"
-                            />
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M17.883 6.117a2.25 2.25 0 100 4.186 2.25 2.25 0 000-4.186zM6.117 17.883a2.25 2.25 0 100-4.186 2.25 2.25 0 000 4.186z"
-                            />
-                          </svg>
-                          Paylaş
-                        </ShareButton>
-                      )} */}
+
                         <AuctionStatusBadge
                           status={listing.status}
                           type={listing._display_type}
@@ -2122,27 +1340,6 @@ const Home = () => {
                           )}
                         </AuctionMeta>
 
-                        {/* <AuctionDetails>
-                        <div
-                          style={{
-                            width: "100%",
-                            display: "flex",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <PriceInfo>
-                            <span>Başlangıç Fiyatı</span>
-                            <AuctionPrice>
-                              {formatPrice(
-                                listing.starting_price ||
-                                  listing.startingPrice ||
-                                  0
-                              )}
-                            </AuctionPrice>
-                          </PriceInfo>
-                        </div>
-                      </AuctionDetails> */}
-
                         <AuctionDetails>
                           <PriceInfo>
                             <span>
@@ -2193,29 +1390,6 @@ const Home = () => {
                         </AuctionDetails>
 
                         <AuctionDetails>
-                          {/*  <PriceInfo>
-                          <span>
-                            {listing.status === "active"
-                              ? "Güncel Teklif"
-                              : listing.status === "ended" ||
-                                listing.status === "completed"
-                              ? "Kapanış Fiyatı"
-                              : "Başlangıç Fiyatı"}
-                          </span>
-                          <AuctionPrice>
-                            {formatPrice(
-                              listing.status === "active" ||
-                                listing.status === "ended" ||
-                                listing.status === "completed"
-                                ? getMinimumBidAmount(listing)
-                                : listing.starting_price ||
-                                    listing.startingPrice ||
-                                    listing.starting_bid ||
-                                    0
-                            )}
-                          </AuctionPrice>
-                        </PriceInfo> */}
-
                           {listing._display_type === "offer" ? (
                             <AuctionStatus status="offer">
                               {getStatusIcon("offer", "offer")}
@@ -2228,11 +1402,7 @@ const Home = () => {
                                 Kalan:
                               </CountdownLabel>
                               <CountdownTimer
-                                /* endTime={new Date(
-                                  listing.end_time ||
-                                    listing.endTime ||
-                                    listing.end_date
-                                ).toISOString()} */
+                          
                                 endTime={listing.end_time || listing.endTime}
                                 compact={true}
                               />
@@ -2262,7 +1432,7 @@ const Home = () => {
                   );
                 })
             )}
-          </AuctionsGrid>
+          </AuctionsGrid> */}
 
           {/* Pagination Controls */}
           {filteredAuctions.length > itemsPerPage && (
