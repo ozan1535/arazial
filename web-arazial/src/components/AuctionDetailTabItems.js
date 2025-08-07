@@ -14,7 +14,8 @@ const Tab = styled.div`
   width: 100px;
   padding: 10px;
   text-align: center;
-  border-top: ${(props) => (props.active ? "3px solid red" : "#f0f0f0")};
+  border-top: ${(props) =>
+    props.active ? "3px solid var(--color-primary)" : "#f0f0f0"};
   background-color: ${(props) => (props.active ? "white" : "#f0f0f0")};
   cursor: pointer;
   font-weight: bold;
