@@ -10,7 +10,10 @@ import {
   getStatusText,
   handleShare,
   resetFilters,
+  toggleFavorite,
 } from "../helpers/helpers";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
 
 const AuctionsGrid = styled.div`
   display: grid;
@@ -286,7 +289,11 @@ function AuctionGridComponent({
   listingType,
   setShareMessage,
   shouldRedirectHomePage = false,
+  userFavorites,
+  setUserFavorites,
 }) {
+  const { user } = useAuth();
+
   const navigate = useNavigate();
 
   const handleAuctionClick = (auctionId) => {
@@ -371,26 +378,64 @@ function AuctionGridComponent({
               onClick={() => handleAuctionClick(listing.id)}
             >
               <AuctionImage>
-                <img
-                  src={
-                    listing.images?.[0] ||
-                    "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                  }
-                  alt={listing.title}
-                />
+                <div>
+                  <img
+                    src={
+                      listing.images?.[0] ||
+                      "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                    }
+                    alt={listing.title}
+                  />
 
-                <AuctionStatusBadge
-                  status={listing.status}
-                  type={listing._display_type || listing.listing_type}
+                  <AuctionStatusBadge
+                    status={listing.status}
+                    type={listing._display_type || listing.listing_type}
+                  >
+                    {getStatusText(
+                      listing.status,
+                      listing._display_type || listing.listing_type
+                    )}
+                  </AuctionStatusBadge>
+                  {listingType === "new" &&
+                    (listing._display_type || listing.listing_type) !==
+                      "offer" && <AuctionTypeTag>Açık Arttırma</AuctionTypeTag>}
+                </div>
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    right: 10,
+                    fontSize: 40,
+                  }}
                 >
-                  {getStatusText(
-                    listing.status,
-                    listing._display_type || listing.listing_type
+                  {userFavorites.find(
+                    (favourite) => favourite.auction_id === listing.id
+                  ) ? (
+                    <FaHeart
+                      onClick={(e) =>
+                        toggleFavorite(
+                          e,
+                          listing.id,
+                          user,
+                          userFavorites,
+                          setUserFavorites
+                        )
+                      }
+                    />
+                  ) : (
+                    <FaRegHeart
+                      onClick={(e) =>
+                        toggleFavorite(
+                          e,
+                          listing.id,
+                          user,
+                          userFavorites,
+                          setUserFavorites
+                        )
+                      }
+                    />
                   )}
-                </AuctionStatusBadge>
-                {listingType === "new" &&
-                  (listing._display_type || listing.listing_type) !==
-                    "offer" && <AuctionTypeTag>Açık Arttırma</AuctionTypeTag>}
+                </div>
               </AuctionImage>
               <AuctionContent>
                 <AuctionTitle>{listing.title || "Emlak İlanı"}</AuctionTitle>
