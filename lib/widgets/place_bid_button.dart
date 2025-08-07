@@ -55,7 +55,8 @@ class _PlaceBidButtonState extends State<PlaceBidButton> {
     );
 
     // Check authentication status
-    final authService = provider.Provider.of<AuthService>(context, listen: false);
+    final authService =
+        provider.Provider.of<AuthService>(context, listen: false);
     final isLoggedIn = authService.currentUser != null;
 
     if (!isLoggedIn) {
@@ -114,7 +115,8 @@ class _PlaceBidButtonState extends State<PlaceBidButton> {
                 decoration: InputDecoration(
                   labelText: 'Teklif Tutarı',
                   prefixText: '₺ ',
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -129,12 +131,15 @@ class _PlaceBidButtonState extends State<PlaceBidButton> {
                     if (newValue.text.isEmpty) {
                       return newValue;
                     }
-                    final number = int.tryParse(newValue.text.replaceAll('.', ''));
+                    final number =
+                        int.tryParse(newValue.text.replaceAll('.', ''));
                     if (number != null) {
-                      final formattedValue = NumberFormat.decimalPattern('tr_TR').format(number);
+                      final formattedValue =
+                          NumberFormat.decimalPattern('tr_TR').format(number);
                       return TextEditingValue(
                         text: formattedValue,
-                        selection: TextSelection.collapsed(offset: formattedValue.length),
+                        selection: TextSelection.collapsed(
+                            offset: formattedValue.length),
                       );
                     }
                     return oldValue;
@@ -212,8 +217,10 @@ class _PlaceBidButtonState extends State<PlaceBidButton> {
     });
 
     try {
-      final auctionProvider = provider.Provider.of<AuctionProvider>(context, listen: false);
-      final success = await auctionProvider.placeBid(widget.auction.id, bidAmount);
+      final auctionProvider =
+          provider.Provider.of<AuctionProvider>(context, listen: false);
+      final success =
+          await auctionProvider.placeBid(widget.auction.id, bidAmount);
 
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -251,4 +258,4 @@ class _PlaceBidButtonState extends State<PlaceBidButton> {
       }
     }
   }
-} 
+}

@@ -38,6 +38,8 @@ import LegalNotices from "./pages/LegalNotices";
 import Security from "./pages/Security";
 import KvkkAydinlatmaMetniPage from "./pages/KvkkAydinlatmaMetniPage";
 import HowToUse from "./pages/HowToUse";
+import Account from "./pages/Account";
+import Search from "./pages/Search";
 
 // Re-export for backward compatibility
 export { forceAuthRefresh, resetAllAuthStorage };
@@ -603,6 +605,22 @@ const App = () => {
             element={
               <Layout>
                 <About />
+              </Layout>
+            }
+          />
+          <Route
+            path="/account"
+            element={
+              <Layout>
+                <Account />
+              </Layout>
+            }
+          />
+          <Route
+            path="/search"
+            element={
+              <Layout>
+                <Search />
               </Layout>
             }
           />

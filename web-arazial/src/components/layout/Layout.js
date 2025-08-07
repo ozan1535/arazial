@@ -1,6 +1,7 @@
-import styled from 'styled-components';
-import Navbar from './Navbar';
-import Footer from './Footer';
+import styled from "styled-components";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+import MobileNavbar from "./MobileNavbar";
 
 const LayoutContainer = styled.div`
   display: flex;
@@ -22,10 +23,9 @@ const Layout = ({ children }) => {
   return (
     <LayoutContainer>
       <Navbar />
-      <Main>
-        {children}
-      </Main>
+      <Main>{children}</Main>
       <Footer />
+      <MobileNavbar />
     </LayoutContainer>
   );
 };
