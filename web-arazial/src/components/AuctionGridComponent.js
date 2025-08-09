@@ -291,6 +291,8 @@ function AuctionGridComponent({
   shouldRedirectHomePage = false,
   userFavorites,
   setUserFavorites,
+  notFoundMessage = null,
+  notFoundButtonMessage = null,
 }) {
   const { user } = useAuth();
 
@@ -360,14 +362,17 @@ function AuctionGridComponent({
             padding: "3rem 0",
           }}
         >
-          <p>Şu anda görüntülenebilecek satış ilanı bulunmamaktadır.</p>
+          <p>
+            {notFoundMessage ||
+              "Şu anda görüntülenebilecek satış ilanı bulunmamaktadır."}
+          </p>
           <Button
             variant="secondary"
             size="small"
             onClick={() => resetFilters(shouldRedirectHomePage, navigate)}
             style={{ marginTop: "1rem" }}
           >
-            Tüm Açık Arttırmaları Göster
+            {notFoundButtonMessage || "Tüm Açık Arttırmaları Göster"}
           </Button>
         </div>
       ) : (
