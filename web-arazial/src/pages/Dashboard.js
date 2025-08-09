@@ -216,8 +216,9 @@ const BidItem = styled.li`
 
 const BidItemContent = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  align-items: space-between;
 `;
 
 const BidItemTitle = styled.h3`
@@ -514,7 +515,7 @@ const Dashboard = () => {
 
   return (
     <DashboardContainer>
-      <StatsGrid>
+      {/* <StatsGrid>
         <StatCard>
           <StatTitle>Toplam Teklif</StatTitle>
           <StatValue>{userStats.totalBids}</StatValue>
@@ -531,9 +532,9 @@ const Dashboard = () => {
           <StatTitle>Toplam Harcama</StatTitle>
           <StatValue>{formatPrice(userStats.totalSpent)}</StatValue>
         </StatCard>
-      </StatsGrid>
+      </StatsGrid> */}
 
-      <SectionTitle>Son Tekliflerim</SectionTitle>
+      {/* <SectionTitle>Son Tekliflerim</SectionTitle>
       {error ? (
         <EmptyState>
           <EmptyStateIcon>
@@ -656,8 +657,8 @@ const Dashboard = () => {
             </div>
           )}
         </div>
-      )}
-      <SectionTitle>Satın al Tekliflerim</SectionTitle>
+      )} */}
+      <SectionTitle>Satın Aldıklarım</SectionTitle>
       {error ? (
         <EmptyState>
           <EmptyStateIcon>

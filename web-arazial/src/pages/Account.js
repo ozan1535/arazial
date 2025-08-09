@@ -77,7 +77,7 @@ function Account() {
       </AccountLink>
       <AccountLink to="/dashboard">
         <RiAuctionFill size={24} color="gray" />
-        <span>Tekliflerim</span>
+        <span>İşlemlerim</span>
       </AccountLink>
       <AccountLink to="/">
         <MdRealEstateAgent size={24} color="gray" />
