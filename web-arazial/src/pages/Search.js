@@ -67,7 +67,7 @@ const ContentContainer = styled.div`
   flex: 1;
   padding: 10px;
   text-align: left;
-  font-size: 16px;
+  font-size: 1.25rem;
   font-weight: bold;
   color: #333;
 `;
@@ -484,6 +484,8 @@ function Search() {
             shouldRedirectHomePage={true}
             userFavorites={userFavorites}
             setUserFavorites={setUserFavorites}
+            notFoundMessage="Aradığınız kriterlere uygun ilan bulunamadı."
+            notFoundButtonMessage="Tüm ilanları incele"
           />
           <ShareNotification show={!!shareMessage}>
             {shareMessage}
