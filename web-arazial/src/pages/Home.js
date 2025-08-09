@@ -9,7 +9,10 @@ import {
 } from "../services/auctionService";
 import Button from "../components/ui/Button";
 import backgroundImage from "../assets/backgroundimage.png";
-import { resetFilters } from "../helpers/helpers";
+import {
+  homePageInformationWrapperData,
+  resetFilters,
+} from "../helpers/helpers";
 import SearchComponent from "../components/SearchComponent";
 import AuctionGridComponent from "../components/AuctionGridComponent";
 import { useAuth } from "../context/AuthContext";
@@ -43,6 +46,7 @@ const HeroSection = styled.section`
   }
 
   @media (max-width: 768px) {
+    display: none;
     height: auto;
     min-height: 320px;
     padding: 1rem;
@@ -242,7 +246,7 @@ const PageContainer = styled.div`
   z-index: 10;
 
   @media (max-width: 768px) {
-    padding: 0.75rem;
+    padding: 2rem 0.25rem;
     margin-top: -1rem;
     border-radius: 0;
     box-shadow: none;
@@ -265,6 +269,106 @@ const ShareNotification = styled.div`
   transition: opacity 0.3s ease, visibility 0.3s ease;
 `;
 
+const InformationWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center; /* Centers the cards on mobile */
+
+  @media (min-width: 768px) {
+    justify-content: flex-start; /* Aligns cards to the left on larger screens */
+  }
+`;
+
+const InformationCard = styled.div`
+  max-width: 200px;
+  min-height: 200px;
+  border-radius: 10px;
+  border: 1px solid gray;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  transition: 0.2s;
+  cursor: pointer;
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 4px 4px 10px lightgray;
+  }
+
+  @media (max-width: 768px) {
+    /* For mobile: make the cards take 45% of the width to fit two in a row */
+    width: 45%;
+  }
+
+  @media (min-width: 768px) {
+    /* For larger screens: each card remains at max-width */
+    width: 200px;
+  }
+`;
+
+const InformationCardText = styled.p`
+  margin: 5px 0;
+`;
+
+const InformationCardFooter = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const InformationImage = styled.img`
+  width: 80px;
+  height: 75px;
+  border-radius: 10px;
+  object-fit: cover;
+  object-position: top;
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 600px;
+  max-height: 80%;
+  overflow-y: auto;
+`;
+
+const ModalTitle = styled.h3`
+  margin-top: 0;
+`;
+
+const ModalText = styled.p`
+  margin: 1rem 0;
+  white-space: pre-line;
+  line-height: 1.2;
+`;
+
+const CloseButton = styled.button`
+  background: #f1f1f1;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  &:hover {
+    background-color: #ddd;
+  }
+`;
+
 const Home = () => {
   const [auctions, setAuctions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -276,6 +380,11 @@ const Home = () => {
   const [auctionStatus, setAuctionStatus] = useState("active"); // 'active', 'upcoming', 'ended'
   const [shareMessage, setShareMessage] = useState("");
   const [userFavorites, setUserFavorites] = useState([]);
+  const [informationCardModalOpen, setInformationCardModalOpen] =
+    useState(false);
+  const [informationCardSelectedItem, setInformationCardSelectedItem] =
+    useState(null);
+
   const navigate = useNavigate();
 
   const { user, loading } = useAuth();
@@ -694,6 +803,39 @@ const Home = () => {
         return status;
     }
   };
+
+  const openModal = (item) => {
+    if (item?.linkSource) {
+      window.open(item.linkSource, "_blank");
+      return;
+    }
+    setInformationCardSelectedItem(item);
+    setInformationCardModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setInformationCardModalOpen(false);
+    setInformationCardSelectedItem(null);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (event.target.id === "modal-overlay") {
+        closeModal();
+      }
+    };
+
+    if (informationCardModalOpen) {
+      document
+        .getElementById("modal-overlay")
+        .addEventListener("click", handleClickOutside);
+    }
+    return () => {
+      document
+        .getElementById("modal-overlay")
+        ?.removeEventListener("click", handleClickOutside);
+    };
+  }, [informationCardModalOpen]);
 
   const getStatusIcon = (status, listingType) => {
     if (listingType === "offer") {
@@ -1145,6 +1287,34 @@ const Home = () => {
               YENİ İLANLAR
             </TabButton>
           </TabsContainer>
+
+          <InformationWrapper>
+            {homePageInformationWrapperData.map((informationWrapperItem) => (
+              <InformationCard
+                key={informationWrapperItem.text}
+                onClick={() => openModal(informationWrapperItem)}
+              >
+                <InformationCardText>
+                  {informationWrapperItem.text}
+                </InformationCardText>
+                <InformationCardFooter>
+                  <InformationImage src={informationWrapperItem.imageSource} />
+                </InformationCardFooter>
+              </InformationCard>
+            ))}
+          </InformationWrapper>
+
+          {informationCardModalOpen && (
+            <ModalOverlay id="modal-overlay">
+              <ModalContent>
+                <ModalTitle>{informationCardSelectedItem?.text}</ModalTitle>
+                <ModalText>
+                  {informationCardSelectedItem?.detailedText}
+                </ModalText>
+                <CloseButton onClick={closeModal}>Kapat</CloseButton>
+              </ModalContent>
+            </ModalOverlay>
+          )}
 
           {listingType === "auction" && (
             <StatusTabs>
