@@ -8,6 +8,7 @@ import { supabase } from "./../services/supabase";
 import AuctionGridComponent from "../components/AuctionGridComponent";
 import backgroundImage from "../assets/backgroundimage.png";
 import { useAuth } from "../context/AuthContext";
+import { useSearchParams } from "react-router-dom";
 
 const ShareNotification = styled.div`
   position: fixed;
@@ -216,6 +217,10 @@ function Search() {
 
   const { listingTypes, types, city } = searchFilters;
 
+  let [searchParams] = useSearchParams();
+  const urlQuery = searchParams.get("q");
+  console.log(urlQuery, "fhfehfhe");
+
   // WE MIGHT NEED THE COMMENTS IN THE FUTURE
   // const handleSelectListingType = (listingType) => {
   //   if (listingTypes.includes(listingType)) {
@@ -252,7 +257,11 @@ function Search() {
   //   setCurrentPage(0);
   // };
 
-  const fetchData = async (isListType, itemToFilter) => {
+  const fetchData = async (
+    isListType,
+    itemToFilter,
+    canSearchListingOrType = true
+  ) => {
     setIsLoading(true);
     setCurrentPage((prev) => prev + 1);
     try {
@@ -263,25 +272,29 @@ function Search() {
 
       let filteredData = data;
 
-      if (city) {
+      if (city || urlQuery) {
         filteredData = filteredData.filter(
-          (item) => city.trim().toLowerCase() === item.city.trim().toLowerCase()
+          (item) =>
+            (city || urlQuery).trim().toLowerCase() ===
+            item.city.trim().toLowerCase()
         );
       }
 
-      if (isListType) {
-        filteredData = filteredData.filter(
-          (item) =>
-            itemToFilter.toLowerCase() ===
-            item.listing_type.trim().toLowerCase()
-        );
-      } else {
-        filteredData = filteredData.filter(
-          (item) =>
-            itemToFilter.toLowerCase() === item.emlak_tipi.trim().toLowerCase()
-        );
+      if (canSearchListingOrType) {
+        if (isListType) {
+          filteredData = filteredData.filter(
+            (item) =>
+              itemToFilter.toLowerCase() ===
+              item.listing_type.trim().toLowerCase()
+          );
+        } else {
+          filteredData = filteredData.filter(
+            (item) =>
+              itemToFilter.toLowerCase() ===
+              item.emlak_tipi.trim().toLowerCase()
+          );
+        }
       }
-
       // if (types.length) {
       //   filteredData = filteredData.filter(
       //     (item) => itemToFilter === item.emlak_tipi.trim().toLowerCase()
@@ -317,6 +330,9 @@ function Search() {
 
   // TEMPORARY SOLUTION
   useEffect(() => {
+    if (urlQuery) {
+      fetchData(false, urlQuery, false);
+    }
     const handleClickAnywhere = (event) => {
       if (event.target.parentElement.innerText === "Arama") {
         setSearchFilters({ listingTypes: [], types: [], city: "" });
@@ -330,6 +346,33 @@ function Search() {
       window.removeEventListener("click", handleClickAnywhere);
     };
   }, []);
+
+  if (urlQuery) {
+    return (
+      <PageContainer>
+        <SearchResultInfo>
+          {auctionData.length ? (
+            <h5>{`${auctionData.length} sonuç bulundu.`}</h5>
+          ) : null}
+        </SearchResultInfo>
+        <AuctionGridComponent
+          items={auctionData}
+          isLoading={isLoading}
+          auctions={auctionData}
+          listingType="" //{isListingTypeOffer ? "offer" : "auction"}
+          setShareMessage={setShareMessage}
+          shouldRedirectHomePage={true}
+          userFavorites={userFavorites}
+          setUserFavorites={setUserFavorites}
+          notFoundMessage="Aradığınız kriterlere uygun ilan bulunamadı."
+          notFoundButtonMessage="Tüm ilanları incele"
+        />
+        <ShareNotification show={!!shareMessage}>
+          {shareMessage}
+        </ShareNotification>
+      </PageContainer>
+    );
+  }
 
   return (
     <Container>
