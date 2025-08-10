@@ -3,9 +3,9 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import styled from "styled-components";
 import { formatNumber } from "../helpers/helpers";
+import { Link } from "react-router-dom";
 
-// Styled Components
-const CarouselItemContainer = styled.div`
+const CarouselItemContainer = styled(Link)`
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -20,6 +20,10 @@ const CarouselItemContent = styled.div`
   transition: box-shadow 0.3s ease;
   width: 100%;
   max-width: 350px;
+
+  @media (max-width: 768px) {
+    max-width: 310px;
+  }
 
   &:hover {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
@@ -76,7 +80,7 @@ const HomePageCarousel = ({ auctions }) => {
       breakpoint: { max: 464, min: 0 },
       items: 1,
       slidesToSlide: 1,
-      partialVisibilityGutter: 50,
+      partialVisibilityGutter: 20,
     },
   };
 
@@ -93,19 +97,16 @@ const HomePageCarousel = ({ auctions }) => {
           showDots={false}
           responsive={responsive}
           partialVisible={true}
-          ssr={true}
           infinite={true}
-          autoPlaySpeed={1000}
-          keyBoardControl={false}
-          customTransition="all .5"
-          transitionDuration={500}
+          customTransition="all .2"
+          transitionDuration={200}
           containerClass="carousel-container"
           removeArrowOnDeviceType={["tablet", "mobile", "desktop"]}
           dotListClass="custom-dot-list-style"
           itemClass="carousel-item-padding-40-px"
         >
           {filteredAuctions.slice(0, 5).map((item) => (
-            <CarouselItemContainer key={item.id}>
+            <CarouselItemContainer key={item.id} to={`/auctions/${item.id}`}>
               <CarouselItemContent>
                 <CarouselItemImage src={item.images[0]} alt={item.title} />
                 <CarouselItemDetails>
