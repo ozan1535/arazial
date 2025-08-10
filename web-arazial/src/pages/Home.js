@@ -272,14 +272,6 @@ const ShareNotification = styled.div`
 `;
 
 const InformationWrapper = styled.div`
-  /* display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  @media (min-width: 768px) {
-    justify-content: flex-start;
-  } */
-
   display: grid;
   gap: 1rem;
 
@@ -292,34 +284,6 @@ const InformationWrapper = styled.div`
   }
 `;
 
-/* const InformationCard = styled.div`
-  max-width: 200px;
-  min-height: 200px;
-  border-radius: 10px;
-  border: 1px solid gray;
-  padding: 0.5rem;
-  / display: flex;
-  flex-direction: column;
-  justify-content: space-around; 
-
-  transition: 0.2s;
-  cursor: pointer;
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 4px 4px 10px lightgray;
-  }
-
-  @media (max-width: 768px) {
-    width: 45%;
-    min-height: 100px;
-      justify-content: flex-start; 
-  }
-
-  @media (min-width: 768px) {
-    width: 200px;
-  }
-`; */
-
 const InformationCard = styled.div`
   min-height: 200px;
   border-radius: 10px;
@@ -327,7 +291,7 @@ const InformationCard = styled.div`
   padding: 0.5rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: flex-start;
   transition: 0.2s;
   cursor: pointer;
 
@@ -348,14 +312,14 @@ const InformationCardText = styled.p`
   margin: 5px 0;
   font-size: 0.9rem;
   @media (max-width: 768px) {
-    font-size: 0.75rem;
+    font-size: 0.6rem;
   }
 `;
 
 const Heading5 = styled.h5`
   margin: 0;
   @media (max-width: 768px) {
-    font-size: 0.9rem;
+    font-size: 0.75rem;
   }
 `;
 
@@ -373,8 +337,8 @@ const InformationImage = styled.img`
   object-position: top;
 
   @media (max-width: 768px) {
-    width: 70px;
-    height: 55px;
+    width: 60px;
+    height: 45px;
   }
 `;
 
@@ -427,7 +391,7 @@ const MobileSearchWrapper = styled.div`
   @media (max-width: 768px) {
     display: flex;
     position: relative;
-    width: 100%;
+    width: 95%;
     max-width: 400px;
     margin: 1rem auto;
   }
