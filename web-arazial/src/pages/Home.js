@@ -17,6 +17,9 @@ import SearchComponent from "../components/SearchComponent";
 import AuctionGridComponent from "../components/AuctionGridComponent";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../supabaseClient";
+import { IoIosArrowDroprightCircle } from "react-icons/io";
+import { FaSearch } from "react-icons/fa";
+import HomePageCarousel from "../components/HomePageCarousel";
 
 // Hero section and modern homepage styling
 const HeroSection = styled.section`
@@ -78,7 +81,7 @@ const HeroSubtitle = styled.p`
 
 const TabsContainer = styled.div`
   display: flex;
-  margin-bottom: 1.5rem;
+  margin: 1rem 0;
   overflow-x: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
@@ -93,7 +96,6 @@ const TabsContainer = styled.div`
   @media (max-width: 768px) {
     padding: 0;
     width: 100%;
-    margin-bottom: 1rem;
   }
 `;
 
@@ -246,7 +248,7 @@ const PageContainer = styled.div`
   z-index: 10;
 
   @media (max-width: 768px) {
-    padding: 2rem 0.25rem;
+    padding: 0.25rem;
     margin-top: -1rem;
     border-radius: 0;
     box-shadow: none;
@@ -270,18 +272,55 @@ const ShareNotification = styled.div`
 `;
 
 const InformationWrapper = styled.div`
-  display: flex;
+  /* display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  justify-content: center; /* Centers the cards on mobile */
+  justify-content: center;
+  @media (min-width: 768px) {
+    justify-content: flex-start;
+  } */
+
+  display: grid;
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
   @media (min-width: 768px) {
-    justify-content: flex-start; /* Aligns cards to the left on larger screens */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
 `;
 
-const InformationCard = styled.div`
+/* const InformationCard = styled.div`
   max-width: 200px;
+  min-height: 200px;
+  border-radius: 10px;
+  border: 1px solid gray;
+  padding: 0.5rem;
+  / display: flex;
+  flex-direction: column;
+  justify-content: space-around; 
+
+  transition: 0.2s;
+  cursor: pointer;
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 4px 4px 10px lightgray;
+  }
+
+  @media (max-width: 768px) {
+    width: 45%;
+    min-height: 100px;
+      justify-content: flex-start; 
+  }
+
+  @media (min-width: 768px) {
+    width: 200px;
+  }
+`; */
+
+const InformationCard = styled.div`
   min-height: 200px;
   border-radius: 10px;
   border: 1px solid gray;
@@ -291,24 +330,33 @@ const InformationCard = styled.div`
   justify-content: space-around;
   transition: 0.2s;
   cursor: pointer;
+
   &:hover {
     transform: translateY(-5px);
     box-shadow: 4px 4px 10px lightgray;
   }
 
   @media (max-width: 768px) {
-    /* For mobile: make the cards take 45% of the width to fit two in a row */
-    width: 45%;
-  }
-
-  @media (min-width: 768px) {
-    /* For larger screens: each card remains at max-width */
-    width: 200px;
+    min-height: 100px;
+    &:nth-last-child(1):nth-child(odd) {
+      grid-column: span 2;
+    }
   }
 `;
 
 const InformationCardText = styled.p`
   margin: 5px 0;
+  font-size: 0.9rem;
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
+`;
+
+const Heading5 = styled.h5`
+  margin: 0;
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+  }
 `;
 
 const InformationCardFooter = styled.div`
@@ -323,6 +371,11 @@ const InformationImage = styled.img`
   border-radius: 10px;
   object-fit: cover;
   object-position: top;
+
+  @media (max-width: 768px) {
+    width: 70px;
+    height: 55px;
+  }
 `;
 
 const ModalOverlay = styled.div`
@@ -368,6 +421,44 @@ const CloseButton = styled.button`
     background-color: #ddd;
   }
 `;
+const MobileSearchWrapper = styled.div`
+  display: none;
+
+  @media (max-width: 768px) {
+    display: flex;
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin: 1rem auto;
+  }
+`;
+
+const SearchInput = styled.input`
+  width: 100%;
+  padding: 0.5rem 1rem 0.5rem 2rem;
+  border: 1px solid gray;
+  border-radius: 5px;
+  font-size: 1rem;
+`;
+
+const IconButton = styled.button`
+  position: absolute;
+  left: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: gray;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    color: black;
+  }
+`;
 
 const Home = () => {
   const [auctions, setAuctions] = useState([]);
@@ -384,6 +475,7 @@ const Home = () => {
     useState(false);
   const [informationCardSelectedItem, setInformationCardSelectedItem] =
     useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const navigate = useNavigate();
 
@@ -1009,6 +1101,10 @@ const Home = () => {
   //   );
   // };
 
+  const handleSearch = () => {
+    navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+  };
+
   const getMinimumBidAmount = useCallback(
     (auction) => {
       if (!auction || auction.listing_type !== "auction") return 0;
@@ -1263,10 +1359,53 @@ const Home = () => {
         style={{
           background: "#fff",
           minHeight: "100vh",
-          paddingBottom: "3rem",
         }}
       >
+        <MobileSearchWrapper>
+          <IconButton onClick={handleSearch}>
+            <FaSearch color="var(--color-primary)" />
+          </IconButton>
+          <SearchInput
+            type="search"
+            placeholder="Konum ara..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          />
+        </MobileSearchWrapper>
         <PageContainer>
+          <p>Arazi Satış ve Yatırım Rehberi</p>
+          <InformationWrapper>
+            {homePageInformationWrapperData.map((informationWrapperItem) => (
+              <InformationCard
+                key={informationWrapperItem.text}
+                onClick={() => openModal(informationWrapperItem)}
+              >
+                <Heading5>{informationWrapperItem.title}</Heading5>
+                <InformationCardText>
+                  {informationWrapperItem.text}
+                </InformationCardText>
+                <InformationCardFooter>
+                  <InformationImage src={informationWrapperItem.imageSource} />
+                  <IoIosArrowDroprightCircle size={35} />
+                </InformationCardFooter>
+              </InformationCard>
+            ))}
+          </InformationWrapper>
+          {informationCardModalOpen && (
+            <ModalOverlay id="modal-overlay">
+              <ModalContent>
+                <ModalTitle>{informationCardSelectedItem?.title}</ModalTitle>
+                <ModalText>
+                  {informationCardSelectedItem?.detailedText}
+                </ModalText>
+                <CloseButton onClick={closeModal}>Kapat</CloseButton>
+              </ModalContent>
+            </ModalOverlay>
+          )}
+
+          <HomePageCarousel auctions={auctions} />
+
           <TabsContainer>
             <TabButton
               $isActive={listingType === "offer"}
@@ -1287,35 +1426,6 @@ const Home = () => {
               YENİ İLANLAR
             </TabButton>
           </TabsContainer>
-
-          <InformationWrapper>
-            {homePageInformationWrapperData.map((informationWrapperItem) => (
-              <InformationCard
-                key={informationWrapperItem.text}
-                onClick={() => openModal(informationWrapperItem)}
-              >
-                <InformationCardText>
-                  {informationWrapperItem.text}
-                </InformationCardText>
-                <InformationCardFooter>
-                  <InformationImage src={informationWrapperItem.imageSource} />
-                </InformationCardFooter>
-              </InformationCard>
-            ))}
-          </InformationWrapper>
-
-          {informationCardModalOpen && (
-            <ModalOverlay id="modal-overlay">
-              <ModalContent>
-                <ModalTitle>{informationCardSelectedItem?.text}</ModalTitle>
-                <ModalText>
-                  {informationCardSelectedItem?.detailedText}
-                </ModalText>
-                <CloseButton onClick={closeModal}>Kapat</CloseButton>
-              </ModalContent>
-            </ModalOverlay>
-          )}
-
           {listingType === "auction" && (
             <StatusTabs>
               <StatusTab
@@ -1338,7 +1448,6 @@ const Home = () => {
               </StatusTab>
             </StatusTabs>
           )}
-
           <AuctionGridComponent
             items={getPaginatedAuctions()}
             isLoading={isLoading}
@@ -1348,7 +1457,6 @@ const Home = () => {
             userFavorites={userFavorites}
             setUserFavorites={setUserFavorites}
           />
-
           {/* <AuctionsGrid>
             {isLoading ? (
               // Show skeletons while loading
@@ -1618,7 +1726,6 @@ const Home = () => {
                 })
             )}
           </AuctionsGrid> */}
-
           {/* Pagination Controls */}
           {filteredAuctions.length > itemsPerPage && (
             <div
