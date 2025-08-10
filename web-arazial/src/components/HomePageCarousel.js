@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 const CarouselWrapper = styled.div`
   display: flex;
   overflow-x: scroll;
-  padding: 20px 0;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   width: 100%;
@@ -25,17 +24,18 @@ const CarouselItemContainer = styled(Link)`
   transition: transform 0.3s ease;
   width: 400px;
   flex-shrink: 0;
-  scroll-snap-align: start;
+  scroll-snap-align: center;
   padding-right: 50px;
 
-  @media (max-width: 768px) {
+  @media (min-width: 481px) and (max-width: 768px) {
     width: 60%;
     padding-right: 40px;
   }
 
   @media (max-width: 480px) {
-    width: 95%;
-    padding-right: 30px;
+    width: 100%;
+    justify-content: center;
+    padding: 0 10px;
   }
 `;
 
