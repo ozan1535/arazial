@@ -4,7 +4,7 @@ import { RiAdminFill, RiAuctionFill } from "react-icons/ri";
 import { MdContactSupport, MdRealEstateAgent } from "react-icons/md";
 import { GrContact } from "react-icons/gr";
 import styled from "styled-components";
-import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
+import { FaPencilAlt, FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 
 const AccountContainer = styled.div`
@@ -76,7 +76,7 @@ function Account() {
         <span>Profilim</span>
       </AccountLink>
       <AccountLink to="/dashboard">
-        <RiAuctionFill size={24} color="gray" />
+        <FaPencilAlt size={24} color="gray" />
         <span>İşlemlerim</span>
       </AccountLink>
       <AccountLink to="/">
