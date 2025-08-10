@@ -401,6 +401,12 @@ export const toggleFavorite = async (
 ) => {
   e.stopPropagation();
   e.preventDefault();
+
+  if (!user) {
+    window.location.href = "/login";
+    return;
+  }
+
   if (userFavorites.find((favourite) => favourite.auction_id === auctionId)) {
     await removeFavorite(auctionId, setUserFavorites, user);
   } else {
@@ -441,21 +447,23 @@ export const removeFavorite = async (auctionId, setUserFavorites, user) => {
 
 export const homePageInformationWrapperData = [
   {
-    text: "Açık Artırma Sistemi Nasıl İşliyor?",
+    title: "Açık Artırma Sistemi Nasıl İşliyor?",
     detailedText: `Taşınmazlar, belirlenen başlangıç fiyatı üzerinden açık artırmaya sunulur. Katılım için teminat bedeli yatırılması zorunludur. Açık artırmayı kazanan katılımcının teminat bedeli satış bedelinden düşülmez. \n
 
 Verilen teklif, taşınmazın belirlenmiş ekspertiz değerinin altında kalırsa satış gerçekleştirilmez. Satışın gerçekleşmemesi veya katılımcının ihaleyi kazanamaması durumunda teminat bedeli iade edilir.`,
     imageSource: "/auction-icon.jpeg",
+    text: "Açık artırmaya katılım ve teklif verme sürecini adım adım öğrenin.",
   },
   {
-    text: "Satın Alma Süreci Nasıl İşliyor?",
+    title: "Satın Alma Süreci Nasıl İşliyor?",
     detailedText: `Satın alma işlemleri için teminat bedeli yatırılması zorunludur. Satın alınan taşınmazlarda teminat bedeli, satış tutarından düşülür.\n
 
 Satış sonrası ekibimiz sizinle iletişime geçerek kimlik bilgilerinizi talep eder ve gerekli resmi başvuruları yapar. Tapu harç bildirimleri geldiğinde, taraflarla birlikte uygun bir gün belirlenir ve tapu müdürlüğünde devir işlemleri gerçekleştirilir.`,
     imageSource: "/satinal-icon.jpeg",
+    text: "Doğrudan satın alma işlemlerinin nasıl gerçekleştiğini keşfedin.",
   },
   {
-    text: "🔍 arazialcom Nasıl Çalışır?",
+    title: "🔍 arazialcom Nasıl Çalışır?",
     detailedText: `arazialcom, çoğunlukla kendi mülkiyetindeki arazileri veya kurumsal firmalara ait taşınmazları satışa sunar. Tek seferde 15–20 adet arazi satın alınır ve bu araziler hem açık artırma yöntemiyle hem de “Satın Al” yöntemiyle ilan edilir.\n
 
 İlanı yayınlanan her taşınmaz, tapu ve mülkiyet durumu kontrol edilerek listelenir. Kullanıcılar, ilgilendikleri taşınmaz için teminat bedeli yatırarak teklif verebilir veya satın alma sürecini başlatabilir. Tüm işlemler şeffaf, kayıt altına alınmış ve güvenli ödeme altyapısı üzerinden gerçekleştirilir.\n
@@ -463,20 +471,23 @@ Satış sonrası ekibimiz sizinle iletişime geçerek kimlik bilgilerinizi talep
 Vizyonumuz: Türkiye’nin en güvenilir ve en çok tercih edilen dijital arazi satış platformu olarak, herkesin güvenle yatırım yapabildiği bir sistem oluşturmak.\n
 Misyonumuz: Toplu arazi alımları yaparak yatırımcılara uygun fiyatlı taşınmazlar sunmak ve herkesi güvenli bir şekilde arazi sahibi yapmak.`,
     imageSource: "/arazialcom-icon.jpeg",
+    text: "Platformun işleyişi ve sunduğu hizmetler hakkında bilgi edinin.",
   },
   {
-    text: "Ödeme ve Tapu Süreci Nasıl İşliyor?",
+    title: "Ödeme ve Tapu Süreci Nasıl İşliyor?",
     detailedText: `Satın alma veya açık artırma sürecinde, katılımcılardan ilk aşamada yalnızca teminat bedeli tahsil edilir. Tapu harç bildirimleri geldikten sonra, taraflarla birlikte tapu devir günü belirlenir.\n
 
 Belirlenen günde tapu müdürlüğünde bir araya gelinir ve satış bedelinin kalan kısmı burada tahsil edilir. Ödeme işleminin ardından tapu devir süreci tamamlanarak taşınmaz alıcı adına tescil edilir.\n
 
 Talep edilmesi halinde, tarafımıza verilecek noter onaylı vekâletname ile tapu işlemleri sizin adınıza tarafımızca da gerçekleştirilebilir.`,
     imageSource: "/paymentprocess-icon.jpeg",
+    text: "Ödeme adımları ve tapu devir sürecini ayrıntılarıyla inceleyin.",
   },
   {
-    text: "Parsel Sorgu",
+    title: "Parsel Sorgu",
     detailedText: "",
     linkSource: "https://parselsorgu.tkgm.gov.tr/",
     imageSource: "/parselsorgu-icon.jpeg",
+    text: "Ada ve parsel bilgilerini kolayca sorgulayın.",
   },
 ];
