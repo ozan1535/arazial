@@ -127,7 +127,7 @@ const HomePageCarousel = ({ auctions }) => {
         (auction) =>
           auction.listing_type === "auction" &&
           new Date(auction.end_date) > currentDate,
-        "AÇIK ARTTIRMALAR"
+        "AÇIK ARTIRMALAR"
       )}
     </>
   );
