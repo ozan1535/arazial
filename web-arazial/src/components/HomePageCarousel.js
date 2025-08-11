@@ -92,7 +92,13 @@ const HomePageCarousel = ({ auctions }) => {
           {filteredAuctions.slice(0, 5).map((item) => (
             <CarouselItemContainer key={item.id} to={`/auctions/${item.id}`}>
               <CarouselItemContent>
-                <CarouselItemImage src={item.images[0]} alt={item.title} />
+                <CarouselItemImage
+                  src={
+                    item.images[0] ||
+                    "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                  }
+                  alt={item.title}
+                />
                 <CarouselItemDetails>
                   <CarouselItemTitle>{item.title}</CarouselItemTitle>
                   <CarouselItemPrice>

@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import Button from "../../components/ui/Button";
 import logoImage from "../../assets/logo.png";
 import { FaRegHeart } from "react-icons/fa";
+import { GoSearch } from "react-icons/go";
 
 const NavbarContainer = styled.nav`
   background-color: ${(props) =>
@@ -17,7 +18,7 @@ const NavbarContainer = styled.nav`
   left: 0;
   right: 0;
   width: 100%;
-  z-index: 1000;
+  z-index: 1000000;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   backdrop-filter: ${(props) => (props.$isScrolled ? "blur(10px)" : "none")};
 
@@ -629,9 +630,14 @@ const Navbar = () => {
                 </svg>
                 Profilim
               </NavLink>
+
               <NavLink to="/favorites">
                 <FaRegHeart />
                 Favoriler
+              </NavLink>
+              <NavLink to="/search">
+                <GoSearch />
+                Ara
               </NavLink>
               <NavLink to="/dashboard">
                 <svg
@@ -852,6 +858,10 @@ const Navbar = () => {
               <MobileNavLink to="/favorites" onClick={() => setIsOpen(false)}>
                 <FaRegHeart />
                 Favoriler
+              </MobileNavLink>
+              <MobileNavLink to="/search">
+                <GoSearch />
+                Ara
               </MobileNavLink>
               <MobileNavLink to="/dashboard" onClick={() => setIsOpen(false)}>
                 <svg

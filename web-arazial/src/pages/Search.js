@@ -8,7 +8,7 @@ import { supabase } from "./../services/supabase";
 import AuctionGridComponent from "../components/AuctionGridComponent";
 import backgroundImage from "../assets/backgroundimage.png";
 import { useAuth } from "../context/AuthContext";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 const ShareNotification = styled.div`
   position: fixed;
@@ -38,7 +38,7 @@ const Container = styled.div`
 const Card = styled.div`
   display: flex;
   align-items: center;
-  width: 95%;
+  width: 100%;
   border-radius: 10px;
   border: 1px solid #ddd;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -108,7 +108,7 @@ const TypeText = styled.span`
 `;
 
 const TypeContainer = styled.div`
-  width: 95%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -139,7 +139,7 @@ const PageContainer = styled.div`
   padding: 2rem 2rem;
   background-color: #f9fafb;
   border-radius: 16px;
-  margin-top: -3rem;
+  margin-top: -1rem;
   box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.05);
   position: relative;
   z-index: 10;
@@ -160,8 +160,8 @@ const HeroSection = styled.section`
   background-repeat: no-repeat;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
+  justify-content: space-around;
+  align-items: center;
   color: white;
   text-align: center;
   position: relative;
@@ -185,13 +185,14 @@ const HeroSection = styled.section`
   }
 `;
 
-const HeroSectionLogo = styled.div`
+const HeroSectionLogo = styled(Link)`
   display: flex;
   align-items: center;
   justify-content: flex-start;
   zindex: 10;
   width: 100%;
   padding-left: 1rem;
+  z-index: 1;
 `;
 
 const SearchResultInfo = styled.div`
@@ -200,6 +201,45 @@ const SearchResultInfo = styled.div`
   align-items: center;
   justify-content: space-between;
   margin-top: 1rem;
+`;
+
+const InputContainer = styled.div`
+  width: 95%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1000;
+`;
+
+const StyledInput = styled.input`
+  width: 50%;
+  background: white;
+  z-index: 100;
+  margin-top: 1rem;
+  @media (max-width: 768px) {
+    width: 90%;
+  }
+`;
+
+const CityList = styled.div`
+  width: 50%;
+  display: flex;
+  gap: 10px;
+  @media (max-width: 768px) {
+    width: 90%;
+  }
+`;
+
+const CityItem = styled.div`
+  width: 75px;
+  cursor: pointer;
+`;
+
+const CityName = styled.p`
+  background-color: white;
+  color: black;
+  border-radius: 5px;
+  font-weight: bold;
 `;
 
 function Search() {
@@ -219,7 +259,6 @@ function Search() {
 
   let [searchParams] = useSearchParams();
   const urlQuery = searchParams.get("q");
-  console.log(urlQuery, "fhfehfhe");
 
   // WE MIGHT NEED THE COMMENTS IN THE FUTURE
   // const handleSelectListingType = (listingType) => {
@@ -282,11 +321,31 @@ function Search() {
 
       if (canSearchListingOrType) {
         if (isListType) {
-          filteredData = filteredData.filter(
-            (item) =>
-              itemToFilter.toLowerCase() ===
-              item.listing_type.trim().toLowerCase()
-          );
+          const now = new Date();
+
+          filteredData = filteredData
+            .filter(
+              (item) =>
+                itemToFilter.toLowerCase() ===
+                item.listing_type.trim().toLowerCase()
+            )
+            .sort((a, b) => {
+              const aStart = new Date(a.start_time);
+              const aEnd = new Date(a.end_time);
+              const bStart = new Date(b.start_time);
+              const bEnd = new Date(b.end_time);
+
+              const getStatus = (start, end) => {
+                if (now >= start && now <= end) return 0;
+                if (now < start) return 1;
+                return 2;
+              };
+
+              const statusA = getStatus(aStart, aEnd);
+              const statusB = getStatus(bStart, bEnd);
+
+              return statusA - statusB;
+            });
         } else {
           filteredData = filteredData.filter(
             (item) =>
@@ -334,7 +393,7 @@ function Search() {
       fetchData(false, urlQuery, false);
     }
     const handleClickAnywhere = (event) => {
-      if (event.target.parentElement.innerText === "Arama") {
+      if (event.target.parentElement?.innerText === "Arama") {
         setSearchFilters({ listingTypes: [], types: [], city: "" });
         setCurrentPage(0);
       }
@@ -379,30 +438,18 @@ function Search() {
       {currentPage === 0 ? (
         <>
           <HeroSection>
-            <HeroSectionLogo>
-              <img
-                src="/logo.png"
-                width={50}
-                height={50}
-                style={{ zIndex: 100 }}
-              />
-              <h5 style={{ color: "white", zIndex: 100, margin: 0 }}>
-                arazialcom
-              </h5>
+            <HeroSectionLogo to={"/"}>
+              <img src="/logo.png" width={50} height={50} />
+              <h5 style={{ color: "white", margin: 0 }}>arazialcom</h5>
             </HeroSectionLogo>
             <p style={{ margin: "0 auto", color: "white", zIndex: "1000" }}>
               Türkiye'nin dört bir yanındaki değerli araziler için ihale
               tekliflerinizi verin.
             </p>
-            <div style={{ zIndex: 100000, width: "95%" }}>
-              <input
+
+            <InputContainer>
+              <StyledInput
                 type="text"
-                style={{
-                  width: "100%",
-                  background: "white",
-                  zIndex: 1000,
-                  marginTop: "1rem",
-                }}
                 value={city}
                 onChange={(e) =>
                   setSearchFilters((prev) => ({
@@ -413,18 +460,9 @@ function Search() {
                 name="city"
                 placeholder="Şehir giriniz."
               />
-              <div
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  gap: 10,
-                }}
-              >
+              <CityList>
                 {popularCities.map((popularCity) => (
-                  <div
-                    style={{
-                      width: "75px",
-                    }}
+                  <CityItem
                     onClick={() =>
                       setSearchFilters((prev) => ({
                         ...prev,
@@ -432,84 +470,82 @@ function Search() {
                       }))
                     }
                   >
-                    <p
-                      style={{
-                        backgroundColor: "white",
-                        color: "black",
-                        borderRadius: "5px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {popularCity.name}
-                    </p>
-                  </div>
+                    <CityName>{popularCity.name}</CityName>
+                  </CityItem>
                 ))}
-              </div>
-            </div>
+              </CityList>
+            </InputContainer>
           </HeroSection>
-          <Card
-            style={{ marginTop: "2rem" }}
-            onClick={() => fetchData(true, "offer")}
-            $isActive={listingTypes.includes("offer")}
-          >
-            <IconContainerLeft>
-              <BsKeyFill size={30} color="white" />
-            </IconContainerLeft>
+          <PageContainer>
+            <Card
+              style={{ marginTop: "2rem" }}
+              onClick={() => fetchData(true, "offer")}
+              $isActive={listingTypes.includes("offer")}
+            >
+              <IconContainerLeft>
+                <BsKeyFill size={30} color="white" />
+              </IconContainerLeft>
 
-            <ContentContainer>Satılık</ContentContainer>
+              <ContentContainer>Satılık</ContentContainer>
 
-            <IconContainerRight>
-              <MdKeyboardArrowRight size={24} color="#333" />
-            </IconContainerRight>
-          </Card>
-          <Card
-            style={{ marginBottom: "2rem" }}
-            onClick={() => fetchData(true, "auction")}
-            $isActive={listingTypes.includes("auction")}
-          >
-            <IconContainerLeft>
-              <RiAuctionFill size={30} color="white" />
-            </IconContainerLeft>
+              <IconContainerRight>
+                <MdKeyboardArrowRight size={24} color="#333" />
+              </IconContainerRight>
+            </Card>
+            <Card
+              style={{ marginBottom: "2rem" }}
+              onClick={() => fetchData(true, "auction")}
+              $isActive={listingTypes.includes("auction")}
+            >
+              <IconContainerLeft>
+                <RiAuctionFill size={30} color="white" />
+              </IconContainerLeft>
 
-            <ContentContainer>Açık Artırma</ContentContainer>
+              <ContentContainer>Açık Artırma</ContentContainer>
 
-            <IconContainerRight>
-              <MdKeyboardArrowRight size={24} color="#333" />
-            </IconContainerRight>
-          </Card>
-          <TypeContainer>
-            <Wrapper>
-              {["Arsa", "Tarla", "Bahçe", "Zeytinlik", "Bağ"].map(
-                (typeItem) => (
-                  <Wrapper key={typeItem}>
-                    <Row
-                      onClick={() => fetchData(false, typeItem)}
-                      style={{
-                        backgroundColor: types.includes(typeItem.toLowerCase())
-                          ? "#4fbf6fff"
-                          : "",
-                      }}
-                    >
-                      <div style={{ display: "flex", alignItems: "center" }}>
-                        <img
-                          src={`${typeItem.toLocaleLowerCase()}.jpeg`}
-                          width={50}
-                          height={50}
-                          style={{ borderRadius: "5px", objectFit: "contain" }}
-                        />
-                        <TypeText>{typeItem}</TypeText>
-                      </div>
-                      <IconContainerRight>
-                        <MdKeyboardArrowRight size={24} color="#333" />
-                      </IconContainerRight>
-                    </Row>
-                    <Hr />
-                  </Wrapper>
-                )
-              )}
-            </Wrapper>
-            {/* <FilterButton onClick={() => fetchData("")}>Ara</FilterButton> */}
-          </TypeContainer>
+              <IconContainerRight>
+                <MdKeyboardArrowRight size={24} color="#333" />
+              </IconContainerRight>
+            </Card>
+            <TypeContainer>
+              <Wrapper>
+                {["Arsa", "Tarla", "Bahçe", "Zeytinlik", "Bağ"].map(
+                  (typeItem) => (
+                    <Wrapper key={typeItem}>
+                      <Row
+                        onClick={() => fetchData(false, typeItem)}
+                        style={{
+                          backgroundColor: types.includes(
+                            typeItem.toLowerCase()
+                          )
+                            ? "#4fbf6fff"
+                            : "",
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                          <img
+                            src={`${typeItem.toLocaleLowerCase()}.jpeg`}
+                            width={50}
+                            height={50}
+                            style={{
+                              borderRadius: "5px",
+                              objectFit: "contain",
+                            }}
+                          />
+                          <TypeText>{typeItem}</TypeText>
+                        </div>
+                        <IconContainerRight>
+                          <MdKeyboardArrowRight size={24} color="#333" />
+                        </IconContainerRight>
+                      </Row>
+                      <Hr />
+                    </Wrapper>
+                  )
+                )}
+              </Wrapper>
+              {/* <FilterButton onClick={() => fetchData("")}>Ara</FilterButton> */}
+            </TypeContainer>
+          </PageContainer>
         </>
       ) : currentPage === 1 ? (
         <PageContainer>

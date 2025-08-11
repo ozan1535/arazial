@@ -23,12 +23,13 @@ import HomePageCarousel from "../components/HomePageCarousel";
 
 // Hero section and modern homepage styling
 const HeroSection = styled.section`
+  display: none;
   height: 600px;
   background-image: url(${backgroundImage});
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  display: flex;
+  /* display: flex; */
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -49,7 +50,6 @@ const HeroSection = styled.section`
   }
 
   @media (max-width: 768px) {
-    display: none;
     height: auto;
     min-height: 320px;
     padding: 1rem;
@@ -80,7 +80,7 @@ const HeroSubtitle = styled.p`
 `;
 
 const TabsContainer = styled.div`
-  display: flex;
+  display: none; //flex
   margin: 1rem 0;
   overflow-x: auto;
   scrollbar-width: none;
@@ -130,7 +130,7 @@ const TabButton = styled.button`
 `;
 
 const StatusTabs = styled.div`
-  display: flex;
+  display: none; //flex;
   gap: 0.75rem;
   margin-bottom: 1.5rem;
   padding-top: 0.5rem;
@@ -1412,7 +1412,7 @@ const Home = () => {
               </StatusTab>
             </StatusTabs>
           )}
-          <AuctionGridComponent
+          {/* <AuctionGridComponent
             items={getPaginatedAuctions()}
             isLoading={isLoading}
             auctions={auctions}
@@ -1420,7 +1420,7 @@ const Home = () => {
             setShareMessage={setShareMessage}
             userFavorites={userFavorites}
             setUserFavorites={setUserFavorites}
-          />
+          /> */}
           {/* <AuctionsGrid>
             {isLoading ? (
               // Show skeletons while loading
@@ -1694,7 +1694,7 @@ const Home = () => {
           {filteredAuctions.length > itemsPerPage && (
             <div
               style={{
-                display: "flex",
+                display: "none", //"flex",
                 justifyContent: "center",
                 marginTop: "2rem",
                 gap: "0.5rem",

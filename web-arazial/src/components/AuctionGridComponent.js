@@ -14,6 +14,7 @@ import {
 } from "../helpers/helpers";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+import CountdownTimer from "./CountdownTimer";
 
 const AuctionsGrid = styled.div`
   display: grid;
