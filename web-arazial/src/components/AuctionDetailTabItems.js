@@ -38,7 +38,7 @@ const TabContent = styled.div`
 
 const containerStyle = {
   height: "400px",
-  width: "800px",
+  width: "100%",
 };
 
 export default function AuctionDetailTabItems({ auction }) {
@@ -125,7 +125,14 @@ export default function AuctionDetailTabItems({ auction }) {
                     lat: polygonCoordinatePaths?.[0]?.lat,
                     lng: polygonCoordinatePaths?.[0]?.lng,
                   }}
-                  zoom={18}
+                  // zoom={18}
+                  onLoad={(map) => {
+                    const bounds = new window.google.maps.LatLngBounds();
+                    polygonCoordinatePaths.forEach((coord) => {
+                      bounds.extend(coord);
+                    });
+                    map.fitBounds(bounds);
+                  }}
                 >
                   <PolygonF
                     paths={polygonCoordinatePaths}
