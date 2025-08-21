@@ -87,7 +87,7 @@ export default function AuctionDetailTabItems({ auction }) {
     if (auction?.ada_no === "0") return;
 
     const res = await fetch(
-      `https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/${currentNeighborhood.id}/${auction?.ada_no}/${auction?.parsel_no}`
+      `https://cors-anywhere.herokuapp.com/https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/${currentNeighborhood.id}/${auction?.ada_no}/${auction?.parsel_no}`
     );
 
     const data = await res.json();
