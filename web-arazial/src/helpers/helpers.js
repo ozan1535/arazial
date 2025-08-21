@@ -78,30 +78,28 @@ export const getAuctionDetailsForSidebar = (auction, isOfferListing) => {
   return sidebarItems;
 };
 
-export const auctionDetailTabContent = (auction) => {
-  return [
-    {
-      id: "aciklama",
-      label: "Açıklama",
-      content: auction.description || "Açıklama girilmemiş.",
-    },
-    {
-      id: "ozellikler",
-      label: "Özellikler",
-      content: auction.features || "Özellik girilmemiş.",
-    },
-    {
-      id: "konum",
-      label: "Konum",
-      content: auction.locationInfo || "Konum girilmemiş.",
-    },
-    {
-      id: "cevre",
-      label: "Çevre",
-      content: auction.environment || "Çevre girilmemiş.",
-    },
-  ];
-};
+export const auctionDetailTabContent = (auction) => [
+  {
+    id: "aciklama",
+    label: "Açıklama",
+    content: auction.description || "Açıklama girilmemiş.",
+  },
+  {
+    id: "ozellikler",
+    label: "Özellikler",
+    content: auction.features || "Özellik girilmemiş.",
+  },
+  {
+    id: "konum",
+    label: "Konum",
+    content: auction.locationInfo || "Konum girilmemiş.",
+  },
+  {
+    id: "cevre",
+    label: "Çevre",
+    content: auction.environment || "Çevre girilmemiş.",
+  },
+];
 
 export const cities = [
   "Adana",

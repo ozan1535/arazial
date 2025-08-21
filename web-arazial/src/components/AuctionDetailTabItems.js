@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { auctionDetailTabContent } from "../helpers/helpers";
-import { useState } from "react";
+import { GoogleMap, PolygonF, useJsApiLoader } from "@react-google-maps/api";
+import { useEffect, useState } from "react";
+import { citiesWithTKGMId } from "../helpers/cities";
 
 const TabContainer = styled.div`
   width: 100%;
@@ -34,12 +36,69 @@ const TabContent = styled.div`
   display: ${(props) => (props.active ? "block" : "none")};
 `;
 
+const containerStyle = {
+  height: "400px",
+  width: "800px",
+};
+
 export default function AuctionDetailTabItems({ auction }) {
   const [activeTab, setActiveTab] = useState("aciklama");
-
+  const [polygonCoordinatePaths, setPolygonCoordinatePaths] = useState(null);
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+    libraries: ["geometry", "drawing"],
+  });
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
+
+  const convertCoordinates = (coordinates) => {
+    return coordinates?.[0].map(([lng, lat]) => ({ lat, lng }));
+  };
+
+  const matchesString = (str1, str2) => {
+    return str1
+      ?.toLocaleLowerCase("tr-TR")
+      ?.trim()
+      .includes(str2?.toLocaleLowerCase("tr-TR")?.trim());
+  };
+
+  const getCurrentCityCoordinates = async () => {
+    if (polygonCoordinatePaths?.length > 0) return;
+    const currentCityItems = citiesWithTKGMId.find((item) =>
+      matchesString(auction?.city, item?.name)
+    );
+
+    if (!currentCityItems) return;
+
+    const currentDistricts = currentCityItems.ilceler.find((item) =>
+      matchesString(auction?.location, item?.name)
+    );
+
+    if (!currentDistricts) return;
+
+    const currentNeighborhood = currentDistricts.mahalleler.find((item) =>
+      matchesString(auction?.location, item?.name)
+    );
+
+    if (!currentNeighborhood) return;
+
+    if (auction?.ada_no === "0") return;
+
+    const res = await fetch(
+      `https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/${currentNeighborhood.id}/${auction?.ada_no}/${auction?.parsel_no}`
+    );
+
+    const data = await res.json();
+    const polygonPaths = convertCoordinates(data?.geometry?.coordinates);
+
+    setPolygonCoordinatePaths(polygonPaths);
+  };
+
+  useEffect(() => {
+    getCurrentCityCoordinates();
+  }, [auction]);
 
   return (
     <TabContainer>
@@ -58,15 +117,41 @@ export default function AuctionDetailTabItems({ auction }) {
       {auctionDetailTabContent(auction).map((tab) => (
         <TabContent key={tab.id} active={activeTab === tab.id}>
           {tab.id === "konum" ? (
-            <iframe
-              width="100%"
-              height="450"
-              style={{ border: 0 }}
-              loading="lazy"
-              allowFullScreen
-              referrerPolicy="no-referrer-when-downgrade"
-              src={`https://www.google.com/maps?q=${tab.content.lat},${tab.content.lng}&output=embed`}
-            />
+            polygonCoordinatePaths && polygonCoordinatePaths.length > 0 ? (
+              isLoaded ? (
+                <GoogleMap
+                  mapContainerStyle={containerStyle}
+                  center={{
+                    lat: polygonCoordinatePaths?.[0]?.lat,
+                    lng: polygonCoordinatePaths?.[0]?.lng,
+                  }}
+                  zoom={18}
+                >
+                  <PolygonF
+                    paths={polygonCoordinatePaths}
+                    options={{
+                      fillColor: "green",
+                      fillOpacity: 0.35,
+                      strokeColor: "black",
+                      strokeOpacity: 1,
+                      strokeWeight: 2,
+                    }}
+                  />
+                </GoogleMap>
+              ) : (
+                <div>Harita Yükleniyor...</div>
+              )
+            ) : (
+              <iframe
+                width="100%"
+                height="450"
+                style={{ border: 0 }}
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+                src={`https://www.google.com/maps?q=${tab?.content?.lat},${tab?.content?.lng}&output=embed`}
+              />
+            )
           ) : (
             <div>{tab.content}</div>
           )}
