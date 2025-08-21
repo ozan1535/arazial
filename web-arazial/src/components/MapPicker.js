@@ -1,18 +1,23 @@
 import React, { useState, useCallback } from "react";
 import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
+import { citieslatlng } from "../helpers/citieslatlng";
 
 const containerStyle = {
   width: "100%",
   height: "400px",
 };
 
-function MapPicker({ onLocationSelect, coordinates }) {
+function MapPicker({ onLocationSelect, coordinates, city }) {
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: "AIzaSyB1-FfO0sN-Qv0JTJNOfi9KqYlm4ohaCHM",
+    googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
   });
+  const currentCity = citieslatlng.find(
+    (item) =>
+      item.il_adi.toLocaleLowerCase("tr-TR") === city.toLocaleLowerCase("tr-Tr")
+  );
   const center = {
-    lat: coordinates?.lat || 39.9208,
-    lng: coordinates?.lng || 32.8541,
+    lat: coordinates?.lat || currentCity?.lat || 39.9208,
+    lng: coordinates?.lng || currentCity?.lon || 32.8541,
   };
 
   const [marker, setMarker] = useState(null);
@@ -41,7 +46,7 @@ function MapPicker({ onLocationSelect, coordinates }) {
       {marker && <Marker position={marker} />}
     </GoogleMap>
   ) : (
-    <p>Loading...</p>
+    <p>Yükleniyor...</p>
   );
 }
 
