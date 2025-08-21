@@ -87,7 +87,7 @@ export default function AuctionDetailTabItems({ auction }) {
     if (auction?.ada_no === "0") return;
 
     const res = await fetch(
-      `https://arazialbackend-je0i1du3m-orcan.vercel.app/api/polygon?mahalle=${currentNeighborhood.id}&ada=${auction?.ada_no}&parsel=${auction?.parsel_no}`
+      `https://arazialbackend.vercel.app/api/polygon?mahalle=${currentNeighborhood.id}&ada=${auction?.ada_no}&parsel=${auction?.parsel_no}`
     );
 
     const data = await res.json();
