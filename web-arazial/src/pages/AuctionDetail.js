@@ -2888,8 +2888,6 @@ const AuctionDetail = ({
     processMethod: "Taşınmaz Alım Vekaleti",
   });
 
-  console.log(offerProcessData, "offerProcessData");
-
   const [hasDeposit, setHasDeposit] = useState(false);
   const [hasPendingDeposit, setHasPendingDeposit] = useState(false);
   const [depositInfo, setDepositInfo] = useState(null);
