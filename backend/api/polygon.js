@@ -9,6 +9,7 @@ app.use(cors());
 
 app.get("/api/polygon", async (req, res) => {
   const { mahalle, ada, parsel } = req.query;
+  console.log("Request is done:", mahalle, ada, parsel);
 
   if (!mahalle || !ada || !parsel) {
     return res
