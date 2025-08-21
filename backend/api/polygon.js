@@ -1,5 +1,3 @@
-// index.js (Backend API)
-
 const express = require("express");
 const axios = require("axios");
 const app = express();
