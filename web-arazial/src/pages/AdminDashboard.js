@@ -4217,20 +4217,7 @@ function AdminDashboard() {
                   required
                 />
               </FormGroup>
-              <FormGroup>
-                <Label htmlFor="locationInfo">Konum</Label>
-                {/* <TextArea
-                  id="locationInfo"
-                  name="locationInfo"
-                  value={auctionForm.locationInfo}
-                  onChange={handleAuctionFormChange}
-                  required
-                /> */}
-                <MapPicker
-                  onLocationSelect={handleLocationSelect}
-                  coordinates={auctionForm?.locationInfo}
-                />
-              </FormGroup>
+
               <FormGroup>
                 <Label htmlFor="environment">Çevre</Label>
                 <TextArea
@@ -4389,6 +4376,22 @@ function AdminDashboard() {
                       </option>
                     ))}
                   </Select>
+                </FormGroup>
+
+                <FormGroup>
+                  <Label htmlFor="locationInfo">Konum</Label>
+                  {/* <TextArea
+                  id="locationInfo"
+                  name="locationInfo"
+                  value={auctionForm.locationInfo}
+                  onChange={handleAuctionFormChange}
+                  required
+                /> */}
+                  <MapPicker
+                    onLocationSelect={handleLocationSelect}
+                    coordinates={auctionForm?.locationInfo}
+                    city={auctionForm.city}
+                  />
                 </FormGroup>
 
                 <FormGroup>
@@ -4682,20 +4685,7 @@ function AdminDashboard() {
                   required
                 />
               </FormGroup>
-              <FormGroup>
-                <Label htmlFor="locationInfo">Konum</Label>
-                {/*  <TextArea
-                  id="locationInfo"
-                  name="locationInfo"
-                  value={auctionForm.locationInfo}
-                  onChange={handleAuctionFormChange}
-                  required
-                /> */}
-                <MapPicker
-                  onLocationSelect={handleLocationSelect}
-                  coordinates={auctionForm?.locationInfo}
-                />
-              </FormGroup>
+
               <FormGroup>
                 <Label htmlFor="environment">Çevre</Label>
                 <TextArea
@@ -4841,6 +4831,22 @@ function AdminDashboard() {
                       </option>
                     ))}
                   </Select>
+                </FormGroup>
+
+                <FormGroup>
+                  <Label htmlFor="locationInfo">Konum</Label>
+                  {/*  <TextArea
+                  id="locationInfo"
+                  name="locationInfo"
+                  value={auctionForm.locationInfo}
+                  onChange={handleAuctionFormChange}
+                  required
+                /> */}
+                  <MapPicker
+                    onLocationSelect={handleLocationSelect}
+                    coordinates={auctionForm?.locationInfo}
+                    city={auctionForm.city}
+                  />
                 </FormGroup>
 
                 <FormGroup>
