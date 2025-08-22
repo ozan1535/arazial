@@ -1,13 +1,14 @@
 const express = require("express");
 const axios = require("axios");
-const app = express();
-const port = 5000;
 const cors = require("cors");
+const app = express();
+
+const port = process.env.PORT || 5000;
+
 app.use(cors());
 
 app.get("/api/polygon", async (req, res) => {
   const { mahalle, ada, parsel } = req.query;
-  console.log("Request is done:", mahalle, ada, parsel);
 
   if (!mahalle || !ada || !parsel) {
     return res
@@ -22,6 +23,10 @@ app.get("/api/polygon", async (req, res) => {
 
     res.json(response.data);
   } catch (error) {
+    console.error(
+      "Error details:",
+      error.response ? error.response.data : error.message
+    );
     res.status(500).json({
       error: "Error fetching data from CBS API",
       details: error.message,
@@ -30,5 +35,5 @@ app.get("/api/polygon", async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Backend API is running on http://localhost:${port}`);
+  console.log(`Backend API is running`);
 });
