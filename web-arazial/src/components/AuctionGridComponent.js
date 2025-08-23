@@ -89,7 +89,7 @@ const AuctionStatusBadge = styled.div`
 `;
 
 const AuctionContent = styled.div`
-  padding: 1.25rem;
+  padding: 0.5rem 1.25rem;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -98,9 +98,9 @@ const AuctionContent = styled.div`
 const AuctionTitle = styled.h3`
   font-size: 1.25rem;
   font-weight: 600;
-  margin-bottom: 0.75rem;
   color: var(--color-text);
   line-height: 1.3;
+  margin: 0.5rem 0;
 
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -116,8 +116,8 @@ const AuctionTitle = styled.h3`
 const AuctionLocation = styled.div`
   display: flex;
   align-items: center;
-
-  font-size: 0.875rem;
+  justify-content: space-between;
+  font-size: 0.8rem;
   color: var(--color-text-secondary);
 
   svg {
@@ -159,8 +159,8 @@ const MetaItem = styled.div`
 `;
 
 const AuctionDetails = styled.div`
-  border-top: 1px solid #eaeaea;
-  padding-top: 1rem;
+  /* border-top: 1px solid #eaeaea; */
+  padding-top: 0.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -446,11 +446,52 @@ function AuctionGridComponent({
               <AuctionContent>
                 <AuctionTitle>{listing.title || "Emlak İlanı"}</AuctionTitle>
                 <AuctionLocation>
-                  <LocationIcon />
-                  {getAuctionLocation(listing)}
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <LocationIcon />
+                    {getAuctionLocation(listing)}
+                  </div>
+                  {(listing._display_type || listing.listing_type) ===
+                    "auction" && (
+                    <button
+                      onClick={(e) => handleShare(e, listing, setShareMessage)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.5rem",
+                        backgroundColor: "var(--color-primary)",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "4px",
+                        padding: "0.5rem 0.75rem",
+                        fontSize: "0.875rem",
+                        fontWeight: "500",
+                        cursor: "pointer",
+                        transition: "all 0.2s ease",
+                      }}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                      </svg>
+                      Paylaş
+                    </button>
+                  )}
                 </AuctionLocation>
 
-                {(listing.ada_no || listing.parsel_no) && (
+                {/* {(listing.ada_no || listing.parsel_no) && (
                   <AuctionMeta>
                     {listing.ada_no && (
                       <MetaItem>
@@ -515,8 +556,8 @@ function AuctionGridComponent({
                       </button>
                     }
                   </AuctionMeta>
-                )}
-                <AuctionMeta>
+                )} */}
+                {/* <AuctionMeta>
                   {listing.area_size && listing.area_unit && (
                     <MetaItem>
                       <GridIcon />
@@ -531,7 +572,7 @@ function AuctionGridComponent({
                       {listing.emlak_tipi}
                     </MetaItem>
                   )}
-                </AuctionMeta>
+                </AuctionMeta> */}
 
                 <AuctionDetails>
                   <PriceInfo>
@@ -579,16 +620,53 @@ function AuctionGridComponent({
                       {formatPrice(listing.deposit_amount || 0)}
                     </AuctionPrice>
                   </PriceInfo>
+                  {(listing._display_type || listing.listing_type) ===
+                    "offer" && (
+                    <button
+                      onClick={(e) => handleShare(e, listing, setShareMessage)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.5rem",
+                        backgroundColor: "var(--color-primary)",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "4px",
+                        padding: "0.5rem 0.75rem",
+                        fontSize: "0.875rem",
+                        fontWeight: "500",
+                        cursor: "pointer",
+                        transition: "all 0.2s ease",
+                      }}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                      </svg>
+                      Paylaş
+                    </button>
+                  )}
                 </AuctionDetails>
 
                 <AuctionDetails>
                   {(listing._display_type || listing.listing_type) ===
-                  "offer" ? (
-                    <AuctionStatus status="offer">
+                  "offer" ? null /* <AuctionStatus status="offer">
                       {getStatusIcon("offer", "offer")}
                       Satılık
-                    </AuctionStatus>
-                  ) : listing.status === "active" ? (
+                    </AuctionStatus> */ : listing.status === "active" ? (
                     <CountdownInfo>
                       <CountdownLabel status="active">
                         {getStatusIcon("active", "auction")}
