@@ -80,14 +80,14 @@ export const getAuctionDetailsForSidebar = (auction, isOfferListing) => {
 
 export const auctionDetailTabContent = (auction) => [
   {
+    id: "ozellikler",
+    label: "İlan Bilgileri",
+    content: auction.features || "Özellik girilmemiş.",
+  },
+  {
     id: "aciklama",
     label: "Açıklama",
     content: auction.description || "Açıklama girilmemiş.",
-  },
-  {
-    id: "ozellikler",
-    label: "Özellikler",
-    content: auction.features || "Özellik girilmemiş.",
   },
   {
     id: "konum",

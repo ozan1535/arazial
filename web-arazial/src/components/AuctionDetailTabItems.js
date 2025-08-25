@@ -1,5 +1,9 @@
 import styled from "styled-components";
-import { auctionDetailTabContent } from "../helpers/helpers";
+import {
+  auctionDetailTabContent,
+  formatDate,
+  formatPrice,
+} from "../helpers/helpers";
 import { GoogleMap, PolygonF, useJsApiLoader } from "@react-google-maps/api";
 import { useEffect, useState } from "react";
 import { citiesWithTKGMId } from "../helpers/cities";
@@ -22,7 +26,7 @@ const Tab = styled.div`
   cursor: pointer;
   font-weight: bold;
   transition: background-color 0.3s;
-
+  font-size: 0.8rem;
   &:hover {
     background-color: #e0e0e0;
   }
@@ -36,13 +40,41 @@ const TabContent = styled.div`
   display: ${(props) => (props.active ? "block" : "none")};
 `;
 
+const Container = styled.div`
+  width: 100%;
+`;
+
+const List = styled.ul`
+  width: 100%;
+  margin: 0;
+  padding: 0;
+`;
+
+const ListItem = styled.li`
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+  border-radius: 5px;
+  background: ${(props) => (props.altBackground ? "#f0f0f0" : "#fff")};
+`;
+
+const Label = styled.p`
+  margin: 0;
+`;
+
+const Value = styled.p`
+  font-weight: bold;
+`;
+
 const containerStyle = {
   height: "400px",
   width: "100%",
 };
 
 export default function AuctionDetailTabItems({ auction }) {
-  const [activeTab, setActiveTab] = useState("aciklama");
+  const [activeTab, setActiveTab] = useState("ozellikler");
   const [polygonCoordinatePaths, setPolygonCoordinatePaths] = useState(null);
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
@@ -52,6 +84,16 @@ export default function AuctionDetailTabItems({ auction }) {
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
+
+  const auctionDetails = [
+    { label: "Fiyat", value: formatPrice(auction.start_price) },
+    { label: "İlan Tarihi", value: formatDate(auction.created_at) },
+    { label: "İmar Durumu", value: auction.emlak_tipi },
+    { label: "Ada No", value: auction.ada_no },
+    { label: "Parsel No", value: auction.parsel_no },
+    { label: "Alan (m²)", value: `${auction.area_size} m²` },
+    { label: "İlan Sahibi", value: "arazialcom" },
+  ];
 
   const convertCoordinates = (coordinates) => {
     return coordinates?.[0].map(([lng, lat]) => ({ lat, lng }));
@@ -159,6 +201,17 @@ export default function AuctionDetailTabItems({ auction }) {
                 src={`https://www.google.com/maps?q=${tab?.content?.lat},${tab?.content?.lng}&output=embed`}
               />
             )
+          ) : tab.id === "ozellikler" ? (
+            <Container>
+              <List>
+                {auctionDetails.map((item, index) => (
+                  <ListItem key={index} altBackground={index % 2 === 0}>
+                    <Label>{item.label}</Label>
+                    <Value>{item.value}</Value>
+                  </ListItem>
+                ))}
+              </List>
+            </Container>
           ) : (
             <div>{tab.content}</div>
           )}

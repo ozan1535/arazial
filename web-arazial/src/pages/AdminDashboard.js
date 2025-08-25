@@ -1185,7 +1185,6 @@ function AdminDashboard() {
   const [auctionForm, setAuctionForm] = useState({
     title: "",
     description: "",
-    features: "",
     environment: "",
     locationInfo: null,
     startingPrice: "",
@@ -1276,7 +1275,6 @@ function AdminDashboard() {
     setAuctionForm({
       title: "",
       description: "",
-      features: "",
       environment: "",
       locationInfo: null,
       startingPrice: "",
@@ -1582,7 +1580,6 @@ function AdminDashboard() {
       const auctionData = {
         title: auctionForm.title,
         description: auctionForm.description,
-        features: auctionForm.features,
         locationInfo: auctionForm.locationInfo,
         environment: auctionForm.environment,
         city: auctionForm.city,
@@ -1670,7 +1667,6 @@ function AdminDashboard() {
       setAuctionForm({
         title: "",
         description: "",
-        features: "",
         locationInfo: "",
         environment: "",
         startingPrice: "",
@@ -1975,7 +1971,6 @@ function AdminDashboard() {
       setAuctionForm({
         title: auctionData.title || "",
         description: auctionData.description || "",
-        features: auctionData.features || "",
         locationInfo: auctionData.locationInfo || "",
         environment: auctionData.environment || "",
         startingPrice:
@@ -2241,7 +2236,6 @@ function AdminDashboard() {
       const auctionData = {
         title: auctionForm.title,
         description: auctionForm.description,
-        features: auctionForm.features,
         locationInfo: auctionForm.locationInfo,
         environment: auctionForm.environment,
         starting_price: price,
@@ -4208,17 +4202,6 @@ function AdminDashboard() {
               </FormGroup>
 
               <FormGroup>
-                <Label htmlFor="features">Özellikler</Label>
-                <TextArea
-                  id="features"
-                  name="features"
-                  value={auctionForm.features}
-                  onChange={handleAuctionFormChange}
-                  required
-                />
-              </FormGroup>
-
-              <FormGroup>
                 <Label htmlFor="environment">Çevre</Label>
                 <TextArea
                   id="environment"
@@ -4670,17 +4653,6 @@ function AdminDashboard() {
                   id="description"
                   name="description"
                   value={auctionForm.description}
-                  onChange={handleAuctionFormChange}
-                  required
-                />
-              </FormGroup>
-
-              <FormGroup>
-                <Label htmlFor="features">Özellikler</Label>
-                <TextArea
-                  id="features"
-                  name="features"
-                  value={auctionForm.features}
                   onChange={handleAuctionFormChange}
                   required
                 />
