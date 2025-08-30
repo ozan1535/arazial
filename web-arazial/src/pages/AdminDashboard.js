@@ -1434,11 +1434,22 @@ function AdminDashboard() {
   const handleAuctionFormChange = (e) => {
     const { name, value } = e.target;
 
-    console.log(name, value);
     setAuctionForm((prev) => ({
       ...prev,
       [name]: value,
     }));
+  };
+
+  const notify = async (title, body, screen) => {
+    // const title = "Yeni İlan!";
+    // const body = "Harika bir ilan eklendi.";
+    // const screen = "/auctions";
+
+    await fetch("https://arazialbackend.vercel.app/api/send-notification", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, body, screen }),
+    });
   };
 
   const handleCreateAuction = async (e) => {
@@ -1649,7 +1660,10 @@ function AdminDashboard() {
       // Create auction with image URLs
       const { data, error } = await supabase
         .from("auctions")
-        .insert([auctionData]);
+        .insert([auctionData])
+        .select();
+      const insertedData = data[0];
+      notify("Yeni İlan!", insertedData.title, `/auctions/${insertedData.id}`);
 
       if (error) {
         console.error("Detailed error creating auction:", {
